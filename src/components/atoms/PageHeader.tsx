@@ -1,12 +1,17 @@
-import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useColorModeValue, useDisclosure } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useEffect, useRef } from "react";
 import { HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
+import { ColorModeSwitcher } from "./ColorModeSwitcher";
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const headerBg = useColorModeValue("white", "neutral.900");
+  const modalBg = useColorModeValue("white", "neutral.700");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   // Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour)
-  const finalFocusRef = useRef(null)
+  const finalFocusRef = useRef(null)  
 
   useEffect(() => {
     const handleKeyDown: EventListener = (event) => {
@@ -28,20 +33,21 @@ const _PageHeader: FC<FlexProps> = (props) => {
       <header>
         <Flex
           alignItems="center"
-          background="white"
-          height="60px"
+          background={headerBg}
+          boxShadow="base"
           justify="center"
           width="100%"
           {...props}
         >
           <SearchBar onOpen={onOpen} />
+          <ColorModeSwitcher />
         </Flex>
       </header>
 
-      <Modal 
-        finalFocusRef={finalFocusRef} 
-        isOpen={isOpen} 
-        scrollBehavior="inside" 
+      <Modal
+        finalFocusRef={finalFocusRef}
+        isOpen={isOpen}
+        scrollBehavior="inside"
         onClose={onClose}
       >
         <ModalOverlay />
@@ -55,8 +61,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
               />
             </InputLeftElement>
             <Input
-              bg="white"
-              borderRadius={5}
+              bg={modalBg}
+              borderRadius={10}
               boxShadow="md"
               height="40px"
               placeholder="Search"
@@ -76,16 +82,16 @@ const _PageHeader: FC<FlexProps> = (props) => {
           </InputGroup>
 
           <ModalBody
-            bg="white"
+            bg={modalBg}
             mt="10px"
           >
-            <Box bg="red" height="100px" mb="2" />
-            <Box bg="red" height="100px" mt="2" />
-            <Box bg="red" height="100px" mt="2" />
-            <Box bg="red" height="100px" mt="2" />
-            <Box bg="red" height="100px" mt="2" />
-            <Box bg="red" height="100px" mt="2" />
-            <Box bg="red" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mb="2" />
+            <Box bg="orange" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mt="2" />
+            <Box bg="orange" height="100px" mt="2" />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -105,14 +111,16 @@ export const PageHeader = memo(_PageHeader);
 
 
 const SearchBar: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props }) => {
+  const bg = useColorModeValue("white", "neutral.700");
 
   return (
     <Box
       as="button"
-      bg="white"
-      borderRadius={5}
+      bg={bg}
+      borderRadius={10}
       boxShadow="base"
       height="40px"
+      minWidth="300px"
       px="10px"
       width="20%"
       onClick={onOpen}

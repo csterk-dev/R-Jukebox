@@ -1,4 +1,5 @@
-import { extendTheme, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
+import { mode } from "@chakra-ui/theme-tools"
 import { accordionStyles, buttonStyles, inputStyles, menuStyles, modalStyles } from "./components";
 import { colors } from "./colors";
 
@@ -32,15 +33,12 @@ const theme = extendTheme({
   },
 
   styles: {
-    global: {
+    global: (props: StyleFunctionProps) => ({
       body: {
-        bg: "neutral.100",
-        color: "neutral.700"
-      },
-      html: {
-        height: "100%"
+        bg: mode("#DFA8F5", "neutral.900")(props),
+        color: mode("neutral.700", "neutral.white")(props)
       }
-    }
+    })
   },
 
   fontSizes: {
