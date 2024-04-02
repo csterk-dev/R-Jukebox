@@ -1,12 +1,14 @@
-import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useColorModeValue, useDisclosure } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useEffect, useRef } from "react";
 import { HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
-import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
+import { VideoCard } from "components/atoms/VideoCard";
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
   const headerBg = useColorModeValue("white", "neutral.900");
-  const modalBg = useColorModeValue("white", "neutral.700");
+  const searchBg = useColorModeValue("white", "neutral.700");
+  const modalBg = useColorModeValue("neutral.offWhite", "neutral.700");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -61,7 +63,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
               />
             </InputLeftElement>
             <Input
-              bg={modalBg}
+              bg={searchBg}
               borderRadius={10}
               boxShadow="md"
               height="40px"
@@ -85,13 +87,11 @@ const _PageHeader: FC<FlexProps> = (props) => {
             bg={modalBg}
             mt="10px"
           >
-            <Box bg="orange" height="100px" mb="2" />
-            <Box bg="orange" height="100px" mt="2" />
-            <Box bg="orange" height="100px" mt="2" />
-            <Box bg="orange" height="100px" mt="2" />
-            <Box bg="orange" height="100px" mt="2" />
-            <Box bg="orange" height="100px" mt="2" />
-            <Box bg="orange" height="100px" mt="2" />
+            <VStack>
+              <VideoCard />
+              <VideoCard />
+              <VideoCard />
+            </VStack>
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -35,7 +35,7 @@ const theme = extendTheme({
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
-        bg: mode("#DFA8F5", "neutral.900")(props),
+        bg: mode("#DFA8F5", "neutral.700")(props),
         color: mode("neutral.700", "neutral.white")(props)
       }
     })
@@ -113,12 +113,12 @@ const theme = extendTheme({
     },
     h2: {
       fontSize: "20px",
-      fontWeight: "500"
+      fontWeight: "600"
     },
     h3: {
       color: "brown.400",
       fontSize: "18px",
-      fontWeight: "500"
+      fontWeight: "400"
     },
     h4: {
       color: "neutral.400",

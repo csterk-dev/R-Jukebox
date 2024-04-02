@@ -128,7 +128,7 @@ const _Backdrop: FC<BoxProps> = (props) => {
       backgroundColor: ["#FE9BA1", "#AD43A2", "#CC2B5E", "#B901B1"],
       rotate: [0, 360, 0],
       transition: {
-        duration: 60,
+        duration: 30,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -289,6 +289,26 @@ const _Backdrop: FC<BoxProps> = (props) => {
         <Circle
           opacity={shapeOpacity}
           size={dimensions.width / 4}
+        />
+      </motion.div>
+
+      {/* Top Left */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          top: -20,
+          right: dimensions.width / 6,
+          borderRadius: 360,
+          filter: `blur(${shapeBlur})`,
+          opacity: shapeOpacity
+        }}
+        variants={circleVariants2}
+      >
+        <Circle
+          opacity={shapeOpacity}
+          size="300px"
         />
       </motion.div>
 
