@@ -1,10 +1,11 @@
 import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools"
-import { accordionStyles, buttonStyles, inputStyles, menuStyles, modalStyles } from "./components";
+import { accordionStyles, buttonStyles, drawerStyles, inputStyles, menuStyles, modalStyles, textareaStyles } from "./components";
 import { colors } from "./colors";
 
 // Supports weights 200-800
 import "@fontsource-variable/assistant";
+import { tabStyles } from "./components/tabs";
 
 /*
  * System sets initial value.
@@ -19,13 +20,16 @@ const theme = extendTheme({
   colors,
   config,
   components: {
+    Accordion: accordionStyles,
     Button: buttonStyles,
     Input: inputStyles,
-    Accordion: accordionStyles,
+    Drawer: drawerStyles,
     Menu: menuStyles,
     Modal: modalStyles,
     // Apply the same input styles to the select component. For further customisation, create a `selectStyles` object inside dir /components.
-    Select: inputStyles
+    Select: inputStyles,
+    Tabs: tabStyles,
+    Textarea: textareaStyles
   },
   fonts: {
     heading: "'Assistant Variable', sans-serif",

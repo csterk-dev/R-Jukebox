@@ -60,7 +60,7 @@ export const buttonStyles = defineStyleConfig({
     }
   },
   defaultProps: {
-    size: "sm", // Same as default
+    size: "md", // Same as default
     variant: "solid" // Same as default
   }
 });

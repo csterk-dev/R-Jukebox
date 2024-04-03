@@ -1,8 +1,9 @@
 import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useEffect, useRef } from "react";
-import { HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
+import { HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
+import { VideoControls } from "components/atoms/VideoControls";
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
@@ -13,7 +14,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour)
-  const finalFocusRef = useRef(null)  
+  const finalFocusRef = useRef(null)
 
   useEffect(() => {
     const handleKeyDown: EventListener = (event) => {
@@ -37,12 +38,42 @@ const _PageHeader: FC<FlexProps> = (props) => {
           alignItems="center"
           background={headerBg}
           boxShadow="base"
+          gap="5px"
           justify="center"
+          px="5px"
           width="100%"
           {...props}
         >
-          <SearchBar onOpen={onOpen} />
-          <ColorModeSwitcher />
+          <VideoControls flex={1} />
+          <SearchBar
+            flex={{
+              base: 1,
+              sm: 1,
+              md: 1,
+              lg: 1,
+              xl: 1
+            }}
+            onOpen={onOpen}
+          />
+          <Flex
+            flex={1}
+            gap="5px"
+            justifyContent="center"
+          >
+            <ColorModeSwitcher />
+            <IconButton
+              aria-label="Adjust volume"
+              colorScheme="purple"
+              icon={<HiSpeakerWave />}
+              variant="ghost"
+            />
+            <IconButton
+              aria-label="Settings"
+              colorScheme="purple"
+              icon={<HiCog6Tooth />}
+              variant="ghost"
+            />
+          </Flex>
         </Flex>
       </header>
 
@@ -120,17 +151,12 @@ const SearchBar: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props }) 
       borderRadius={10}
       boxShadow="base"
       height="40px"
-      minWidth="300px"
       px="10px"
-      width="20%"
       onClick={onOpen}
       {...props}
     >
       <HStack gap={4}>
-        <Icon
-          aria-label="search icon"
-          as={HiMagnifyingGlass}
-        />
+        <Icon aria-label="search icon" as={HiMagnifyingGlass} />
         <Text>Search</Text>
         <Spacer />
         <HStack gap={1}>

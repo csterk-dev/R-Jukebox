@@ -21,10 +21,15 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
       width="100%"
       {...props}
     >
-      <Tabs colorScheme="purple" variant="soft-rounded" width="100%">
+      <Tabs 
+        colorScheme="purple" 
+        variant="soft-rounded"
+        width="100%"
+        isLazy
+      >
         <TabList bgColor={tabHeader} boxShadow="base" p="10px">
-          <Tab>Queue</Tab>
-          <Tab>History</Tab>
+          <Tab color="current">Queue</Tab>
+          <Tab color="current">History</Tab>
         </TabList>
         <TabPanels px="10px">
           <TabPanel p={0} py="10px">

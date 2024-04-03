@@ -7,7 +7,7 @@ type CurrentVideoProps = FlexProps & {
   currentVideo?: YoutubeVideo;
 }
 
-const _CurrentVideo: FC<CurrentVideoProps> = ({ }) => {
+const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
   const dimensions = useWindowDimensions();
 
@@ -22,9 +22,9 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ }) => {
         xl: 2
       }}
       justifyContent="center"
-      p="10px"
+      {...props}
     >
-      <Flex flexDir="column">
+      <Flex flexDir={dimensions.height < 600 ? "row" : "column"} gap="10px">
         <Flex
           alignItems="center"
           bg="neutral.dark"
@@ -64,7 +64,6 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ }) => {
           >
             1:24:09
           </Text>
-
         </Flex>
 
         {/* Current song info */}
@@ -73,35 +72,35 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ }) => {
           borderRadius={10}
           boxShadow="lg"
           flexDir="column"
+          gap="10px"
           minWidth="400px"
-          mt="10px"
           p="10px"
           width={dimensions.width / 3}
           zIndex={100}
         >
-          <Flex
-            alignItems="center"
-            fontSize="14"
-            fontWeight="500"
-            justifyContent="space-between"
-            textTransform="uppercase"
-          >
-            <Text>Current Song</Text>
+          <Flex alignItems="flex-start">
+            <Flex flex={1} flexDirection="column">
+              <Text
+                fontSize="14"
+                fontWeight="500"
+                textTransform="uppercase"
+              >
+                Current Song
+              </Text>
+              <Text
+                as="h2"
+                fontSize="20"
+                fontWeight="600"
+                mt="10px"
+                noOfLines={2}
+                textOverflow="ellipsis"
+              >
+                Jungle drum & bass liquid funk mix this is a really long string it shold break
+              </Text>
+            </Flex>
             <Tag bg="red.500" color="white">• Live</Tag>
           </Flex>
-          <Text
-            as="h2"
-            fontSize="20"
-            fontWeight="600"
-            noOfLines={2}
-            textOverflow="ellipsis"
-          >
-            Jungle drum & bass liquid funk mix this is a really long string it shold break
-          </Text>
-          <HStack
-            fontSize="18"
-            fontWeight="400"
-          >
+          <HStack fontSize="18" fontWeight="400">
             <Text>
               Loopy Longplays
             </Text>
@@ -109,13 +108,13 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ }) => {
               •
             </Text>
             <Text>
-              28 Aug 2022
+              236k views
             </Text>
             <Text>
               •
             </Text>
             <Text>
-              236k views
+              28 Aug 2022
             </Text>
           </HStack>
         </Flex>
