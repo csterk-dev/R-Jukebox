@@ -1,15 +1,19 @@
 import { Flex, FlexProps, HStack, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import { FC, memo } from "react";
+import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 
 
 type VideoCardProps = FlexProps & {
-  video?: YoutubeVideo;
+  video: YoutubeVideo;
 }
 
-const _VideoCard: FC<VideoCardProps> = ({ ...props }) => {
+const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
 
-
+  const videoDuration = formatVideoDuration(video?.contentDetails.duration);
+  const videoPublishedAt = formatVideoPublishedDate(video?.video.snippet.publishedAt);
+  const videoTitle = replaceAmps(video?.video.snippet.title);
+  
   return (
     <Flex
       _hover={{ cursor: "pointer" }}
@@ -17,28 +21,22 @@ const _VideoCard: FC<VideoCardProps> = ({ ...props }) => {
       borderRadius={5}
       boxShadow="base"
       flexDir="row"
-      height="100px"
+      height="94px"
       width="100%"
       {...props}
     >
       <Flex
-        alignItems="center"
-        bg="neutral.dark"
         borderRadius={5}
-        height="100%"
-        justifyContent="center"
+        height="94px"
         position="relative"
-        width="200px"
       >
         <Image
           aria-label="Video thumbnail"
-          bg="neutral.dark"
           borderRadius={5}
-          height="100%"
+          height="94px"
           objectFit="cover"
-          position="relative"
-          src="https://img.youtube.com/vi/uLxD4ozDPZA/hq720.jpg"
-          width="100%"
+          src={video?.video.snippet.thumbnails.high.url}
+          width="168px"
         />
         <Text
           bgColor={foreground}
@@ -50,12 +48,13 @@ const _VideoCard: FC<VideoCardProps> = ({ ...props }) => {
           right="2px"
           textAlign="center"
         >
-          1:24:09
+          {videoDuration}
         </Text>
       </Flex>
 
       <Flex
         borderRadius={10}
+        flex={1}
         flexDir="column"
         justifyContent="space-between"
         px="10px"
@@ -65,23 +64,23 @@ const _VideoCard: FC<VideoCardProps> = ({ ...props }) => {
           as="h4"
           fontSize="14"
           fontWeight="600"
-          noOfLines={2} 
+          noOfLines={2}
           textOverflow="ellipsis"
         >
-          Jungle drum & bass liquid funk mix this is really
+          {videoTitle}
         </Text>
         <Text fontSize="14" noOfLines={1} textOverflow="ellipsis">
-          Loopy Longplays
+          {video?.video.snippet.channelTitle}
         </Text>
         <HStack fontSize="14" fontWeight="400">
-          <Text>
-            240k views
+          {/* <Text>
+            Unknown Views
           </Text>
           <Text>
             •
-          </Text>
+          </Text> */}
           <Text>
-            28 Aug 2022
+            {videoPublishedAt}
           </Text>
         </HStack>
       </Flex>

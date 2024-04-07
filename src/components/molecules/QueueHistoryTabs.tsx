@@ -1,5 +1,4 @@
 import { Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, VStack } from "@chakra-ui/react";
-import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo } from "react"
 
 
@@ -21,8 +20,8 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
       width="100%"
       {...props}
     >
-      <Tabs 
-        colorScheme="purple" 
+      <Tabs
+        colorScheme="purple"
         variant="soft-rounded"
         width="100%"
         isLazy
@@ -33,11 +32,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
         </TabList>
         <TabPanels px="10px">
           <TabPanel p={0} py="10px">
-            <VStack>
-              <VideoCard />
-              <VideoCard />
-              <VideoCard />
-            </VStack>
+            <p>Coming soon</p>
           </TabPanel>
           <TabPanel p={0} py="10px">
             <p>Coming soon</p>

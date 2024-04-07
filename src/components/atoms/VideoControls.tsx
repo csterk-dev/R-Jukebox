@@ -1,4 +1,4 @@
-import { Flex, FlexProps, IconButton } from "@chakra-ui/react"
+import { Flex, FlexProps, IconButton, Tooltip } from "@chakra-ui/react"
 import { FC, memo } from "react"
 import { HiBackward, HiForward, HiPlay } from "react-icons/hi2";
 
@@ -13,24 +13,28 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         gap="5px"
         zIndex={100}
       >
-        <IconButton
-          aria-label="rewind"
-          colorScheme="purple"
-          icon={<HiBackward />}
-          variant="ghost"
-        />
+        <Tooltip label="Restart song">
+          <IconButton
+            aria-label="rewind"
+            colorScheme="purple"
+            icon={<HiBackward />}
+            variant="ghost"
+          />
+        </Tooltip>
         <IconButton
           aria-label="play/pause"
-          colorScheme="gray"
-          icon={<HiPlay />}
-          variant="solid"
-        />
-        <IconButton
-          aria-label="forward"
           colorScheme="purple"
-          icon={<HiForward />}
+          icon={<HiPlay />}
           variant="ghost"
         />
+        <Tooltip label="Next song">
+          <IconButton
+            aria-label="forward"
+            colorScheme="purple"
+            icon={<HiForward />}
+            variant="ghost"
+          />
+        </Tooltip>
       </Flex>
     </Flex>
   );

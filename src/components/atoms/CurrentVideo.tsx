@@ -4,7 +4,7 @@ import { FC, memo } from "react";
 
 
 type CurrentVideoProps = FlexProps & {
-  currentVideo?: YoutubeVideo;
+  // currentVideo?: YoutubeVideo; // fix type
 }
 
 const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {

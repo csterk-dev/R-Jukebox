@@ -1,9 +1,11 @@
-import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
-import { FC, KeyboardEvent, memo, useEffect, useRef } from "react";
+import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
+import { useDebounce } from "@usesoftwareau/react-utils";
+import { useYoutubeSearch } from "utils/hooks";
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
@@ -16,6 +18,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
   // Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour)
   const finalFocusRef = useRef(null)
 
+  /*
+   * Handling to trigger the opening and closing of the search from a keyboard short cut.
+   */
   useEffect(() => {
     const handleKeyDown: EventListener = (event) => {
       if ((event as unknown as KeyboardEvent).metaKey && (event as unknown as KeyboardEvent).key === "k") {
@@ -31,6 +36,22 @@ const _PageHeader: FC<FlexProps> = (props) => {
     };
   }, [isOpen, onClose, onOpen]);
 
+
+  /*
+   * Search state and results
+   */
+  const [searchVal, setSearchVal] = useState<string>("");
+  const query = useDebounce(searchVal, 1000);
+  const { error, loading, videos } = useYoutubeSearch(query);
+
+  
+  /** Clears the input if there is a value otherwise closes the modal. */
+  const onClickXButton = useCallback(() => {
+    if (!searchVal) return onClose();
+    setSearchVal("");
+  }, [onClose, searchVal]);
+
+  
   return (
     <>
       <header>
@@ -45,7 +66,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
           {...props}
         >
           <VideoControls flex={1} />
-          <SearchBar
+          <SearchBarBox
             flex={{
               base: 1,
               sm: 1,
@@ -77,6 +98,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
         </Flex>
       </header>
 
+      {/* Search and results */}
       <Modal
         finalFocusRef={finalFocusRef}
         isOpen={isOpen}
@@ -85,45 +107,76 @@ const _PageHeader: FC<FlexProps> = (props) => {
       >
         <ModalOverlay />
         <ModalContent bg="transparent" boxShadow={0}>
-          <InputGroup>
-            <InputLeftElement>
-              <Icon
-                aria-label="search icon"
-                as={HiMagnifyingGlass}
-                pointerEvents="none"
+          <Flex alignItems="center" flexDir="column">
+            <InputGroup>
+              <InputLeftElement>
+                <Icon
+                  aria-label="search icon"
+                  as={HiMagnifyingGlass}
+                  pointerEvents="none"
+                />
+              </InputLeftElement>
+              <Input
+                bg={searchBg}
+                borderRadius="6px"
+                boxShadow="md"
+                height="40px"
+                placeholder="Search"
+                px="10px"
+                value={searchVal}
+                variant="unstyled"
+                width="100%"
+                autoFocus
+                onChange={val => setSearchVal(val.target.value)}
               />
-            </InputLeftElement>
-            <Input
-              bg={searchBg}
-              borderRadius={10}
-              boxShadow="md"
-              height="40px"
-              placeholder="Search"
-              px="10px"
-              variant="unstyled"
-              width="100%"
-              autoFocus
-            />
-            <InputRightElement>
-              <IconButton
-                aria-label="Close search"
-                icon={<HiXMark />}
-                variant="ghost"
-                onClick={onClose}
+              <InputRightElement>
+                <IconButton
+                  aria-label="Close search"
+                  icon={<HiXMark />}
+                  variant="link"
+                  onClick={onClickXButton}
+                />
+              </InputRightElement>
+            </InputGroup>
+            {loading ?
+              <Progress
+                bgColor={searchBg}
+                borderBottomLeftRadius="6px"
+                borderBottomRightRadius="6px"
+                colorScheme="purple"
+                height="8px"
+                mt="-8px"
+                width="100%"
+                zIndex={10}
+                isIndeterminate
+              /> :
+              <Box
+                bgColor={searchBg}
+                borderBottomLeftRadius="6px"
+                borderBottomRightRadius="6px"
+                height="8px"
+                mt="-8px"
+                width="100%"
+                zIndex={10}
               />
-            </InputRightElement>
-          </InputGroup>
+            }
+          </Flex>
 
-          <ModalBody
-            bg={modalBg}
-            mt="10px"
-          >
-            <VStack>
-              <VideoCard />
-              <VideoCard />
-              <VideoCard />
-            </VStack>
-          </ModalBody>
+          {videos.length > 0 || error ?
+            <ModalBody
+              bg={modalBg}
+              mt="10px"
+            >
+              <VStack>
+                {error ?<Text mb="4px">{error}</Text> : <Text mb="4px">Showing the first 20 video results</Text>}
+                {videos.map(video => {
+                  if (!video) return;
+                  return <VideoCard key={video.video.id.videoId} video={video} />;
+                })}
+              </VStack>
+            </ModalBody> :
+            null
+          }
         </ModalContent>
       </Modal>
     </>
@@ -140,15 +193,20 @@ _PageHeader.displayName = "PageHeader";
 export const PageHeader = memo(_PageHeader);
 
 
-
-const SearchBar: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props }) => {
+/**
+ * Renders a input like styled box.
+ * 
+ * @param onOpen Callback for when the box is clicked. 
+ * @returns {JSX.Element} The search bar box.
+ */
+const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props }) => {
   const bg = useColorModeValue("white", "neutral.700");
 
   return (
     <Box
       as="button"
       bg={bg}
-      borderRadius={10}
+      borderRadius={8}
       boxShadow="base"
       height="40px"
       px="10px"
