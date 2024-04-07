@@ -5,6 +5,7 @@ import { HiBackward, HiForward, HiPlay } from "react-icons/hi2";
 type VideoControlsProps = FlexProps & {}
 
 const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
+  const openDelay = 500;
 
   return (
     <Flex justifyContent="center" {...props}>
@@ -13,7 +14,7 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         gap="5px"
         zIndex={100}
       >
-        <Tooltip label="Restart song">
+        <Tooltip label="Restart song" openDelay={openDelay}>
           <IconButton
             aria-label="rewind"
             colorScheme="purple"
@@ -27,7 +28,7 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
           icon={<HiPlay />}
           variant="ghost"
         />
-        <Tooltip label="Next song">
+        <Tooltip label="Next song" openDelay={openDelay}>
           <IconButton
             aria-label="forward"
             colorScheme="purple"
