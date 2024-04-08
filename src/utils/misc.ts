@@ -7,7 +7,7 @@ import dayjs from "dayjs";
  * 'PT1H8M41S' -> '1:08:01'
  * ```
  * @param duration Duration string.
- * @returns The formatted duration string, or undefined if no duration is supplied.
+ * @returns The formatted duration string, 'Live' for live videos, or undefined if no duration is supplied.
  */
 export function formatVideoDuration(duration?: string) {
   if (!duration) return undefined;

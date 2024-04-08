@@ -6,6 +6,7 @@ import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
 import { useDebounce } from "@usesoftwareau/react-utils";
 import { useYoutubeSearch } from "utils/hooks";
+import { usePlayer } from "state/playerContext";
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
@@ -44,14 +45,21 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const query = useDebounce(searchVal, 1000);
   const { error, loading, videos } = useYoutubeSearch(query);
 
-  
+
   /** Clears the input if there is a value otherwise closes the modal. */
   const onClickXButton = useCallback(() => {
     if (!searchVal) return onClose();
     setSearchVal("");
   }, [onClose, searchVal]);
 
-  
+
+  const { playVideo } = usePlayer();
+
+  /** Callback that plays the card youtube video. */
+  const onClickCard = useCallback((video: YoutubeVideo) => {
+    playVideo(video);
+  }, [playVideo]);
+
   return (
     <>
       <header>
@@ -87,12 +95,14 @@ const _PageHeader: FC<FlexProps> = (props) => {
               colorScheme="purple"
               icon={<HiSpeakerWave />}
               variant="ghost"
+              isDisabled
             />
             <IconButton
               aria-label="Settings"
               colorScheme="purple"
               icon={<HiCog6Tooth />}
               variant="ghost"
+              isDisabled
             />
           </Flex>
         </Flex>
@@ -168,10 +178,10 @@ const _PageHeader: FC<FlexProps> = (props) => {
               mt="10px"
             >
               <VStack>
-                {error ?<Text mb="4px">{error}</Text> : <Text mb="4px">Showing the first 20 video results</Text>}
+                {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">Showing the first 20 video results</Text>}
                 {videos.map(video => {
                   if (!video) return;
-                  return <VideoCard key={video.video.id.videoId} video={video} />;
+                  return <VideoCard key={video.video.id.videoId} playVideo={onClickCard} video={video} />;
                 })}
               </VStack>
             </ModalBody> :

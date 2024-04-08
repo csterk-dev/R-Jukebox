@@ -1,20 +1,23 @@
-import { Flex, FlexProps, HStack, IconButton, Image, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
+import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
 import { useWebHover } from "@usesoftwareau/react-utils";
-import { FC, memo, useMemo } from "react";
-import { HiPlay } from "react-icons/hi2";
+import { FC, memo, useCallback, useMemo } from "react";
+import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 
+const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
   video: YoutubeVideo;
+  playVideo: (video: YoutubeVideo) => void;
 }
 
-const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
+const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
 
   const videoDuration = formatVideoDuration(video?.contentDetails.duration);
   const videoPublishedAt = formatVideoPublishedDate(video?.video.snippet.publishedAt);
   const videoTitle = replaceAmps(video?.video.snippet.title);
+  const isLive = videoDuration === "Live";
 
   const [cardRef, cardHovered] = useWebHover();
   const [buttonRef, buttonHovered] = useWebHover();
@@ -24,9 +27,15 @@ const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
     return false;
   }, [buttonHovered, cardHovered]);
 
+  const optionButtonBg = useColorModeValue("neutral.50", "neutral.700");
+
+  const onClickCard = useCallback(() => {
+    playVideo(video);
+  }, [playVideo, video]);
+
   return (
     <Flex
-      // _hover={{ cursor: "pointer" }}
+      _hover={{ cursor: "pointer" }}
       bgColor={foreground}
       borderRadius={5}
       boxShadow="base"
@@ -35,50 +44,48 @@ const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
       position="relative"
       ref={cardRef}
       width="100%"
+      onClick={onClickCard}
       {...props}
     >
       <Flex
         borderRadius={5}
-        /* Must specify filter property before blur can be specified */
         filter="auto"
         height="94px"
         position="relative"
-        // eslint-disable-next-line react/jsx-sort-props
-        blur={showOverlay ? "4px" : undefined}
       >
         <Image
           aria-label="Video thumbnail"
           borderRadius={5}
           height="94px"
           objectFit="cover"
+          pointerEvents="none"
           src={video?.video.snippet.thumbnails.high.url}
           width="168px"
         />
-        <Text
-          bgColor={foreground}
-          borderRadius={4}
+        <Tag
+          alignItems="center"
+          bgColor={isLive ? "red.500" : foreground}
+          borderRadius={2}
           bottom="4px"
+          color={isLive ? "white" : undefined}
           fontSize="14"
           position="absolute"
           px="4px"
           right="2px"
           textAlign="center"
         >
+          {isLive ? <Icon as={HiSignal} mr="2px" /> : null}
           {videoDuration}
-        </Text>
+        </Tag>
       </Flex>
 
       <Flex
         borderRadius={10}
-        /* Must specify filter property before blur can be specified */
-        filter="auto"
         flex={1}
         flexDir="column"
         justifyContent="space-between"
         px="10px"
         py="5px"
-        // eslint-disable-next-line react/jsx-sort-props
-        // blur={showOverlay ? "4px" : undefined}
       >
         <Text
           as="h4"
@@ -106,19 +113,19 @@ const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
 
       </Flex>
 
-      {showOverlay ?
+      {showOverlay && SHOW_OPTIONS ?
         <HStack
+          gap="5px"
           height="100%"
           justifyContent="center"
           pl="65px"
           position="absolute"
-          pr="20px"
-          pt="3px"
+          pr="3px"
           ref={buttonRef}
           width="100%"
           zIndex={100}
         >
-          <IconButton
+          {/* <IconButton
             _hover={{
               bgColor: "purple.500",
               color: "white",
@@ -129,28 +136,32 @@ const _VideoCard: FC<VideoCardProps> = ({ video, ...props }) => {
             color="neutral.700"
             icon={<HiPlay size="20px" />}
             variant="solid"
-          />
+          /> */}
           <Spacer />
-          {/* <VStack
-            _hover={{
-              transition: "all linear 0ms "
-            }}
-          >
+          <VStack>
             <Tooltip label="Play next" placement="left">
               <IconButton
+                _hover={{
+                  transition: "all linear 0ms "
+                }}
                 aria-label="Play video next"
+                bgColor={optionButtonBg}
                 icon={<HiQueueList />}
-                variant="ghost"
+                variant="solid"
               />
             </Tooltip>
             <Tooltip label="Play last" placement="left">
               <IconButton
-                aria-label="Play video last"
+                _hover={{
+                  transition: "all linear 0ms "
+                }}
+                aria-label="Play video last" 
+                bgColor={optionButtonBg}
                 icon={<HiBarsArrowDown />}
-                variant="ghost"
+                variant="solid"
               />
             </Tooltip>
-          </VStack> */}
+          </VStack>
         </HStack> :
         null
       }

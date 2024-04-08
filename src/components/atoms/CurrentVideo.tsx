@@ -1,16 +1,24 @@
-import { Box, Flex, FlexProps, HStack, Image, Tag, Text, useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Tag, Text, useColorModeValue } from "@chakra-ui/react";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { FC, memo } from "react";
+import { HiMusicalNote } from "react-icons/hi2";
+import { usePlayer } from "state/playerContext";
+import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 
 
-type CurrentVideoProps = FlexProps & {
-  // currentVideo?: YoutubeVideo; // fix type
-}
+type CurrentVideoProps = FlexProps;
 
 const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
+  const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
+  const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
 
+  const { isPlaying, currentVideo } = usePlayer();
+
+  const videoDuration = formatVideoDuration(currentVideo?.contentDetails.duration);
+  const videoPublishedAt = formatVideoPublishedDate(currentVideo?.video.snippet.publishedAt);
+  const videoTitle = replaceAmps(currentVideo?.video.snippet.title);
 
   return (
     <Flex
@@ -27,7 +35,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
       <Flex flexDir={dimensions.height < 600 ? "row" : "column"} gap="10px">
         <Flex
           alignItems="center"
-          bg="neutral.dark"
+          bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
           borderRadius={10}
           height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
           justifyContent="center"
@@ -37,33 +45,43 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           width={dimensions.width / 3}
         >
           <Box
-            bg="url('https://img.youtube.com/vi/uLxD4ozDPZA/hq720.jpg') center/cover no-repeat"
+            bg={currentVideo ? `url('${currentVideo.video.snippet.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
             borderRadius={10}
-            filter="blur(10px)"
+            filter={`blur(${currentVideo ? "10px" : "0px"})`}
             height="95%"
             position="absolute"
             width="95%"
           />
-          <Image
-            aria-label="Video thumbnail"
-            borderRadius={10}
-            src="https://img.youtube.com/vi/uLxD4ozDPZA/hq720.jpg"
-            width="75%"
-            zIndex={100}
-          />
+          {currentVideo ?
+            <Image
+              aria-label="Video thumbnail"
+              borderRadius={10}
+              src={currentVideo.video.snippet.thumbnails.high.url}
+              width="75%"
+              zIndex={100}
+            /> :
+            <Icon
+              as={HiMusicalNote}
+              boxSize={20}
+              zIndex={1}
+            />
+          }
 
-          <Text
-            bgColor={foreground}
-            borderRadius={4}
-            bottom="10px"
-            pb="2px"
-            position="absolute"
-            px="8px"
-            right="10px"
-            textAlign="center"
-          >
-            1:24:09
-          </Text>
+          {currentVideo ?
+            <Text
+              bgColor={durationBg}
+              borderRadius={4}
+              bottom="10px"
+              pb="2px"
+              position="absolute"
+              px="8px"
+              right="10px"
+              textAlign="center"
+            >
+              {videoDuration}
+            </Text> :
+            null
+          }
         </Flex>
 
         {/* Current song info */}
@@ -85,7 +103,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 fontWeight="500"
                 textTransform="uppercase"
               >
-                Current Song
+                {currentVideo ? "Current Song" : "No song selected"}
               </Text>
               <Text
                 as="h2"
@@ -95,28 +113,31 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 noOfLines={2}
                 textOverflow="ellipsis"
               >
-                Jungle drum & bass liquid funk mix this is a really long string it shold break
+                {currentVideo ? videoTitle : "Use the search bar to find a song!"}
               </Text>
             </Flex>
-            <Tag bg="red.500" color="white">• Live</Tag>
+            {isPlaying ? <Tag bg="red.500" color="white">• Playing</Tag> : currentVideo ? <Tag bg="neutral.500" color="white">Paused</Tag> : null}
           </Flex>
-          <HStack fontSize="18" fontWeight="400">
-            <Text>
-              Loopy Longplays
-            </Text>
-            <Text>
+          {currentVideo ?
+            <HStack fontSize="18" fontWeight="400">
+              <Text>
+                {currentVideo.video.snippet.channelTitle}
+              </Text>
+              {/* <Text>
               •
             </Text>
             <Text>
               236k views
-            </Text>
-            <Text>
-              •
-            </Text>
-            <Text>
-              28 Aug 2022
-            </Text>
-          </HStack>
+            </Text> */}
+              <Text>
+                •
+              </Text>
+              <Text>
+                {videoPublishedAt}
+              </Text>
+            </HStack> :
+            null
+          }
         </Flex>
       </Flex>
     </Flex>

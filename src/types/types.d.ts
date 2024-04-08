@@ -78,6 +78,7 @@ declare interface SearchVideoItem {
     },
     channelTitle: string,
     liveBroadcastContent: string,
+    /** Use `publishedAt` instead. */
     publishTime: string
   }
 }

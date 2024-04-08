@@ -6,6 +6,7 @@ import { theme } from "./theme";
 import { CurrentVideo } from "components/atoms/CurrentVideo";
 import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
 import { PageContainer } from "components/templates/PageContainer";
+import { PlayerProvider } from "state/playerContext";
 
 
 const headerHeight = 60;
@@ -17,28 +18,30 @@ export const App = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <PageContainer mb="10px">
-        {/* Header */}
-        <PageHeader height={`${headerHeight}px`} />
-        
-        {/* Body Content */}
-        <Flex
-          flexDirection={dimensions.width < 800 ? "column" : "row"}
-          gap="10px"
-          height={dimensions.height - headerHeight - controlBarHeight}
-          justifyContent="space-between"
-          // p="10px"
-          mt="10px"
-        >
-          {/* Video Thumbnail & Metadata Container */}
-          <CurrentVideo />
+      <PlayerProvider>
+        <PageContainer mb="10px">
+          {/* Header */}
+          <PageHeader height={`${headerHeight}px`} />
 
-          {/* Queue & History Container */}
-          <Flex flex={1} justifyContent={dimensions.width < 800 ? "center" : "flex-start"} pb={dimensions.width < 800 ? "10px" : 0}>
-            <QueueHistoryTabs />
+          {/* Body Content */}
+          <Flex
+            flexDirection={dimensions.width < 800 ? "column" : "row"}
+            gap="10px"
+            height={dimensions.height - headerHeight - controlBarHeight}
+            justifyContent="space-between"
+            // p="10px"
+            mt="10px"
+          >
+            {/* Video Thumbnail & Metadata Container */}
+            <CurrentVideo />
+
+            {/* Queue & History Container */}
+            <Flex flex={1} justifyContent={dimensions.width < 800 ? "center" : "flex-start"} pb={dimensions.width < 800 ? "10px" : 0}>
+              <QueueHistoryTabs />
+            </Flex>
           </Flex>
-        </Flex>
-      </PageContainer>
+        </PageContainer>
+      </PlayerProvider>
     </ChakraProvider>
   )
 }

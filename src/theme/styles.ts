@@ -39,7 +39,7 @@ const theme = extendTheme({
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
-        bg: mode("#DFA8F5", "neutral.700")(props),
+        bg: mode("#DFA8F5", "#371B3F")(props),
         color: mode("neutral.700", "neutral.white")(props)
       }
     })
