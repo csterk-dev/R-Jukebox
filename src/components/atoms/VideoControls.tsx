@@ -3,19 +3,29 @@ import { FC, memo, useCallback } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 
+
+const tooltipOpenDelay = 500;
+
+
 type VideoControlsProps = FlexProps & {}
 
-const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
-  const openDelay = 500;
 
+const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
+
+  /*
+   * Get the current state of the player
+   */
   const { isPlaying, pauseCurrentVideo, resumeCurrentVideo } = usePlayer();
 
+  /**
+   * Toggles the current playing state of the player.
+   */
   const onPressPlayPause = useCallback(() => {
-    console.log(isPlaying);
     if (isPlaying) return pauseCurrentVideo();
     resumeCurrentVideo();
   }, [isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
 
+  
   return (
     <Flex justifyContent="center" {...props}>
       <Flex
@@ -23,7 +33,7 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         gap="5px"
         zIndex={100}
       >
-        <Tooltip label="Restart song" openDelay={openDelay}>
+        <Tooltip label="Restart song" openDelay={tooltipOpenDelay}>
           <IconButton
             aria-label="rewind"
             colorScheme="purple"
@@ -39,7 +49,7 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
           variant="ghost"
           onClick={onPressPlayPause}
         />
-        <Tooltip label="Next song" openDelay={openDelay}>
+        <Tooltip label="Next song" openDelay={tooltipOpenDelay}>
           <IconButton
             aria-label="forward"
             colorScheme="purple"

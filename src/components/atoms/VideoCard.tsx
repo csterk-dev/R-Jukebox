@@ -7,16 +7,19 @@ import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "util
 const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
+  /** The video to render. */
   video: YoutubeVideo;
+  /** Callback to set the video as playing. */
   playVideo: (video: YoutubeVideo) => void;
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
 
-  const videoDuration = formatVideoDuration(video?.contentDetails.duration);
-  const videoPublishedAt = formatVideoPublishedDate(video?.video.snippet.publishedAt);
-  const videoTitle = replaceAmps(video?.video.snippet.title);
+  const videoDuration = useMemo(() => formatVideoDuration(video?.contentDetails.duration), [video?.contentDetails.duration]);
+  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video?.video.snippet.publishedAt), [video?.video.snippet.publishedAt]);
+  const videoTitle = useMemo(() => replaceAmps(video?.video.snippet.title), [video?.video.snippet.title]);
+
   const isLive = videoDuration === "Live";
 
   const [cardRef, cardHovered] = useWebHover();
@@ -171,4 +174,10 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
 }
 _VideoCard.displayName = "VideoCard";
 
+/**
+ * Displays the video details in a card.
+ * 
+ * @extends FlexProps Additional props to configure the card container.
+ * @returns {JSX.Element} The video card.
+ */
 export const VideoCard = memo(_VideoCard);

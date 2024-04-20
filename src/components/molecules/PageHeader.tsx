@@ -9,11 +9,15 @@ import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
 
 
+const noOfResults = 40;
+
+
 const _PageHeader: FC<FlexProps> = (props) => {
   const headerBg = useColorModeValue("white", "neutral.900");
   const searchBg = useColorModeValue("white", "neutral.700");
   const modalBg = useColorModeValue("neutral.offWhite", "neutral.700");
 
+  // Search bar and results disclosure
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour)
@@ -29,12 +33,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
         else onClose();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose, onOpen]);
 
 
@@ -43,7 +44,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
    */
   const [searchVal, setSearchVal] = useState<string>("");
   const query = useDebounce(searchVal, 1000);
-  const { error, loading, videos } = useYoutubeSearch(query);
+  const { error, loading, videos } = useYoutubeSearch(query, noOfResults);
 
 
   /** Clears the input if there is a value otherwise closes the modal. */
@@ -178,7 +179,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
               mt="10px"
             >
               <VStack>
-                {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">Showing the first 20 video results</Text>}
+                {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${noOfResults} Youtube video results`}</Text>}
                 {videos.map(video => {
                   if (!video) return;
                   return <VideoCard key={video.video.id.videoId} playVideo={onClickCard} video={video} />;

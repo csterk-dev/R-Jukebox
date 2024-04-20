@@ -1,4 +1,4 @@
-import { Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from "@chakra-ui/react";
 import { FC, memo } from "react"
 
 
@@ -44,4 +44,10 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
 }
 _QueueHistoryTabs.displayName = "QueueHistoryTabs";
 
+/**
+ * Renders the queue and history tabs.
+ * 
+ * @extends FlexProps Additional props to configure the parent container.
+ * @returns {JSX.Element} The queue and history tabs.
+ */
 export const QueueHistoryTabs = memo(_QueueHistoryTabs);
