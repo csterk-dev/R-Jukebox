@@ -4,6 +4,7 @@ import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 
+/** Enable when queue/ history is implemented */
 const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
@@ -15,6 +16,8 @@ type VideoCardProps = FlexProps & {
 
 const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
+  const foregroundHovered = useColorModeValue("neutral.50", "neutral.800");
+  const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
 
   const videoDuration = useMemo(() => formatVideoDuration(video?.contentDetails.duration), [video?.contentDetails.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video?.video.snippet.publishedAt), [video?.video.snippet.publishedAt]);
@@ -25,12 +28,11 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const [cardRef, cardHovered] = useWebHover();
   const [buttonRef, buttonHovered] = useWebHover();
 
-  const showOverlay = useMemo(() => {
+  const isHovered = useMemo(() => {
     if (cardHovered || buttonHovered) return true;
     return false;
   }, [buttonHovered, cardHovered]);
 
-  const optionButtonBg = useColorModeValue("neutral.50", "neutral.700");
 
   const onClickCard = useCallback(() => {
     playVideo(video);
@@ -39,7 +41,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   return (
     <Flex
       _hover={{ cursor: "pointer" }}
-      bgColor={foreground}
+      bgColor={isHovered ? foregroundHovered : foreground}
       borderRadius={5}
       boxShadow="base"
       flexDir="row"
@@ -116,14 +118,14 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
 
       </Flex>
 
-      {showOverlay && SHOW_OPTIONS ?
+      {isHovered && SHOW_OPTIONS ?
         <HStack
           gap="5px"
           height="100%"
           justifyContent="center"
-          pl="65px"
+          // pl="60px"
           position="absolute"
-          pr="3px"
+          pr="5px"
           ref={buttonRef}
           width="100%"
           zIndex={100}
@@ -158,7 +160,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
                 _hover={{
                   transition: "all linear 0ms "
                 }}
-                aria-label="Play video last" 
+                aria-label="Play video last"
                 bgColor={optionButtonBg}
                 icon={<HiBarsArrowDown />}
                 variant="solid"

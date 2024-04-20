@@ -24,12 +24,27 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
-  const placeholderIconAnimation: Variants = {
+
+  /** A looping opacity animation */
+  const fadingOpacityAnimation: Variants = {
     initial: {
       opacity: 1
     },
     animate: {
       opacity: 0.5,
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse" as const
+      }
+    }
+  };
+  const liveTagAnimation: Variants = {
+    initial: {
+      opacity: 1
+    },
+    animate: {
+      opacity: 0.75,
       transition: {
         duration: 2,
         repeat: Infinity,
@@ -92,7 +107,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               <motion.div
                 animate="animate"
                 initial="initial"
-                variants={placeholderIconAnimation}
+                variants={fadingOpacityAnimation}
               >
                 <VStack zIndex={1}>
                   <Icon
@@ -161,7 +176,25 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 {currentVideo ? videoTitle : undefined}
               </Text>
             </Flex>
-            {isPlaying ? <Tag bg="red.500" color="white">• Playing</Tag> : currentVideo ? <Tag bg="neutral.500" color="white">Paused</Tag> : null}
+            {isPlaying ?
+              <Tag
+                bg="red.600"
+                color="white"
+                fontWeight="bold"
+                pb="2px"
+              >
+                <motion.div
+                  animate="animate"
+                  initial="initial"
+                  variants={liveTagAnimation}
+                >
+                  • Playing
+                </motion.div>
+              </Tag> :
+              currentVideo ?
+                <Tag bg="neutral.500" color="white">Paused</Tag> :
+                null
+            }
           </Flex>
           {currentVideo ?
             <HStack fontSize="18" fontWeight="400">
