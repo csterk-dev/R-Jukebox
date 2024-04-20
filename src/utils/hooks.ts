@@ -38,15 +38,15 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
      */
     setLoading(true);
     YoutubeAPI.searchVideos(query, maxResults)
-      .then((searchRes: AxiosResponse<SearchVideoResult>) => {
-        const videoIds = searchRes.data.items.map(i => {
+      .then((searchRes: AxiosResponse<SearchVideoItem[]>) => {
+        const videoIds = searchRes.data.map(i => {
           return i.id.videoId
         })
         YoutubeAPI.getVideosContentDetails(videoIds)
-          .then((detailsRes: AxiosResponse<GetVideosContentDetailsResult>) => {
+          .then((detailsRes: AxiosResponse<GetVideosContentDetailsItem[]>) => {
             if (isMounted) {
-              const combinedResults: YoutubeVideo[] = detailsRes.data.items.map(detailsItem => {
-                const video = searchRes.data.items.find(searchItem => searchItem.id.videoId == detailsItem.id);
+              const combinedResults: YoutubeVideo[] = detailsRes.data.map(detailsItem => {
+                const video = searchRes.data.find(searchItem => searchItem.id.videoId == detailsItem.id);
                 if (!video) return;
                 return {
                   video,

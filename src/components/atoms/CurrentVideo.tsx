@@ -1,24 +1,52 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Tag, Text, useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
-import { FC, memo } from "react";
-import { HiMusicalNote } from "react-icons/hi2";
+import { FC, memo, useMemo } from "react";
+import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
+import { motion, Variants } from "framer-motion";
 
 
 type CurrentVideoProps = FlexProps;
 
 const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
+  /*
+   * Player State
+   */
+  const { isPlaying, currentVideo } = usePlayer();
+
+
+  /*
+   * ------------------------------------------------------------------------------------------------------------------ 
+   * UI Styling
+   */
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
+  const placeholderIconAnimation: Variants = {
+    initial: {
+      opacity: 1
+    },
+    animate: {
+      opacity: 0.5,
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse" as const
+      }
+    }
+  };
 
-  const { isPlaying, currentVideo } = usePlayer();
 
-  const videoDuration = formatVideoDuration(currentVideo?.contentDetails.duration);
-  const videoPublishedAt = formatVideoPublishedDate(currentVideo?.video.snippet.publishedAt);
-  const videoTitle = replaceAmps(currentVideo?.video.snippet.title);
+  /*
+   * ------------------------------------------------------------------------------------------------------------------ 
+   * Video Details
+   */
+  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.contentDetails.duration), [currentVideo?.contentDetails.duration]);
+  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.video.snippet.publishedAt), [currentVideo?.video.snippet.publishedAt]);
+  const videoTitle = useMemo(() => replaceAmps(currentVideo?.video.snippet.title), [currentVideo?.video.snippet.title]);
+
 
   return (
     <Flex
@@ -60,11 +88,28 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               width="75%"
               zIndex={100}
             /> :
-            <Icon
-              as={HiMusicalNote}
-              boxSize={20}
-              zIndex={1}
-            />
+            <VStack zIndex={1}>
+              <motion.div
+                animate="animate"
+                initial="initial"
+                variants={placeholderIconAnimation}
+              >
+                <VStack zIndex={1}>
+                  <Icon
+                    as={HiSignalSlash}
+                    boxSize="80px"
+                  />
+                  <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
+                </VStack>
+              </motion.div>
+              <HStack mt="10px" opacity={0.8}>
+                <Icon
+                  as={HiMagnifyingGlass}
+                  boxSize="20px"
+                />
+                <Text mb="5px">Use the search bar to find the music you love!</Text>
+              </HStack>
+            </VStack>
           }
 
           {currentVideo ?
@@ -113,7 +158,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 noOfLines={2}
                 textOverflow="ellipsis"
               >
-                {currentVideo ? videoTitle : "Use the search bar to find a song!"}
+                {currentVideo ? videoTitle : undefined}
               </Text>
             </Flex>
             {isPlaying ? <Tag bg="red.500" color="white">• Playing</Tag> : currentVideo ? <Tag bg="neutral.500" color="white">Paused</Tag> : null}
@@ -145,4 +190,10 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 }
 _CurrentVideo.displayName = "CurrentVideo";
 
+/**
+ * Displays the currently active video and its meta data, or a placeholder.
+ * 
+ * @extends FlexProps Additional props to configure the parent container.
+ * @returns {JSX.Element} The Current video or placeholder.
+ */
 export const CurrentVideo = memo(_CurrentVideo);
