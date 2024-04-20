@@ -3,12 +3,6 @@ import { YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
 
 
-/*
- * 6 hours in milliseconds
- * const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
- */
-
-
 /**
  * Custom hooks that returns a list of videos that match the search query.
  * @param query The search query.
@@ -25,13 +19,6 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
 
     // Prevent empty string searches
     if (!query) return;
-
-    /*
-     * TODO
-     * Implement backend caching to sql lite instance:
-     * - Hash the search query -> use as PK
-     *    - Store search results and timestamp of when it was searched
-     */
 
     /*
      * Get list of videos and their content details.
