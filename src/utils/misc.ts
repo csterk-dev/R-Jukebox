@@ -72,6 +72,14 @@ export function formatVideoPublishedDate(date?: string) {
   }
 
   const noOfDays = dayjs(date).day() - dayjs().day();
+  if (noOfDays === 0) {
+    const noOfHours = dayjs().hour() - dayjs(date).hour();
+    if (noOfHours < 1) {
+      const noOfMins = dayjs().minute() - dayjs(date).minute();
+      return `${noOfMins === 0 ? 1 : noOfMins} ${noOfMins === 1 ? "min" : "hours"} ago`;
+    }
+    return `${noOfHours === 0 ? 1 : noOfHours} ${noOfHours === 1 ? "hour" : "hours"} ago`;
+  }
   return `${noOfDays} ${noOfDays === 1 ? "day" : "days"} ago`;
 }
 
