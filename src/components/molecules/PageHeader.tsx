@@ -59,7 +59,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
   /** Callback that plays the card youtube video. */
   const onClickCard = useCallback((video: YoutubeVideo) => {
     playVideo(video);
-  }, [playVideo]);
+    onClose();
+  }, [onClose, playVideo]);
 
   return (
     <>

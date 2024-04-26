@@ -33,7 +33,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
     animate: {
       opacity: 0.5,
       transition: {
-        duration: 2,
+        duration: 1,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -46,7 +46,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
     animate: {
       opacity: 0.75,
       transition: {
-        duration: 2,
+        duration: 1,
         repeat: Infinity,
         repeatType: "reverse" as const
       }

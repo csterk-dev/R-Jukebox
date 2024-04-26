@@ -15,15 +15,16 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
   /*
    * Get the current state of the player
    */
-  const { isPlaying, pauseCurrentVideo, resumeCurrentVideo } = usePlayer();
+  const { currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo } = usePlayer();
 
   /**
    * Toggles the current playing state of the player.
    */
   const onPressPlayPause = useCallback(() => {
+    if (!currentVideo) return;
     if (isPlaying) return pauseCurrentVideo();
     resumeCurrentVideo();
-  }, [isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
+  }, [currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
 
   
   return (
@@ -46,6 +47,7 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
           aria-label="play/pause"
           colorScheme="purple"
           icon={isPlaying ? <HiPause /> : <HiPlay />}
+          isDisabled={!currentVideo}
           variant="ghost"
           onClick={onPressPlayPause}
         />

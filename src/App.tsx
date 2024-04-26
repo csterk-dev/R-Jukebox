@@ -29,7 +29,6 @@ export const App = () => {
             gap="10px"
             height={dimensions.height - headerHeight - controlBarHeight}
             justifyContent="space-between"
-            // p="10px"
             mt="10px"
           >
             {/* Video Thumbnail & Metadata Container */}
