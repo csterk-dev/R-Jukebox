@@ -11,7 +11,7 @@ import { AxiosResponse } from "axios";
  */
 export const useYoutubeSearch = (query: string, maxResults?: number) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>();
   const [videos, setVideos] = useState<YoutubeVideo[]>([]);
 
   useEffect(() => {
