@@ -58,9 +58,9 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
    * ------------------------------------------------------------------------------------------------------------------ 
    * Video Details
    */
-  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.contentDetails.duration), [currentVideo?.contentDetails.duration]);
-  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.video.snippet.publishedAt), [currentVideo?.video.snippet.publishedAt]);
-  const videoTitle = useMemo(() => replaceAmps(currentVideo?.video.snippet.title), [currentVideo?.video.snippet.title]);
+  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.duration), [currentVideo?.duration]);
+  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
+  const videoTitle = useMemo(() => replaceAmps(currentVideo?.title), [currentVideo?.title]);
 
 
   return (
@@ -88,7 +88,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           width={dimensions.width / 3}
         >
           <Box
-            bg={currentVideo ? `url('${currentVideo.video.snippet.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
+            bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
             borderRadius={10}
             filter={`blur(${currentVideo ? "10px" : "0px"})`}
             height="95%"
@@ -99,7 +99,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
             <Image
               aria-label="Video thumbnail"
               borderRadius={10}
-              src={currentVideo.video.snippet.thumbnails.high.url}
+              src={currentVideo.thumbnails.high.url}
               width="75%"
               zIndex={100}
             /> :
@@ -199,7 +199,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           {currentVideo ?
             <HStack fontSize="18" fontWeight="400">
               <Text>
-                {currentVideo.video.snippet.channelTitle}
+                {currentVideo.channelTitle}
               </Text>
               {/* <Text>
               •
