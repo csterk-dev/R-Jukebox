@@ -1,13 +1,12 @@
 import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
-import { HiChartBar, HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
+import { HiChartBar, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
 import { useDebounce } from "@usesoftwareau/react-utils";
 import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
-import { TooltipOpenDelay } from "../../constants";
 
 
 const noOfResults = 40;
@@ -101,22 +100,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
               variant="ghost"
               isDisabled
             />
-            <Tooltip label="Web socket status" openDelay={TooltipOpenDelay}>
+            <Tooltip label={isSocketConnected ? "WebSocket connected" : "Web Socket offline"}>
               <span>
                 <Icon
                   aria-label="Websocket connected"
                   as={HiChartBar}
                   color={isSocketConnected ? "green" : "orange"}
+                  ml="10px"
+                  mt="5px"
                 />
               </span>
             </Tooltip>
-            {/* <IconButton
-              aria-label="Settings"
-              colorScheme="purple"
-              icon={<HiCog6Tooth />}
-              variant="ghost"
-              isDisabled
-            /> */}
           </Flex>
         </Flex>
       </header>
@@ -238,9 +232,9 @@ const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props 
     >
       <HStack gap={4}>
         <Icon aria-label="search icon" as={HiMagnifyingGlass} />
-        <Text opacity={0.7}>Search</Text>
+        <Text opacity={0.7}>Search Youtube</Text>
         <Spacer />
-        <HStack gap={1}>
+        <HStack gap={1} userSelect="none">
           <Kbd>⌘</Kbd>
           <Kbd>K</Kbd>
         </HStack>
