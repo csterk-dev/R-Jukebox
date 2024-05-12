@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 
 /**
- * Parses video duration strings and converts them to a human readable representation.
+ * Parses video duration strings in ISO 8601 and converts them to a human readable representation.
+ * @link [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
  * @example 
  * ```typescript
  * 'PT1H8M41S' -> '1:08:01'

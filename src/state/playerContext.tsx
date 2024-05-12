@@ -127,14 +127,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
       socketInstance.on(WebSocketEventKeys.currentVideo, (video: Video | undefined) => {
         if (video?.videoId !== currentVideo?.videoId) {
-          console.log("setting current video", video);
           setCurrentVideo(video);
         }
       });
 
       socketInstance.on(WebSocketEventKeys.isPlaying, (playing: boolean) => {
         if (playing !== isPlaying) {
-          console.log("setting is playing", playing);
           setIsPlaying(playing);
         }
       })
