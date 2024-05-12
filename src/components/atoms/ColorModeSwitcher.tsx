@@ -1,4 +1,4 @@
-import { IconButton, IconButtonProps, useColorMode, useColorModeValue } from "@chakra-ui/react"
+import { IconButton, IconButtonProps, Tooltip, useColorMode, useColorModeValue } from "@chakra-ui/react"
 import { FC } from "react"
 import { HiMoon, HiSun } from "react-icons/hi2"
 
@@ -15,13 +15,15 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = (props) => {
   const SwitchIcon = useColorModeValue(HiMoon, HiSun);
 
   return (
-    <IconButton
-      aria-label={`Switch to ${text} mode`}
-      colorScheme="purple"
-      icon={<SwitchIcon />}
-      variant="ghost"
-      onClick={toggleColorMode}
-      {...props}
-    />
+    <Tooltip label={`Switch to ${text} mode`}>
+      <IconButton
+        aria-label={`Switch to ${text} mode`}
+        colorScheme="purple"
+        icon={<SwitchIcon />}
+        variant="ghost"
+        onClick={toggleColorMode}
+        {...props}
+      />
+    </Tooltip>
   )
 }

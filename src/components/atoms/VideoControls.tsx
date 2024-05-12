@@ -4,6 +4,7 @@ import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 
+const showNextPrevButtons = true;
 
 
 type VideoControlsProps = FlexProps & {}
@@ -27,8 +28,8 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
 
   /** The play pause icons */
   const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
-  
-  
+
+
   return (
     <Flex justifyContent="center" {...props}>
       <Flex
@@ -36,13 +37,13 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         gap="5px"
         zIndex={100}
       >
-        <Tooltip label="Restart song" openDelay={TooltipOpenDelay}>
+        <Tooltip isDisabled={showNextPrevButtons} label="Restart song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="rewind"
             colorScheme="purple"
             icon={<HiBackward />}
+            isDisabled={showNextPrevButtons}
             variant="ghost"
-            isDisabled
           />
         </Tooltip>
         <IconButton
@@ -53,13 +54,13 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
           variant="ghost"
           onClick={onPressPlayPause}
         />
-        <Tooltip label="Next song" openDelay={TooltipOpenDelay}>
+        <Tooltip isDisabled={showNextPrevButtons} label="Next song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="forward"
             colorScheme="purple"
             icon={<HiForward />}
+            isDisabled={showNextPrevButtons}
             variant="ghost"
-            isDisabled
           />
         </Tooltip>
       </Flex>
