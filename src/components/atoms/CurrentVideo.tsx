@@ -1,4 +1,4 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { FC, memo, useMemo } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
@@ -65,6 +65,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 
   return (
     <Flex
+      as="article"
       flex={{
         base: 1,
         sm: 1,
@@ -76,76 +77,87 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
       {...props}
     >
       <Flex flexDir={dimensions.height < 600 ? "row" : "column"} gap="10px">
-        <Flex
-          alignItems="center"
-          bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
-          borderRadius={10}
-          height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
-          justifyContent="center"
-          minHeight="400px"
-          minWidth="400px"
-          position="relative"
-          width={dimensions.width / 3}
-        >
-          <Box
-            bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
-            borderRadius={10}
-            filter={`blur(${currentVideo ? "10px" : "0px"})`}
-            height="95%"
-            position="absolute"
-            width="95%"
-          />
-          {currentVideo ?
-            <Image
-              aria-label="Video thumbnail"
-              borderRadius={10}
-              src={currentVideo.thumbnails.high.url}
-              width="75%"
-              zIndex={100}
-            /> :
-            <VStack zIndex={1}>
-              <motion.div
-                animate="animate"
-                initial="initial"
-                variants={fadingOpacityAnimation}
-              >
-                <VStack zIndex={1}>
-                  <Icon
-                    as={HiSignalSlash}
-                    boxSize="80px"
-                  />
-                  <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
-                </VStack>
-              </motion.div>
-              <HStack mt="10px" opacity={0.8}>
-                <Icon
-                  as={HiMagnifyingGlass}
-                  boxSize="20px"
-                />
-                <Text mb="5px">Use the search bar to find the music you love!</Text>
-              </HStack>
-            </VStack>
-          }
 
-          {currentVideo ?
-            <Text
-              bgColor={durationBg}
-              borderRadius={4}
-              bottom="10px"
-              pb="2px"
-              position="absolute"
-              px="8px"
-              right="10px"
-              textAlign="center"
+        {/* Video thumbnail preview */}
+        <LinkBox as="section">
+          <LinkOverlay href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : ""} isExternal>
+            <Flex
+              alignItems="center"
+              bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
+              borderRadius={10}
+              height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
+              justifyContent="center"
+              minHeight="400px"
+              minWidth="400px"
+              position="relative"
+              width={dimensions.width / 3}
             >
-              {videoDuration}
-            </Text> :
-            null
-          }
-        </Flex>
+              <Box
+                bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
+                borderRadius={10}
+                filter={`blur(${currentVideo ? "10px" : "0px"})`}
+                height="95%"
+                position="absolute"
+                width="95%"
+              />
+              {currentVideo ?
+                <Image
+                  aria-label="Video thumbnail"
+                  borderRadius={10}
+                  pointerEvents="none"
+                  src={currentVideo.thumbnails.high.url}
+                  userSelect="none"
+                  width="75%"
+                  zIndex={100}
+                /> :
+
+                // Placeholder text
+                <VStack zIndex={1}>
+                  <motion.div
+                    animate="animate"
+                    initial="initial"
+                    variants={fadingOpacityAnimation}
+                  >
+                    <VStack zIndex={1}>
+                      <Icon
+                        as={HiSignalSlash}
+                        boxSize="80px"
+                      />
+                      <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
+                    </VStack>
+                  </motion.div>
+                  <HStack mt="10px" opacity={0.8}>
+                    <Icon
+                      as={HiMagnifyingGlass}
+                      boxSize="20px"
+                    />
+                    <Text mb="5px">Use the search bar to find the music you love!</Text>
+                  </HStack>
+                </VStack>
+              }
+
+              {currentVideo ?
+                <Text
+                  bgColor={durationBg}
+                  borderRadius={4}
+                  bottom="10px"
+                  pb="2px"
+                  position="absolute"
+                  px="8px"
+                  right="10px"
+                  textAlign="center"
+                >
+                  {videoDuration}
+                </Text> :
+                null
+              }
+            </Flex>
+          </LinkOverlay>
+        </LinkBox>
 
         {/* Current song info */}
         <Flex
+          as="section"
           bgColor={foreground}
           borderRadius={10}
           boxShadow="lg"
@@ -156,32 +168,18 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           width={dimensions.width / 3}
           zIndex={100}
         >
-          <Flex alignItems="flex-start">
-            <Flex flex={1} flexDirection="column">
-              <Text
-                fontSize="14"
-                fontWeight="500"
-                textTransform="uppercase"
-              >
-                {currentVideo ? "Current Song" : "No song selected"}
-              </Text>
-              <Text
-                as="h2"
-                fontSize="20"
-                fontWeight="600"
-                mt="10px"
-                noOfLines={2}
-                textOverflow="ellipsis"
-              >
-                {currentVideo ? videoTitle : undefined}
-              </Text>
-            </Flex>
+          <Flex alignItems="center" justifyContent="space-between">
+            <Text fontSize="14" fontWeight="500" textTransform="uppercase">
+              {currentVideo ? "Current Song" : "No song selected"}
+            </Text>
+
             {isPlaying ?
               <Tag
                 bg="red.600"
                 color="white"
                 fontWeight="bold"
                 pb="2px"
+                userSelect="none"
               >
                 <motion.div
                   animate="animate"
@@ -192,28 +190,43 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 </motion.div>
               </Tag> :
               currentVideo ?
-                <Tag bg="neutral.500" color="white">Paused</Tag> :
+                <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
                 null
             }
           </Flex>
+
           {currentVideo ?
-            <HStack fontSize="18" fontWeight="400">
-              <Text>
-                {currentVideo.channelTitle}
-              </Text>
-              {/* <Text>
+            <>
+              <Flex flex={1} flexDirection="column">
+                <Text
+                  as="h2"
+                  fontSize="20"
+                  fontWeight="600"
+                  noOfLines={3}
+                  textOverflow="ellipsis"
+                >
+                  {videoTitle}
+                </Text>
+              </Flex>
+
+              <HStack fontSize="18" fontWeight="400">
+                <Link href={`https://www.youtube.com/channel/${currentVideo.channelId}`} isExternal>
+                  {currentVideo.channelTitle}
+                </Link>
+                {/* <Text>
               •
             </Text>
             <Text>
               236k views
             </Text> */}
-              <Text>
-                •
-              </Text>
-              <Text>
-                {videoPublishedAt}
-              </Text>
-            </HStack> :
+                <Text>
+                  •
+                </Text>
+                <Text>
+                  {videoPublishedAt}
+                </Text>
+              </HStack>
+            </> :
             null
           }
         </Flex>
