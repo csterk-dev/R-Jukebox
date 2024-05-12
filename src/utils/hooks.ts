@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
+import { WebSocketEventKeys } from "../constants";
 
 /**
  * Custom hooks that returns a momoized list of videos that match the search query.
@@ -64,8 +65,11 @@ export const useWebSockets = () => {
   const [isConnected, setIsConnected] = useState(socketInstance.connected);
 
   useEffect(() => {
+
     function onConnect() {
       setIsConnected(true);
+      // Tell the server that the client is ready
+      socketInstance.emit(WebSocketEventKeys.getInitialState, socketInstance.id);
     }
 
     function onDisconnect() {
