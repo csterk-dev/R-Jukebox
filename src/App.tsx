@@ -25,7 +25,7 @@ export const App = () => {
 
           {/* Body Content */}
           <Flex
-            flexDirection={dimensions.width < 800 ? "column" : "row"}
+            flexDirection={dimensions.width > 800 ? "row" : "column"}
             gap="10px"
             height={dimensions.height - headerHeight - controlBarHeight}
             justifyContent="space-between"
