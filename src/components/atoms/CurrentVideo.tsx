@@ -1,11 +1,12 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
-import { useWindowDimensions } from "@usesoftwareau/react-utils";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, SkeletonText, Spinner, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
 import { FC, memo, useMemo } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 import { motion, Variants } from "framer-motion";
+import { useWindowDimensions } from "@usesoftwareau/react-utils";
 
+const skeletonSpeed = 2
 
 type CurrentVideoProps = FlexProps;
 
@@ -13,8 +14,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   /*
    * Player State
    */
-  const { isPlaying, currentVideo } = usePlayer();
-
+  const { isPlaying, currentVideo, isPlayerLoading } = usePlayer();
 
   /*
    * ------------------------------------------------------------------------------------------------------------------ 
@@ -24,6 +24,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
+
 
   /** A looping opacity animation */
   const fadingOpacityAnimation: Variants = {
@@ -66,21 +67,14 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   return (
     <Flex
       as="article"
-      flex={{
-        base: 1,
-        sm: 1,
-        md: 1,
-        lg: 1,
-        xl: 2
-      }}
       justifyContent="center"
       {...props}
     >
-      <Flex flexDir={dimensions.height < 600 ? "row" : "column"} gap="10px">
+      <Flex flexDir="column" gap="10px">
 
         {/* Video thumbnail preview */}
         <LinkBox as="section">
-          <LinkOverlay href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : ""} isExternal>
+          <LinkOverlay href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : undefined} isExternal>
             <Flex
               alignItems="center"
               bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
@@ -100,40 +94,43 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 position="absolute"
                 width="95%"
               />
-              {currentVideo ?
-                <Image
-                  aria-label="Video thumbnail"
-                  borderRadius={10}
-                  pointerEvents="none"
-                  src={currentVideo.thumbnails.high.url}
-                  userSelect="none"
-                  width="75%"
-                  zIndex={100}
-                /> :
 
-                // Placeholder text
-                <VStack zIndex={1}>
-                  <motion.div
-                    animate="animate"
-                    initial="initial"
-                    variants={fadingOpacityAnimation}
-                  >
-                    <VStack zIndex={1}>
+              {isPlayerLoading ?
+                <Spinner /> :
+
+                currentVideo ?
+                  <Image
+                    aria-label="Video thumbnail"
+                    borderRadius={10}
+                    pointerEvents="none"
+                    src={currentVideo.thumbnails.high.url}
+                    userSelect="none"
+                    width="75%"
+                    zIndex={100}
+                  /> :
+                  <VStack zIndex={1}>
+                    <motion.div
+                      animate="animate"
+                      initial="initial"
+                      variants={fadingOpacityAnimation}
+                    >
+                      <VStack zIndex={1}>
+                        <Icon
+                          as={HiSignalSlash}
+                          boxSize="80px"
+                        />
+                        <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
+                      </VStack>
+                    </motion.div>
+                    <HStack mt="10px" opacity={0.8}>
                       <Icon
-                        as={HiSignalSlash}
-                        boxSize="80px"
+                        as={HiMagnifyingGlass}
+                        boxSize="20px"
                       />
-                      <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
-                    </VStack>
-                  </motion.div>
-                  <HStack mt="10px" opacity={0.8}>
-                    <Icon
-                      as={HiMagnifyingGlass}
-                      boxSize="20px"
-                    />
-                    <Text mb="5px">Use the search bar to find the music you love!</Text>
-                  </HStack>
-                </VStack>
+                      <Text mb="5px">Use the search bar to find the music you love!</Text>
+                    </HStack>
+                  </VStack>
+
               }
 
               {currentVideo ?
@@ -156,6 +153,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
         </LinkBox>
 
         {/* Current song info */}
+
         <Flex
           as="section"
           bgColor={foreground}
@@ -169,11 +167,18 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           zIndex={100}
         >
           <Flex alignItems="center" justifyContent="space-between">
-            <Text fontSize="14" fontWeight="500" textTransform="uppercase">
-              {currentVideo ? "Current Song" : "No song selected"}
-            </Text>
+            <SkeletonText
+              isLoaded={!isPlayerLoading}
+              noOfLines={1}
+              skeletonHeight="14px"
+              speed={skeletonSpeed}
+            >
+              <Text fontSize="14" fontWeight="500" textTransform="uppercase">
+                {currentVideo ? "Current Song" : "No song selected"}
+              </Text>
+            </SkeletonText>
 
-            {isPlaying ?
+            {currentVideo && isPlaying && !isPlayerLoading?
               <Tag
                 bg="red.600"
                 color="white"
@@ -189,46 +194,49 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                   • Playing
                 </motion.div>
               </Tag> :
-              currentVideo ?
+              currentVideo && !isPlayerLoading ?
                 <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
                 null
             }
           </Flex>
 
-          {currentVideo ?
-            <>
-              <Flex flex={1} flexDirection="column">
-                <Text
-                  as="h2"
-                  fontSize="20"
-                  fontWeight="600"
-                  noOfLines={3}
-                  textOverflow="ellipsis"
-                >
-                  {videoTitle}
-                </Text>
-              </Flex>
 
-              <HStack fontSize="18" fontWeight="400">
-                <Link href={`https://www.youtube.com/channel/${currentVideo.channelId}`} isExternal>
-                  {currentVideo.channelTitle}
-                </Link>
-                {/* <Text>
-              •
-            </Text>
-            <Text>
-              236k views
-            </Text> */}
-                <Text>
-                  •
-                </Text>
-                <Text>
-                  {videoPublishedAt}
-                </Text>
-              </HStack>
-            </> :
-            null
-          }
+          <Flex flex={1} flexDirection="column">
+            <SkeletonText
+              isLoaded={!isPlayerLoading}
+              noOfLines={2}
+              skeletonHeight="20px"
+              speed={skeletonSpeed}
+            >
+              <Text
+                as="h2"
+                fontSize="20"
+                fontWeight="600"
+                noOfLines={3}
+                textOverflow="ellipsis"
+              >
+                {videoTitle}
+              </Text>
+            </SkeletonText>
+          </Flex>
+
+          <SkeletonText
+            isLoaded={!isPlayerLoading}
+            noOfLines={1}
+            skeletonHeight="18px"
+            speed={skeletonSpeed}
+            width="65%"
+          >
+            <HStack fontSize="18" fontWeight="400">
+              <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                {currentVideo ? currentVideo.channelTitle : null}
+              </Link>
+              {currentVideo ? <Text>•</Text> : null}
+              <Text>
+                {videoPublishedAt}
+              </Text>
+            </HStack>
+          </SkeletonText>
         </Flex>
       </Flex>
     </Flex>

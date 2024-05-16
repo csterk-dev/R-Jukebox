@@ -18,3 +18,5 @@ export const WebSocketEventKeys = {
 
 
 export const TooltipOpenDelay = 500;
+
+export const HEADER_HEIGHT = 60;

@@ -18,14 +18,14 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#4BB7FF"
+      backgroundColor: "#6C21CC"
     },
     animate: {
       x: [0, -100, 0],
       y: [0, 100, 0],
-      backgroundColor: ["#4BB7FF", "#353FEB", "#8F31B7"],
+      backgroundColor: ["#6C21CC", "#353FEB", "#0018FB", "#8F31B7"],
       transition: {
-        duration: 7,
+        duration: 12,
         repeat: Infinity,
         repeatType: "reverse" as const
       }

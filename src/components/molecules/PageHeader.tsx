@@ -232,7 +232,7 @@ const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props 
     >
       <HStack gap={4}>
         <Icon aria-label="search icon" as={HiMagnifyingGlass} />
-        <Text opacity={0.7}>Search Youtube</Text>
+        <Text opacity={0.7}>Search</Text>
         <Spacer />
         <HStack gap={1} userSelect="none">
           <Kbd>⌘</Kbd>

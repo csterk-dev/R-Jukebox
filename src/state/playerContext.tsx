@@ -1,3 +1,4 @@
+import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { WebSocketEventKeys } from "../constants";
 import { logAxiosError } from "@usesoftwareau/react-utils";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -5,10 +6,23 @@ import { PlayerAPI } from "utils/api";
 import { useWebSockets } from "utils/hooks";
 
 
+const defaultErrorToastStyle = {
+  status: "error" as UseToastOptions["status"],
+  variant: "unstyled",
+  duration: 10000,
+  isClosable: true,
+  containerStyle: {
+    bg: "#B9023A",
+    color: "white",
+    borderRadius: 5
+  }
+};
+
+
 interface PlayerContextType {
   currentVideo: Video | undefined;
   isPlaying: boolean;
-  isLoading: boolean;
+  isPlayerLoading: boolean;
   isSocketConnected: boolean;
   error: string | undefined;
   pauseCurrentVideo: () => void;
@@ -19,7 +33,7 @@ interface PlayerContextType {
 const defaultPlayerContextVal: PlayerContextType = {
   currentVideo: undefined,
   isPlaying: false,
-  isLoading: false,
+  isPlayerLoading: false,
   isSocketConnected: false,
   error: undefined,
   pauseCurrentVideo: () => void 0,
@@ -39,15 +53,16 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
   const [isPlaying, setIsPlaying] = useState<PlayerContextType["isPlaying"]>(false);
-  const [isLoading, setIsLoading] = useState<PlayerContextType["isLoading"]>(false);
+  const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
   const [error, setError] = useState<string>();
+  const toast = useToast();
 
 
   /** Plays the supplied video. */
   const playVideo = useCallback((video: Video) => {
     if (!video) return;
 
-    setIsLoading(true);
+    setIsPlayerLoading(true);
 
     const playPromise = PlayerAPI.playVideo(video.videoId);
     playPromise
@@ -62,18 +77,21 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         console.log("Error playing video");
         logAxiosError(err);
         setError(err.message);
+        toast({
+          title: "Error playing video",
+          description: err.message,
+          ...defaultErrorToastStyle
+        });
       })
       .finally((() => {
-        setIsLoading(false);
+        setIsPlayerLoading(false);
       }))
-  }, [socketInstance]);
+  }, [socketInstance, toast]);
 
 
   /** Pauses the currently playing video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-
-    setIsLoading(true);
 
     const playPromise = PlayerAPI.pauseVideo(currentVideo.videoId);
     playPromise
@@ -87,18 +105,18 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         console.log("Error playing video");
         logAxiosError(err);
         setError(err.message);
-      })
-      .finally((() => {
-        setIsLoading(false);
-      }))
-  }, [currentVideo, socketInstance]);
+        toast({
+          title: "Error pausing video",
+          description: err.message,
+          ...defaultErrorToastStyle
+        });
+      });
+  }, [currentVideo, socketInstance, toast]);
 
 
   /** Pauses the currently playing video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-
-    setIsLoading(true);
 
     const playPromise = PlayerAPI.playVideo(currentVideo.videoId);
     playPromise
@@ -111,12 +129,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         console.log("Error playing video");
         logAxiosError(err);
         setError(err.message);
-      })
-      .finally((() => {
-        setIsLoading(false);
-      }))
-
-  }, [currentVideo, socketInstance]);
+        toast({
+          title: "Error playing video",
+          description: err.message,
+          ...defaultErrorToastStyle
+        });
+      });
+  }, [currentVideo, socketInstance, toast]);
 
 
   /**
@@ -144,14 +163,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     return {
       currentVideo,
       isPlaying,
-      isLoading,
+      isPlayerLoading,
       isSocketConnected,
       error,
       pauseCurrentVideo,
       playVideo,
       resumeCurrentVideo
     }
-  }, [currentVideo, error, isLoading, isPlaying, isSocketConnected, pauseCurrentVideo, playVideo, resumeCurrentVideo]);
+  }, [currentVideo, error, isPlayerLoading, isPlaying, isSocketConnected, pauseCurrentVideo, playVideo, resumeCurrentVideo]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
