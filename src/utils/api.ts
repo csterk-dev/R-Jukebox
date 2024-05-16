@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
-const YOUTUBE_API_URL = `${process.env.REACT_APP_SERVER_URL}/youtube`;
-const PLAYER_API_URL = `${process.env.REACT_APP_SERVER_URL}/player`;
+
+const YOUTUBE_API_URL = `${SERVER_URL}/youtube`;
+const PLAYER_API_URL = `${SERVER_URL}/player`;
 
 
 const YOUTUBE_CLIENT = axios.create({
