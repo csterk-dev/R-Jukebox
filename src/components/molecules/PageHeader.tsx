@@ -1,6 +1,6 @@
-import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
-import { HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
+import { HiChartBar, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
@@ -54,10 +54,10 @@ const _PageHeader: FC<FlexProps> = (props) => {
   }, [onClose, searchVal]);
 
 
-  const { playVideo } = usePlayer();
+  const { playVideo, isSocketConnected } = usePlayer();
 
   /** Callback that plays the card youtube video. */
-  const onClickCard = useCallback((video: YoutubeVideo) => {
+  const onClickCard = useCallback((video: Video) => {
     playVideo(video);
     onClose();
   }, [onClose, playVideo]);
@@ -87,6 +87,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
             onOpen={onOpen}
           />
           <Flex
+            alignItems="center"
             flex={1}
             gap="5px"
             justifyContent="center"
@@ -99,13 +100,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
               variant="ghost"
               isDisabled
             />
-            <IconButton
-              aria-label="Settings"
-              colorScheme="purple"
-              icon={<HiCog6Tooth />}
-              variant="ghost"
-              isDisabled
-            />
+            <Tooltip label={isSocketConnected ? "WebSocket connected" : "Web Socket offline"}>
+              <span>
+                <Icon
+                  aria-label="Websocket connected"
+                  as={HiChartBar}
+                  color={isSocketConnected ? "green" : "orange"}
+                  ml="10px"
+                  mt="5px"
+                />
+              </span>
+            </Tooltip>
           </Flex>
         </Flex>
       </header>
@@ -183,7 +188,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${noOfResults} Youtube video results`}</Text>}
                 {videos.map(video => {
                   if (!video) return;
-                  return <VideoCard key={video.video.id.videoId} playVideo={onClickCard} video={video} />;
+                  return <VideoCard key={video.videoId} playVideo={onClickCard} video={video} />;
                 })}
               </VStack>
             </ModalBody> :
@@ -227,9 +232,9 @@ const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props 
     >
       <HStack gap={4}>
         <Icon aria-label="search icon" as={HiMagnifyingGlass} />
-        <Text>Search</Text>
+        <Text opacity={0.7}>Search Youtube</Text>
         <Spacer />
-        <HStack gap={1}>
+        <HStack gap={1} userSelect="none">
           <Kbd>⌘</Kbd>
           <Kbd>K</Kbd>
         </HStack>

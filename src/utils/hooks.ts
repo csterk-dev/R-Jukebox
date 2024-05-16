@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
-
+import { socket as socketInstance } from "./socket";
+import { WebSocketEventKeys } from "../constants";
 
 /**
- * Custom hooks that returns a list of videos that match the search query.
+ * Custom hooks that returns a momoized list of videos that match the search query.
  * @param query The search query.
  * @param maxResults Total number of results returned per page. Default `20`,
- * @returns 
+ * @returns {Object} A momized object containing the videos, error and loading states.
  */
 export const useYoutubeSearch = (query: string, maxResults?: number) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const [videos, setVideos] = useState<YoutubeVideo[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -25,24 +26,10 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
      */
     setLoading(true);
     YoutubeAPI.searchVideos(query, maxResults)
-      .then((searchRes: AxiosResponse<SearchVideoItem[]>) => {
-        const videoIds = searchRes.data.map(i => {
-          return i.id.videoId
-        })
-        YoutubeAPI.getVideosContentDetails(videoIds)
-          .then((detailsRes: AxiosResponse<GetVideosContentDetailsItem[]>) => {
-            if (isMounted) {
-              const combinedResults: YoutubeVideo[] = detailsRes.data.map(detailsItem => {
-                const video = searchRes.data.find(searchItem => searchItem.id.videoId == detailsItem.id);
-                if (!video) return;
-                return {
-                  video,
-                  contentDetails: detailsItem.contentDetails
-                }
-              })
-              setVideos(combinedResults);
-            }
-          })
+      .then((results: AxiosResponse<Video[]>) => {
+        if (isMounted) {
+          setVideos(results.data);
+        }
       })
       .catch((err: any) => {
         setError(err.message);
@@ -58,9 +45,50 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
     };
   }, [query, maxResults]);
 
-  return {
-    loading,
-    error,
-    videos
-  };
+
+  return useMemo(() => (
+    {
+      loading,
+      error,
+      videos
+    }
+  ), [error, loading, videos]) 
 };
+
+
+/**
+ * Custom hooks that connects to the websocket server and provides monitoring and updating functionality.
+ *
+ * @returns {Object} A momized object containing the current connection state of the socket.
+ */
+export const useWebSockets = () => {
+  const [isConnected, setIsConnected] = useState(socketInstance.connected);
+
+  useEffect(() => {
+
+    function onConnect() {
+      setIsConnected(true);
+      // Tell the server that the client is ready
+      socketInstance.emit(WebSocketEventKeys.getInitialState, socketInstance.id);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socketInstance.on("connect", onConnect);
+    socketInstance.on("disconnect", onDisconnect);
+
+    return () => {
+      socketInstance.off("connect", onConnect);
+      socketInstance.off("disconnect", onDisconnect);
+    };
+  }, []);
+
+  return useMemo(() => (
+    {
+      isConnected,
+      socketInstance
+    }
+  ), [isConnected]);
+}

@@ -9,9 +9,9 @@ const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
   /** The video to render. */
-  video: YoutubeVideo;
+  video: Video;
   /** Callback to set the video as playing. */
-  playVideo: (video: YoutubeVideo) => void;
+  playVideo: (video: Video) => void;
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
@@ -19,9 +19,9 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const foregroundHovered = useColorModeValue("neutral.50", "neutral.800");
   const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
 
-  const videoDuration = useMemo(() => formatVideoDuration(video?.contentDetails.duration), [video?.contentDetails.duration]);
-  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video?.video.snippet.publishedAt), [video?.video.snippet.publishedAt]);
-  const videoTitle = useMemo(() => replaceAmps(video?.video.snippet.title), [video?.video.snippet.title]);
+  const videoDuration = useMemo(() => formatVideoDuration(video.duration), [video?.duration]);
+  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video.publishedAt), [video.publishedAt]);
+  const videoTitle = useMemo(() => replaceAmps(video.title), [video.title]);
 
   const isLive = videoDuration === "Live";
 
@@ -64,7 +64,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
           height="94px"
           objectFit="cover"
           pointerEvents="none"
-          src={video?.video.snippet.thumbnails.high.url}
+          src={video.thumbnails.high.url}
           width="168px"
         />
         <Tag
@@ -102,7 +102,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
           {videoTitle}
         </Text>
         <Text fontSize="14" noOfLines={1} textOverflow="ellipsis">
-          {video?.video.snippet.channelTitle}
+          {video.channelTitle}
         </Text>
         <HStack fontSize="14" fontWeight="400">
           {/* <Text>

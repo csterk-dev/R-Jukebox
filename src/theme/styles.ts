@@ -8,11 +8,11 @@ import "@fontsource-variable/assistant";
 import { tabStyles } from "./components/tabs";
 
 /*
- * System sets initial value.
+ * Dark mode by default.
  * App color mode is detached from system color mode changes.
  */
 const config: ThemeConfig = {
-  initialColorMode: "system",
+  initialColorMode: "dark",
   useSystemColorMode: false
 }
 

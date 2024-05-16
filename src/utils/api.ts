@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
-const YOUTUBE_API_URL = `${process.env.REACT_APP_SERVER_URL}/youtube`;
-const PLAYER_API_URL = `${process.env.REACT_APP_SERVER_URL}/player`;
+
+const YOUTUBE_API_URL = `${SERVER_URL}/youtube`;
+const PLAYER_API_URL = `${SERVER_URL}/player`;
 
 
 const YOUTUBE_CLIENT = axios.create({
@@ -33,7 +35,6 @@ export const PlayerAPI = {
    * Otherwise will open a new tab and close any previous youtube tabs in the browser.
    */
   async playVideo(videoId: string) {
-    console.log(videoId);
     return await PLAYER_CLIENT.post("/play", { videoId });
   },
 
@@ -44,7 +45,6 @@ export const PlayerAPI = {
    * 
    */
   async pauseVideo(videoId: string) {
-    console.log(videoId);
     return await PLAYER_CLIENT.post("/pause", { videoId });
   }
 }
@@ -60,17 +60,5 @@ export const YoutubeAPI = {
    */
   async searchVideos(query: string, limit?: number) {
     return await YOUTUBE_CLIENT.get(`/search?val=${query}&limit=${limit}`);
-    // return await YOUTUBE_CLIENT.get(`/search?key=${YOUTUBE_API_KEY}&q=${query}&type=video&part=snippet&maxResults=${maxResults ?? 20}`)
-  },
-
-  /**
-   * Returns a the content details of the provided video Ids. 
-   * @param videoIDs String array of video IDs
-   * 
-   * @remarks Quota cost = `1 credit.`
-   */
-  async getVideosContentDetails(videoIDs: string[]) {
-    return await YOUTUBE_CLIENT.get(`/contentDetails?ids=${videoIDs.toString()}`);
-    // return await YOUTUBE_CLIENT.get(`/videos?key=${YOUTUBE_API_KEY}&part=contentDetails&id=${videoIDs.toString()}`)
   }
 }
