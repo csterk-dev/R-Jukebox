@@ -1,8 +1,6 @@
 import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { WebSocketEventKeys } from "../constants";
-import { logAxiosError } from "@usesoftwareau/react-utils";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { PlayerAPI } from "utils/api";
 import { useWebSockets } from "utils/hooks";
 
 
@@ -62,84 +60,31 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const playVideo = useCallback((video: Video) => {
     if (!video) return;
 
-    setIsPlayerLoading(true);
+    socketInstance.emit(WebSocketEventKeys.setCurrentVideo, video);
 
-    const playPromise = PlayerAPI.playVideo(video.videoId);
-    playPromise
-      .then(() => {
-        // Optimistically update the current video state and broadcast the new video to the socket
-        socketInstance.emit(WebSocketEventKeys.setCurrentVideo, video);
-        setCurrentVideo(video)
-        setIsPlaying(true);
-        setError(undefined);
-      })
-      .catch((err) => {
-        console.log("Error playing video");
-        logAxiosError(err);
-        setError(err.message);
-        toast({
-          title: "Error playing video",
-          description: err.message,
-          ...defaultErrorToastStyle
-        });
-      })
-      .finally((() => {
-        setIsPlayerLoading(false);
-      }))
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   /** Pauses the currently playing video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
 
-    const playPromise = PlayerAPI.pauseVideo(currentVideo.videoId);
-    playPromise
-      .then((() => {
-        // Optimistically update the playing state and broadcast the new video to the socket
-        socketInstance.emit(WebSocketEventKeys.setIsPlaying, false);
-        setIsPlaying(false);
-        setError(undefined);
-      }))
-      .catch((err) => {
-        console.log("Error playing video");
-        logAxiosError(err);
-        setError(err.message);
-        toast({
-          title: "Error pausing video",
-          description: err.message,
-          ...defaultErrorToastStyle
-        });
-      });
-  }, [currentVideo, socketInstance, toast]);
+    socketInstance.emit(WebSocketEventKeys.setIsPlaying, false);
+
+  }, [currentVideo, socketInstance]);
 
 
   /** Pauses the currently playing video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
 
-    const playPromise = PlayerAPI.playVideo(currentVideo.videoId);
-    playPromise
-      .then(() => {
-        socketInstance.emit(WebSocketEventKeys.setIsPlaying, true);
-        setIsPlaying(true);
-        setError(undefined);
-      })
-      .catch((err) => {
-        console.log("Error playing video");
-        logAxiosError(err);
-        setError(err.message);
-        toast({
-          title: "Error playing video",
-          description: err.message,
-          ...defaultErrorToastStyle
-        });
-      });
-  }, [currentVideo, socketInstance, toast]);
+    socketInstance.emit(WebSocketEventKeys.setIsPlaying, true);
+
+  }, [currentVideo, socketInstance]);
 
 
   /**
-   * Automiatically sync the isPlaying and currenVideo states from the server if the socket is connected.
+   * Automiatically sync the currenVideo, error, isPlaying and isLoading states from the server if the socket is connected.
    */
   useEffect(() => {
     if (isSocketConnected) {
@@ -150,13 +95,26 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       });
 
+      socketInstance.on(WebSocketEventKeys.error, (errorMessage: string) => {
+        setError(errorMessage);
+        toast({
+          title: "Player error",
+          description: errorMessage,
+          ...defaultErrorToastStyle
+        });
+      });
+
+      socketInstance.on(WebSocketEventKeys.isLoading, (loading: boolean) => {
+        setIsPlayerLoading(loading);
+      });
+
       socketInstance.on(WebSocketEventKeys.isPlaying, (playing: boolean) => {
         if (playing !== isPlaying) {
           setIsPlaying(playing);
         }
-      })
+      });
     }
-  }, [currentVideo?.videoId, isPlaying, isSocketConnected, socketInstance]);
+  }, [currentVideo?.videoId, isPlaying, isSocketConnected, socketInstance, toast]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
