@@ -20,7 +20,6 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, 
   if (withText) return (
     <HStack 
       as="button"
-      fontSize="20px"
       gap="10px"
       width="100%"
       onClick={toggleColorMode}

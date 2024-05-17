@@ -115,7 +115,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   variant="ghost"
                   isDisabled
                 />
-                <Tooltip label={isSocketConnected ? "WebSocket connected" : "Web Socket offline"}>
+                <Tooltip label={isSocketConnected ? "Websocket connected" : "Websocket disconnected"}>
                   <span>
                     <Icon
                       aria-label="Websocket connected"
@@ -142,17 +142,33 @@ const _PageHeader: FC<FlexProps> = (props) => {
       >
         <ModalOverlay />
         <ModalContent bg={foreground} boxShadow={0}>
+          <Flex 
+            alignItems="center" 
+            justifyContent="space-between" 
+            mt="10px"
+            width="100%"
+          >
+            <Text fontWeight="600" pl="20px" textTransform="uppercase">Settings</Text>
+            <IconButton
+              aria-label="Close settings"
+              icon={<HiXMark />}
+              mr="10px"
+              variant="ghost"
+              onClick={onCloseSettings}
+            />
+          </Flex>
           <VStack
             align="flex-start"
+            fontSize="16px"
             gap="10px"
-            p="20px"
+            px="20px"
+            py="10px"
           >
-            <Text fontWeight="600" textTransform="uppercase">Settings</Text>
             <Divider />
             <ColorModeSwitcher disableTooltip withText />
             <Divider />
 
-            <HStack fontSize="20px">
+            <HStack>
               <Icon
                 aria-label="Adjust volume"
                 as={HiSpeakerWave}
@@ -161,13 +177,13 @@ const _PageHeader: FC<FlexProps> = (props) => {
             </HStack>
             <Divider />
 
-            <HStack fontSize="20px">
+            <HStack>
               <Icon
-                aria-label="Websocket connected"
+                aria-label={`Websocket ${isSocketConnected ? "connected" : "disconnected"}`}
                 as={HiChartBar}
                 color={isSocketConnected ? "green" : "orange"}
               />
-              <Text>Web socket status</Text>
+              <Text>{`Websocket ${isSocketConnected ? "connected" : "disconnected"}`}</Text>
             </HStack>
           </VStack>
         </ModalContent>
@@ -179,7 +195,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
         finalFocusRef={finalFocusRef}
         isOpen={isSearchOpen}
         scrollBehavior="inside"
-        size={isMobile ? "sm" : "md"}
+        size={isMobile ? "xs" : "md"}
         onClose={onCloseSearch}
       >
         <ModalOverlay />

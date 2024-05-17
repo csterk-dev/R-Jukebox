@@ -1,8 +1,9 @@
-import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, Tooltip, useColorModeValue, useMediaQuery, VStack } from "@chakra-ui/react";
 import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
+import { MOBILE_BREAKPOINT } from "../../constants";
 
 /** Enable when queue/ history is implemented */
 const SHOW_OPTIONS = false;
@@ -18,6 +19,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
   const foregroundHovered = useColorModeValue("neutral.50", "neutral.800");
   const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
+  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
 
   const videoDuration = useMemo(() => formatVideoDuration(video.duration), [video?.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video.publishedAt), [video.publishedAt]);
@@ -60,12 +62,12 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
       >
         <Image
           aria-label="Video thumbnail"
-          borderRadius={5}
+          borderLeftRadius={5}
           height="94px"
           objectFit="cover"
           pointerEvents="none"
           src={video.thumbnails.high.url}
-          width="168px"
+          width={isMobile ? "130px" : "168px"}
         />
         <Tag
           alignItems="center"
