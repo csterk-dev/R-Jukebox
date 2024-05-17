@@ -1,12 +1,13 @@
-import { Box, BoxProps, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, useMediaQuery, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
-import { HiChartBar, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
+import { HiChartBar, HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
 import { useDebounce } from "@usesoftwareau/react-utils";
 import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
+import { MOBILE_BREAKPOINT } from "../../constants";
 
 
 const noOfResults = 40;
@@ -14,13 +15,15 @@ const noOfResults = 40;
 
 const _PageHeader: FC<FlexProps> = (props) => {
   const headerBg = useColorModeValue("white", "neutral.900");
-  const searchBg = useColorModeValue("white", "neutral.700");
+  const foreground = useColorModeValue("white", "neutral.700");
   const modalBg = useColorModeValue("neutral.offWhite", "neutral.700");
+  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
 
   // Search bar and results disclosure
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
+  const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
 
-  // Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour)
+  /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
   const finalFocusRef = useRef(null)
 
   /*
@@ -29,14 +32,14 @@ const _PageHeader: FC<FlexProps> = (props) => {
   useEffect(() => {
     const handleKeyDown: EventListener = (event) => {
       if ((event as unknown as KeyboardEvent).metaKey && (event as unknown as KeyboardEvent).key === "k") {
-        if (!isOpen) onOpen();
-        else onClose();
+        if (!isSearchOpen) onOpenSearch();
+        else onCloseSearch();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, onOpen]);
+  }, [isSearchOpen, onCloseSearch, onOpenSearch]);
 
 
   /*
@@ -49,9 +52,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
   /** Clears the input if there is a value otherwise closes the modal. */
   const onClickXButton = useCallback(() => {
-    if (!searchVal) return onClose();
+    if (!searchVal) return onCloseSearch();
     setSearchVal("");
-  }, [onClose, searchVal]);
+  }, [onCloseSearch, searchVal]);
 
 
   const { playVideo, isSocketConnected } = usePlayer();
@@ -59,8 +62,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
   /** Callback that plays the card youtube video. */
   const onClickCard = useCallback((video: Video) => {
     playVideo(video);
-    onClose();
-  }, [onClose, playVideo]);
+    onCloseSearch();
+  }, [onCloseSearch, playVideo]);
 
   return (
     <>
@@ -71,56 +74,113 @@ const _PageHeader: FC<FlexProps> = (props) => {
           boxShadow="base"
           gap="5px"
           justify="center"
-          px="5px"
+          px={isMobile ? "20px" : "5px"}
           width="100%"
           {...props}
         >
-          <VideoControls flex={1} />
-          <SearchBarBox
-            flex={{
-              base: 1,
-              sm: 1,
-              md: 1,
-              lg: 1,
-              xl: 1
-            }}
-            onOpen={onOpen}
-          />
-          <Flex
-            alignItems="center"
-            flex={1}
-            gap="5px"
-            justifyContent="center"
-          >
-            <ColorModeSwitcher />
-            <IconButton
-              aria-label="Adjust volume"
-              colorScheme="purple"
-              icon={<HiSpeakerWave />}
-              variant="ghost"
-              isDisabled
-            />
-            <Tooltip label={isSocketConnected ? "WebSocket connected" : "Web Socket offline"}>
-              <span>
-                <Icon
-                  aria-label="Websocket connected"
-                  as={HiChartBar}
-                  color={isSocketConnected ? "green" : "orange"}
-                  ml="10px"
-                  mt="5px"
+          {isMobile ?
+            <>
+              <SearchBarBox
+                flex={1}
+                isMobile={isMobile}
+                onOpen={onOpenSearch}
+              />
+              <VideoControls flex={1} />
+              <IconButton
+                aria-label="Open settings"
+                bgColor={foreground}
+                icon={<HiCog6Tooth />}
+                onClick={onOpenSettings}
+              />
+            </> :
+
+            <>
+              <VideoControls flex={1} />
+              <SearchBarBox
+                flex={1}
+                isMobile={isMobile}
+                onOpen={onOpenSearch}
+              />
+              <Flex
+                alignItems="center"
+                flex={1}
+                gap="5px"
+                justifyContent="center"
+              >
+                <ColorModeSwitcher />
+                <IconButton
+                  aria-label="Adjust volume"
+                  colorScheme="purple"
+                  icon={<HiSpeakerWave />}
+                  variant="ghost"
+                  isDisabled
                 />
-              </span>
-            </Tooltip>
-          </Flex>
+                <Tooltip label={isSocketConnected ? "WebSocket connected" : "Web Socket offline"}>
+                  <span>
+                    <Icon
+                      aria-label="Websocket connected"
+                      as={HiChartBar}
+                      color={isSocketConnected ? "green" : "orange"}
+                      ml="10px"
+                      mt="5px"
+                    />
+                  </span>
+                </Tooltip>
+              </Flex>
+            </>
+          }
         </Flex>
       </header>
+
+      {/* Settings (Mobile use ONLY) */}
+      <Modal
+        finalFocusRef={finalFocusRef}
+        isOpen={isSettingsOpen}
+        scrollBehavior="inside"
+        size="xs"
+        onClose={onCloseSettings}
+      >
+        <ModalOverlay />
+        <ModalContent bg={foreground} boxShadow={0}>
+          <VStack
+            align="flex-start"
+            gap="10px"
+            p="20px"
+          >
+            <Text fontWeight="600" textTransform="uppercase">Settings</Text>
+            <Divider />
+            <ColorModeSwitcher disableTooltip withText />
+            <Divider />
+
+            <HStack fontSize="20px">
+              <Icon
+                aria-label="Adjust volume"
+                as={HiSpeakerWave}
+              />
+              <Text>Adjust volume</Text>
+            </HStack>
+            <Divider />
+
+            <HStack fontSize="20px">
+              <Icon
+                aria-label="Websocket connected"
+                as={HiChartBar}
+                color={isSocketConnected ? "green" : "orange"}
+              />
+              <Text>Web socket status</Text>
+            </HStack>
+          </VStack>
+        </ModalContent>
+      </Modal>
+
 
       {/* Search and results */}
       <Modal
         finalFocusRef={finalFocusRef}
-        isOpen={isOpen}
+        isOpen={isSearchOpen}
         scrollBehavior="inside"
-        onClose={onClose}
+        size={isMobile ? "sm" : "md"}
+        onClose={onCloseSearch}
       >
         <ModalOverlay />
         <ModalContent bg="transparent" boxShadow={0}>
@@ -134,7 +194,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 />
               </InputLeftElement>
               <Input
-                bg={searchBg}
+                bg={foreground}
                 borderRadius="6px"
                 boxShadow="md"
                 height="40px"
@@ -149,33 +209,28 @@ const _PageHeader: FC<FlexProps> = (props) => {
               <InputRightElement>
                 <IconButton
                   aria-label="Close search"
+                  borderRadius="6px"
+                  height="100%"
                   icon={<HiXMark />}
                   variant="link"
+                  zIndex={10}
                   onClick={onClickXButton}
                 />
               </InputRightElement>
             </InputGroup>
             {loading ?
               <Progress
-                bgColor={searchBg}
+                bgColor={foreground}
                 borderBottomLeftRadius="6px"
                 borderBottomRightRadius="6px"
                 colorScheme="purple"
                 height="8px"
                 mt="-8px"
                 width="100%"
-                zIndex={10}
+                zIndex={1}
                 isIndeterminate
               /> :
-              <Box
-                bgColor={searchBg}
-                borderBottomLeftRadius="6px"
-                borderBottomRightRadius="6px"
-                height="8px"
-                mt="-8px"
-                width="100%"
-                zIndex={10}
-              />
+              null
             }
           </Flex>
 
@@ -210,15 +265,29 @@ _PageHeader.displayName = "PageHeader";
 export const PageHeader = memo(_PageHeader);
 
 
+type SearchBarBoxProps = BoxProps & {
+  isMobile: boolean;
+  onOpen: () => void
+}
+
 /**
  * Renders a input like styled box.
  * 
  * @param onOpen Callback for when the box is clicked. 
  * @returns {JSX.Element} The search bar box.
  */
-const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props }) => {
+const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => {
   const bg = useColorModeValue("white", "neutral.700");
 
+
+  if (isMobile) return (
+    <IconButton
+      aria-label="Open search"
+      bg={bg}
+      icon={<HiMagnifyingGlass />}
+      onClick={onOpen}
+    />
+  )
   return (
     <Box
       as="button"
@@ -231,7 +300,7 @@ const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props 
       {...props}
     >
       <HStack gap={4}>
-        <Icon aria-label="search icon" as={HiMagnifyingGlass} />
+        <Icon aria-label="Open search" as={HiMagnifyingGlass} />
         <Text opacity={0.7}>Search</Text>
         <Spacer />
         <HStack gap={1} userSelect="none">
@@ -240,5 +309,5 @@ const SearchBarBox: FC<BoxProps & { onOpen: () => void }> = ({ onOpen, ...props 
         </HStack>
       </HStack>
     </Box>
-  )
+  );
 }

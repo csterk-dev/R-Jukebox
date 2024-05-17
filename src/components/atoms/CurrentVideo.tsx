@@ -1,10 +1,11 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, SkeletonText, Spinner, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, SkeletonText, Spinner, Tag, Text, useColorModeValue, useMediaQuery, VStack } from "@chakra-ui/react";
 import { FC, memo, useMemo } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
+import { MOBILE_BREAKPOINT } from "../../constants";
 
 const skeletonSpeed = 2
 
@@ -24,6 +25,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
+  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
 
 
   /** A looping opacity animation */
@@ -81,8 +83,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               borderRadius={10}
               height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
               justifyContent="center"
-              minHeight="400px"
-              minWidth="400px"
+              minHeight={isMobile ? "300px" : "400px"}
+              minWidth={isMobile ? "300px" : "400px"}
               position="relative"
               width={dimensions.width / 3}
             >
@@ -106,7 +108,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                     src={currentVideo.thumbnails.high.url}
                     userSelect="none"
                     width="75%"
-                    zIndex={100}
+                    zIndex={1}
                   /> :
                   <VStack zIndex={1}>
                     <motion.div
@@ -161,10 +163,10 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           boxShadow="lg"
           flexDir="column"
           gap="10px"
-          minWidth="400px"
+          minWidth={isMobile ? "300px" : "400px"}
           p="10px"
           width={dimensions.width / 3}
-          zIndex={100}
+          zIndex={10}
         >
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
