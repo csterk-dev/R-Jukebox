@@ -5,6 +5,7 @@ import { usePlayer } from "state/playerContext";
 import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
+import { useAppState } from "state/appContext";
 
 const skeletonSpeed = 2
 
@@ -24,6 +25,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
+  const { isMobile } = useAppState();
+
 
 
   /** A looping opacity animation */
@@ -81,8 +84,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               borderRadius={10}
               height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
               justifyContent="center"
-              minHeight="400px"
-              minWidth="400px"
+              minHeight={isMobile ? "300px" : "400px"}
+              minWidth={isMobile ? "300px" : "400px"}
               position="relative"
               width={dimensions.width / 3}
             >
@@ -106,31 +109,32 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                     src={currentVideo.thumbnails.high.url}
                     userSelect="none"
                     width="75%"
-                    zIndex={100}
+                    zIndex={1}
                   /> :
-                  <VStack zIndex={1}>
+                  
+                  // Placeholder
+                  <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
                     <motion.div
                       animate="animate"
                       initial="initial"
                       variants={fadingOpacityAnimation}
                     >
                       <VStack zIndex={1}>
-                        <Icon
-                          as={HiSignalSlash}
-                          boxSize="80px"
-                        />
-                        <Text fontSize="22" mt="10px">Nothing is playing right now...</Text>
+                        <Icon as={HiSignalSlash} boxSize="80px" />
+                        <Text fontSize="22" mt="10px" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
                       </VStack>
                     </motion.div>
-                    <HStack mt="10px" opacity={0.8}>
-                      <Icon
-                        as={HiMagnifyingGlass}
-                        boxSize="20px"
-                      />
+                    <HStack
+                      alignItems="flex-start"
+                      ml={isMobile ? "12px" : undefined}
+                      mt="10px"
+                      opacity={0.8}
+                      px={isMobile ? "20px" : undefined}
+                    >
+                      <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
                       <Text mb="5px">Use the search bar to find the music you love!</Text>
                     </HStack>
                   </VStack>
-
               }
 
               {currentVideo ?
@@ -161,10 +165,10 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           boxShadow="lg"
           flexDir="column"
           gap="10px"
-          minWidth="400px"
+          minWidth={isMobile ? "300px" : "400px"}
           p="10px"
           width={dimensions.width / 3}
-          zIndex={100}
+          zIndex={10}
         >
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
@@ -178,7 +182,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               </Text>
             </SkeletonText>
 
-            {currentVideo && isPlaying && !isPlayerLoading?
+            {currentVideo && isPlaying && !isPlayerLoading ?
               <Tag
                 bg="red.600"
                 color="white"

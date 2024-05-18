@@ -1,21 +1,38 @@
-import { IconButton, IconButtonProps, Tooltip, useColorMode, useColorModeValue } from "@chakra-ui/react"
+import { HStack, Icon, IconButton, IconButtonProps, Text, Tooltip, useColorMode, useColorModeValue } from "@chakra-ui/react"
 import { FC } from "react"
 import { HiMoon, HiSun } from "react-icons/hi2"
 
-type ColorModeSwitcherProps = Omit<IconButtonProps, "aria-label">
+type ColorModeSwitcherProps = Omit<IconButtonProps, "aria-label"> & {
+  disableTooltip?: boolean;
+  /** Displays the toggle with text right of the icon. */
+  withText?: boolean;
+}
 
 /**
  * Allows the user to toggle the current color mode.
  * 
  * @returns An Icon button toggle switch.
  */
-export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = (props) => {
+export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, withText, ...props }) => {
   const { toggleColorMode } = useColorMode()
   const text = useColorModeValue("dark", "light")
   const SwitchIcon = useColorModeValue(HiMoon, HiSun);
 
+  if (withText) return (
+    <HStack 
+      as="button"
+      gap="10px"
+      height="35px"
+      width="100%"
+      onClick={toggleColorMode}
+    >
+      <Icon as={SwitchIcon} />
+      <Text>{`Switch to ${text} mode`}</Text>
+    </HStack>
+  );
+
   return (
-    <Tooltip label={`Switch to ${text} mode`}>
+    <Tooltip isDisabled={disableTooltip} label={`Switch to ${text} mode`}>
       <IconButton
         aria-label={`Switch to ${text} mode`}
         colorScheme="purple"
@@ -25,5 +42,5 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = (props) => {
         {...props}
       />
     </Tooltip>
-  )
+  );
 }

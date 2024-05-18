@@ -6,6 +6,7 @@ import { colors } from "./colors";
 // Supports weights 200-800
 import "@fontsource-variable/assistant";
 import { tabStyles } from "./components/tabs";
+import { sliderStyles } from "./components/slider";
 
 /*
  * Dark mode by default.
@@ -29,7 +30,8 @@ const theme = extendTheme({
     // Apply the same input styles to the select component. For further customisation, create a `selectStyles` object inside dir /components.
     Select: inputStyles,
     Tabs: tabStyles,
-    Textarea: textareaStyles
+    Textarea: textareaStyles,
+    Slider: sliderStyles
   },
   fonts: {
     heading: "'Assistant Variable', sans-serif",

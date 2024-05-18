@@ -4,6 +4,10 @@
  * Ensure that the client and server **have matching event keys.**
  */
 export const WebSocketEventKeys = {
+  /** Any error values. */
+  error: "error",
+  /** If the player is loading. */
+  isLoading: "is-loading",
   /** Gets the value from the isPlaying boolean. */
   isPlaying: "is-playing",
   /** Updates the isPlaying boolean state. */
@@ -20,3 +24,6 @@ export const WebSocketEventKeys = {
 export const TooltipOpenDelay = 500;
 
 export const HEADER_HEIGHT = 60;
+
+/** In pixsels. */
+export const MOBILE_BREAKPOINT = 500;

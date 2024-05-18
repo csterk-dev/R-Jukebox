@@ -8,6 +8,7 @@ import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
 import { PageContainer } from "components/templates/PageContainer";
 import { PlayerProvider } from "state/playerContext";
 import { HEADER_HEIGHT } from "./constants";
+import { AppProvider } from "state/appContext";
 
 
 const controlBarHeight = 50;
@@ -19,38 +20,40 @@ export const App = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <PlayerProvider>
-        <PageContainer mb="10px">
-          {/* Header */}
-          <PageHeader height={`${HEADER_HEIGHT}px`} />
+      <AppProvider>
+        <PlayerProvider>
+          <PageContainer mb="10px">
+            {/* Header */}
+            <PageHeader height={`${HEADER_HEIGHT}px`} />
 
-          {/* Body Content */}
-          <Flex
-            flexDirection={!isLargerThan800 ? "column" : "row"}
-            gap="10px"
-            height={dimensions.height - HEADER_HEIGHT - controlBarHeight}
-            justifyContent="space-between"
-            mt="10px"
-          >
-            {/* Video Thumbnail & Metadata Container */}
-            <CurrentVideo
-              flex={{
-                base: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 2,
-                "2xl": 2.5
-              }}
-            />
+            {/* Body Content */}
+            <Flex
+              flexDirection={!isLargerThan800 ? "column" : "row"}
+              gap="10px"
+              height={dimensions.height - HEADER_HEIGHT - controlBarHeight}
+              justifyContent="space-between"
+              mt="10px"
+            >
+              {/* Video Thumbnail & Metadata Container */}
+              <CurrentVideo
+                flex={{
+                  base: 1,
+                  sm: 1,
+                  md: 1,
+                  lg: 1,
+                  xl: 2,
+                  "2xl": 2.5
+                }}
+              />
 
-            {/* Queue & History Container */}
-            <Flex flex={1} justifyContent={!isLargerThan800 ? "center" : "flex-start"} pb={!isLargerThan800 ? "10px" : 0}>
-              <QueueHistoryTabs />
+              {/* Queue & History Container */}
+              <Flex flex={1} justifyContent={!isLargerThan800 ? "center" : "flex-start"} pb={!isLargerThan800 ? "10px" : 0}>
+                <QueueHistoryTabs />
+              </Flex>
             </Flex>
-          </Flex>
-        </PageContainer>
-      </PlayerProvider>
+          </PageContainer>
+        </PlayerProvider>
+      </AppProvider>
     </ChakraProvider>
   )
 }
