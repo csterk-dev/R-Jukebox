@@ -1,30 +1,44 @@
-import { Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalOverlay, Progress, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, useMediaQuery, VStack } from "@chakra-ui/react";
+import { Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
-import { HiChartBar, HiCog6Tooth, HiMagnifyingGlass, HiSpeakerWave, HiXMark } from "react-icons/hi2";
+import { HiChartBar, HiChevronLeft, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSpeakerXMark, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
 import { useDebounce } from "@usesoftwareau/react-utils";
 import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
-import { MOBILE_BREAKPOINT } from "../../constants";
+import { useAppState } from "state/appContext";
 
 
 const noOfResults = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
+  const { playVideo, isSocketConnected, volume, setVolume } = usePlayer();
+  const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
+
+  /*
+   * Styling variables
+   */
   const headerBg = useColorModeValue("white", "neutral.900");
   const foreground = useColorModeValue("white", "neutral.700");
   const modalBg = useColorModeValue("neutral.offWhite", "neutral.700");
-  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
 
-  // Search bar and results disclosure
-  const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
-  const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
 
+  /*
+   * Modals
+   */
   /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
-  const finalFocusRef = useRef(null)
+  const finalFocusRef = useRef(null);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
+  const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: _onCloseSettings } = useDisclosure();
+  const onCloseSettings = useCallback(() => {
+    _onCloseSettings();
+    setShowVolumeSlider(false);
+  }, [_onCloseSettings]);
+  const onPressShowVolumeSlider = useCallback(() => setShowVolumeSlider(true), []);
+  const onPressHideVolumeSlider = useCallback(() => setShowVolumeSlider(false), []);
 
   /*
    * Handling to trigger the opening and closing of the search from a keyboard short cut.
@@ -57,13 +71,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
   }, [onCloseSearch, searchVal]);
 
 
-  const { playVideo, isSocketConnected } = usePlayer();
-
   /** Callback that plays the card youtube video. */
   const onClickCard = useCallback((video: Video) => {
     playVideo(video);
     onCloseSearch();
   }, [onCloseSearch, playVideo]);
+
+
+  /** Change handler for the volume slider. */
+  const onChangeVolumeHandler = useCallback((value: number) => {
+    setVolume(value);
+  }, [setVolume]);
 
   return (
     <>
@@ -74,65 +92,60 @@ const _PageHeader: FC<FlexProps> = (props) => {
           boxShadow="base"
           gap="5px"
           justify="center"
-          px={isMobile ? "20px" : "5px"}
+          px="20px"
+          // px={isMobile ? "20px" : "5px"}
           width="100%"
           {...props}
         >
           {isMobile ?
             <>
-              <SearchBarBox
-                flex={1}
-                isMobile={isMobile}
-                onOpen={onOpenSearch}
-              />
+              <SearchBarBox flex={1} isMobile={isMobile} onOpen={onOpenSearch} />
               <VideoControls flex={1} />
-              <IconButton
-                aria-label="Open settings"
-                bgColor={foreground}
-                icon={<HiCog6Tooth />}
-                onClick={onOpenSettings}
-              />
+              <IconButton aria-label="Open settings" icon={<HiCog6Tooth opacity={0.9} />} onClick={onOpenSettings} />
             </> :
 
+            // Default view
             <>
               <VideoControls flex={1} />
-              <SearchBarBox
-                flex={1}
-                isMobile={isMobile}
-                onOpen={onOpenSearch}
-              />
+              <SearchBarBox flex={1} isMobile={isMobile} onOpen={onOpenSearch} />
               <Flex
                 alignItems="center"
                 flex={1}
                 gap="5px"
                 justifyContent="center"
               >
-                <ColorModeSwitcher />
-                <IconButton
-                  aria-label="Adjust volume"
-                  colorScheme="purple"
-                  icon={<HiSpeakerWave />}
-                  variant="ghost"
-                  isDisabled
-                />
-                <Tooltip label={isSocketConnected ? "Websocket connected" : "Websocket disconnected"}>
-                  <span>
-                    <Icon
-                      aria-label="Websocket connected"
-                      as={HiChartBar}
-                      color={isSocketConnected ? "green" : "orange"}
-                      ml="10px"
-                      mt="5px"
-                    />
-                  </span>
-                </Tooltip>
+                <Flex alignItems="center" gap="10px" width="130px">
+                  <Icon aria-label="No volume" as={HiSpeakerXMark} />
+                  <Slider
+                    aria-label="Volume control"
+                    colorScheme="purple"
+                    defaultValue={30}
+                    step={5}
+                    value={volume}
+                    variant="horizontal"
+                    onChange={onChangeVolumeHandler}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
+                  <Icon aria-label="Max volume" as={HiSpeakerWave} />
+                </Flex>
               </Flex>
+              <IconButton
+                aria-label="Open settings"
+                icon={<HiCog6Tooth opacity={0.9} />}
+                variant="ghost"
+                onClick={onOpenSettings}
+              />
             </>
           }
         </Flex>
       </header>
 
-      {/* Settings (Mobile use ONLY) */}
+
+      {/* Settings Modal */}
       <Modal
         finalFocusRef={finalFocusRef}
         isOpen={isSettingsOpen}
@@ -141,51 +154,150 @@ const _PageHeader: FC<FlexProps> = (props) => {
         onClose={onCloseSettings}
       >
         <ModalOverlay />
-        <ModalContent bg={foreground} boxShadow={0}>
-          <Flex 
-            alignItems="center" 
-            justifyContent="space-between" 
-            mt="10px"
-            width="100%"
-          >
-            <Text fontWeight="600" pl="20px" textTransform="uppercase">Settings</Text>
-            <IconButton
-              aria-label="Close settings"
-              icon={<HiXMark />}
-              mr="10px"
-              variant="ghost"
-              onClick={onCloseSettings}
-            />
-          </Flex>
-          <VStack
-            align="flex-start"
-            fontSize="16px"
-            gap="10px"
-            px="20px"
-            py="10px"
-          >
-            <Divider />
-            <ColorModeSwitcher disableTooltip withText />
-            <Divider />
+        <ModalContent bg={foreground} boxShadow={0} userSelect="none">
 
-            <HStack>
-              <Icon
-                aria-label="Adjust volume"
-                as={HiSpeakerWave}
+          {isMobile && showVolumeSlider ?
+            <Flex py="10px">
+              <IconButton
+                aria-label="Go back"
+                icon={<HiChevronLeft />}
+                left="20px"
+                ml="-10px"
+                position="absolute"
+                px="10px"
+                top="10px"
+                variant="unstyled"
+                onClick={onPressHideVolumeSlider}
               />
-              <Text>Adjust volume</Text>
-            </HStack>
-            <Divider />
 
-            <HStack>
-              <Icon
-                aria-label={`Websocket ${isSocketConnected ? "connected" : "disconnected"}`}
-                as={HiChartBar}
-                color={isSocketConnected ? "green" : "orange"}
-              />
-              <Text>{`Websocket ${isSocketConnected ? "connected" : "disconnected"}`}</Text>
-            </HStack>
-          </VStack>
+              <Flex
+                alignItems="center"
+                flex={1}
+                flexDirection="column"
+                gap="10px"
+                height="300px"
+                px="20px"
+                py="10px"
+              >
+                <Icon aria-label="Max volume" as={HiSpeakerWave} />
+                <Slider
+                  aria-label="Volume control"
+                  colorScheme="purple"
+                  defaultValue={30}
+                  height="100%"
+                  orientation="vertical"
+                  step={5}
+                  value={volume}
+                  variant="vertical"
+                  onChange={onChangeVolumeHandler}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <Icon aria-label="No volume" as={HiSpeakerXMark} />
+              </Flex>
+            </Flex> :
+
+            <>
+              <ModalHeader fontSize="16px">
+                <Flex
+                  alignItems="center"
+                  fontWeight="600"
+                  justifyContent="space-between"
+                  pl="20px"
+                  width="100%"
+                >
+                  <Text textTransform="uppercase">Settings</Text>
+                  <IconButton
+                    aria-label="Close settings"
+                    icon={<HiXMark />}
+                    mr="10px"
+                    px="10px"
+                    variant="unstyled"
+                    onClick={onCloseSettings}
+                  />
+                </Flex>
+              </ModalHeader>
+
+              <VStack
+                align="flex-start"
+                fontSize="16px"
+                gap="10px"
+                pb="10px"
+                px="20px"
+              >
+
+                <Text
+                  fontSize="14"
+                  mt="10px"
+                  opacity={0.7}
+                  textTransform="uppercase"
+                >
+                  Player
+                </Text>
+
+                {isMobile ?
+                  <>
+                    <HStack
+                      as="button"
+                      height="35px"
+                      width="100%"
+                      onClick={onPressShowVolumeSlider}
+                    >
+                      <Icon aria-label="Adjust volume" as={HiSpeakerWave} />
+                      <Text>Adjust volume</Text>
+                    </HStack>
+                    <Divider />
+                  </> :
+                  null
+                }
+
+                <HStack height="35px">
+                  <Icon aria-label={`${isSocketConnected ? "Connected" : "Offline"}`} as={HiChartBar} color={isSocketConnected ? "green" : "orange"} />
+                  <Text>{`${isSocketConnected ? "Connected" : "Offline"}`}</Text>
+                </HStack>
+                <Divider />
+
+                <Text fontSize="14" opacity={0.7} textTransform="uppercase">Personalise</Text>
+
+                <ColorModeSwitcher disableTooltip withText />
+
+                <Divider />
+
+                <HStack
+                  as="button"
+                  height="35px"
+                  width="100%"
+                  onClick={toggleBgAnimated}
+                >
+                  <Icon aria-label={`${isBgAnimated ? "Disable" : "enable"} background animations `} as={isBgAnimated ? HiOutlineRocketLaunch : HiRocketLaunch} />
+                  <Text>{`${isBgAnimated ? "Disable" : "Enable"} background animations `}</Text>
+                </HStack>
+                <Divider />
+
+              </VStack>
+              <ModalFooter
+                alignItems="flex-start"
+                flexDirection="column"
+                opacity={0.7}
+                pt="0px"
+                px="20px"
+              >
+                <Flex
+                  alignItems="center"
+                  fontWeight="600"
+                  justifyContent="space-between"
+                  width="100%"
+                >
+                  <Text>R Jukebox</Text>
+                  <Text>v 1.0</Text>
+                </Flex>
+                <Text fontSize="14" mt="5px">By Chris Sterkenburg</Text>
+              </ModalFooter>
+            </>
+          }
         </ModalContent>
       </Modal>
 
@@ -201,13 +313,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
         <ModalOverlay />
         <ModalContent bg="transparent" boxShadow={0}>
           <Flex alignItems="center" flexDir="column">
-            <InputGroup>
+            <InputGroup as="search">
               <InputLeftElement>
-                <Icon
-                  aria-label="search icon"
-                  as={HiMagnifyingGlass}
-                  pointerEvents="none"
-                />
+                <Icon aria-label="search icon" as={HiMagnifyingGlass} pointerEvents="none" />
               </InputLeftElement>
               <Input
                 bg={foreground}
@@ -251,10 +359,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
           </Flex>
 
           {videos.length > 0 || error ?
-            <ModalBody
-              bg={modalBg}
-              mt="10px"
-            >
+            <ModalBody bg={modalBg} mt="10px">
               <VStack>
                 {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${noOfResults} Youtube video results`}</Text>}
                 {videos.map(video => {
@@ -297,12 +402,7 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
 
 
   if (isMobile) return (
-    <IconButton
-      aria-label="Open search"
-      bg={bg}
-      icon={<HiMagnifyingGlass />}
-      onClick={onOpen}
-    />
+    <IconButton aria-label="Open search" icon={<HiMagnifyingGlass />} onClick={onOpen} />
   )
   return (
     <Box

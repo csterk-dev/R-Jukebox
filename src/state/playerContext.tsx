@@ -11,7 +11,7 @@ const defaultErrorToastStyle = {
   isClosable: true,
   containerStyle: {
     bg: "#B9023A",
-    color: "white",
+    color: "#ffffff",
     borderRadius: 5
   }
 };
@@ -23,9 +23,11 @@ interface PlayerContextType {
   isPlayerLoading: boolean;
   isSocketConnected: boolean;
   error: string | undefined;
+  volume: number;
   pauseCurrentVideo: () => void;
   playVideo: (video: Video) => void;
   resumeCurrentVideo: () => void;
+  setVolume: (volume: number) => void;
 }
 
 const defaultPlayerContextVal: PlayerContextType = {
@@ -34,9 +36,11 @@ const defaultPlayerContextVal: PlayerContextType = {
   isPlayerLoading: false,
   isSocketConnected: false,
   error: undefined,
+  volume: 30,
   pauseCurrentVideo: () => void 0,
   playVideo: () => void 0,
-  resumeCurrentVideo: () => void 0
+  resumeCurrentVideo: () => void 0,
+  setVolume: () => void 0
 };
 
 
@@ -52,32 +56,37 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
   const [isPlaying, setIsPlaying] = useState<PlayerContextType["isPlaying"]>(false);
   const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<PlayerContextType["error"]>();
+  const [volumeLevel, setVolumeLevel] = useState<PlayerContextType["volume"]>(30);
   const toast = useToast();
 
 
-  /** Plays the supplied video. */
+  /** Set the volume of the player. */
+  const setVolume = useCallback((value: number) => {
+    setVolumeLevel(value);
+    // TODO send to api
+  }, []);
+
+
+  /** Starts the player with the provided video. */
   const playVideo = useCallback((video: Video) => {
     if (!video) return;
-
     socketInstance.emit(WebSocketEventKeys.setCurrentVideo, video);
 
   }, [socketInstance]);
 
 
-  /** Pauses the currently playing video. */
+  /** Pauses the current video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-
     socketInstance.emit(WebSocketEventKeys.setIsPlaying, false);
 
   }, [currentVideo, socketInstance]);
 
 
-  /** Pauses the currently playing video. */
+  /** Resumes the current video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-
     socketInstance.emit(WebSocketEventKeys.setIsPlaying, true);
 
   }, [currentVideo, socketInstance]);
@@ -124,11 +133,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       isPlayerLoading,
       isSocketConnected,
       error,
+      volume: volumeLevel,
       pauseCurrentVideo,
       playVideo,
-      resumeCurrentVideo
+      resumeCurrentVideo,
+      setVolume
     }
-  }, [currentVideo, error, isPlayerLoading, isPlaying, isSocketConnected, pauseCurrentVideo, playVideo, resumeCurrentVideo]);
+  }, [currentVideo, error, isPlayerLoading, isPlaying, isSocketConnected, pauseCurrentVideo, playVideo, resumeCurrentVideo, setVolume, volumeLevel]);
 
   return (
     <PlayerContext.Provider value={playerContext}>

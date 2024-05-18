@@ -1,6 +1,6 @@
-import { Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, useMediaQuery } from "@chakra-ui/react";
-import { MOBILE_BREAKPOINT } from "../../constants";
+import { Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from "@chakra-ui/react";
 import { FC, memo } from "react"
+import { useAppState } from "state/appContext";
 
 
 type QueueHistoryProps = FlexProps;
@@ -8,11 +8,12 @@ type QueueHistoryProps = FlexProps;
 const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.8)", "rgba(13, 15, 24, 0.75)");
   const tabHeader = useColorModeValue("neutral.white", "neutral.900");
-  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const { isMobile } = useAppState();
 
 
   return (
     <Flex
+      as="aside"
       bg={foreground}
       borderRadius={10}
       boxShadow="lg"

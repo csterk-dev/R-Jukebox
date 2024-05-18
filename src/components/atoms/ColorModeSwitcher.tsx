@@ -4,6 +4,7 @@ import { HiMoon, HiSun } from "react-icons/hi2"
 
 type ColorModeSwitcherProps = Omit<IconButtonProps, "aria-label"> & {
   disableTooltip?: boolean;
+  /** Displays the toggle with text right of the icon. */
   withText?: boolean;
 }
 
@@ -21,6 +22,7 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, 
     <HStack 
       as="button"
       gap="10px"
+      height="35px"
       width="100%"
       onClick={toggleColorMode}
     >

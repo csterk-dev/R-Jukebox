@@ -1,6 +1,7 @@
 import { Box, BoxProps } from "@chakra-ui/react";
 import { FC } from "react";
 import { PageBackdrop } from "components/atoms/PageBackdrop";
+import { useAppState } from "state/appContext";
 
 
 /**
@@ -10,7 +11,7 @@ import { PageBackdrop } from "components/atoms/PageBackdrop";
  * @returns {JSX.Element} The background used for the page.
  */
 export const PageContainer: FC<BoxProps> = (props) => {
-  
+  const { isBgAnimated } = useAppState();
 
 
   return (
@@ -30,7 +31,7 @@ export const PageContainer: FC<BoxProps> = (props) => {
       >
         {props.children}
       </Box>
-      <PageBackdrop />
+      {isBgAnimated ? <PageBackdrop /> : null}
     </Box>
   )
 }

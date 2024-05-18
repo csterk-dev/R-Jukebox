@@ -6,6 +6,7 @@ import { useWindowDimensions } from "@usesoftwareau/react-utils";
 
 const _PageBackdrop: FC<BoxProps> = (props) => {
   const dimensions = useWindowDimensions();
+  
   const baseBlur = "70px";
   const shapeBlur = "30px";
   const shapeOpacity = 0.75;
