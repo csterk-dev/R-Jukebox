@@ -1,4 +1,4 @@
-import { Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiChevronLeft, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSpeakerXMark, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
@@ -14,7 +14,7 @@ const noOfResults = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { playVideo, isSocketConnected, volume, setVolume } = usePlayer();
+  const { playVideo, isConnected, systemVolume, setSystemVolume } = usePlayer();
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
   /*
@@ -40,6 +40,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const onPressShowVolumeSlider = useCallback(() => setShowVolumeSlider(true), []);
   const onPressHideVolumeSlider = useCallback(() => setShowVolumeSlider(false), []);
 
+
   /*
    * Handling to trigger the opening and closing of the search from a keyboard short cut.
    */
@@ -57,11 +58,15 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
 
   /*
-   * Search state and results
+   * Search and Volume states
    */
   const [searchVal, setSearchVal] = useState<string>("");
   const query = useDebounce(searchVal, 1000);
   const { error, loading, videos } = useYoutubeSearch(query, noOfResults);
+
+  const [localVolume, setLocalVolume] = useState<number>(systemVolume);
+  const prevSystemVolume = useRef<number>();
+  const [showVolumeTooltip, setShowVolumeTooltip] = useState(false);
 
 
   /** Clears the input if there is a value otherwise closes the modal. */
@@ -78,10 +83,27 @@ const _PageHeader: FC<FlexProps> = (props) => {
   }, [onCloseSearch, playVideo]);
 
 
+  const onChangeEndVolumeHandler = useCallback((value: number) => {
+    prevSystemVolume.current = value;
+    setSystemVolume(value);
+  }, [setSystemVolume]);
+
+
   /** Change handler for the volume slider. */
   const onChangeVolumeHandler = useCallback((value: number) => {
-    setVolume(value);
-  }, [setVolume]);
+    console.log(value);
+    setLocalVolume(value);
+
+  }, []);
+
+
+  // Resync volume
+  useEffect(() => {
+    if (prevSystemVolume.current !== systemVolume) {
+      setLocalVolume(systemVolume);
+    }
+  }, [prevSystemVolume, systemVolume]);
+
 
   return (
     <>
@@ -93,7 +115,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
           gap="5px"
           justify="center"
           px="20px"
-          // px={isMobile ? "20px" : "5px"}
           width="100%"
           {...props}
         >
@@ -114,27 +135,43 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Flex alignItems="center" gap="10px" width="130px">
-                  <Icon aria-label="No volume" as={HiSpeakerXMark} />
+                <Flex
+                  alignItems="center"
+                  gap="10px"
+                  width="130px"
+                  onMouseEnter={() => setShowVolumeTooltip(true)}
+                  onMouseLeave={() => setShowVolumeTooltip(false)}
+                >
+                  <Icon aria-label="No volume" as={HiSpeakerXMark} color="neutral.300" />
                   <Slider
                     aria-label="Volume control"
                     colorScheme="purple"
-                    defaultValue={30}
+                    max={100}
+                    min={0}
                     step={5}
-                    value={volume}
+                    value={localVolume}
                     variant="horizontal"
-                    onChange={onChangeVolumeHandler}
+                    onChange={val => onChangeVolumeHandler(val)}
+                    onChangeEnd={val => onChangeEndVolumeHandler(val)}
                   >
                     <SliderTrack>
                       <SliderFilledTrack />
                     </SliderTrack>
-                    <SliderThumb />
+                    <Tooltip
+                      isOpen={showVolumeTooltip}
+                      label={`${localVolume}%`}
+                      // placement="top"
+                      hasArrow
+                    >
+                      <SliderThumb />
+                    </Tooltip>
                   </Slider>
-                  <Icon aria-label="Max volume" as={HiSpeakerWave} />
+                  <Icon aria-label="Max volume" as={HiSpeakerWave} color="neutral.300" />
                 </Flex>
               </Flex>
               <IconButton
                 aria-label="Open settings"
+                colorScheme="purple"
                 icon={<HiCog6Tooth opacity={0.9} />}
                 variant="ghost"
                 onClick={onOpenSettings}
@@ -158,17 +195,28 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
           {isMobile && showVolumeSlider ?
             <Flex py="10px">
-              <IconButton
-                aria-label="Go back"
-                icon={<HiChevronLeft />}
-                left="20px"
-                ml="-10px"
+              <Flex
+                alignItems="center"
+                justifyContent="space-between"
                 position="absolute"
-                px="10px"
-                top="10px"
-                variant="unstyled"
-                onClick={onPressHideVolumeSlider}
-              />
+                top={0}
+                width="100%"
+              >
+                <IconButton
+                  aria-label="Go back"
+                  icon={<HiChevronLeft />}
+                  px="10px"
+                  variant="unstyled"
+                  onClick={onPressHideVolumeSlider}
+                />
+                <IconButton
+                  aria-label="Go back"
+                  icon={<HiXMark />}
+                  px="10px"
+                  variant="unstyled"
+                  onClick={onCloseSettings}
+                />
+              </Flex>
 
               <Flex
                 alignItems="center"
@@ -176,27 +224,29 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 flexDirection="column"
                 gap="10px"
                 height="300px"
+                pb="10px"
                 px="20px"
-                py="10px"
               >
                 <Icon aria-label="Max volume" as={HiSpeakerWave} />
                 <Slider
                   aria-label="Volume control"
                   colorScheme="purple"
-                  defaultValue={30}
                   height="100%"
+                  max={100}
+                  min={0}
                   orientation="vertical"
                   step={5}
-                  value={volume}
+                  value={localVolume}
                   variant="vertical"
-                  onChange={onChangeVolumeHandler}
+                  onChange={val => onChangeVolumeHandler(val)}
+                  onChangeEnd={val => onChangeEndVolumeHandler(val)}
                 >
                   <SliderTrack>
                     <SliderFilledTrack />
                   </SliderTrack>
                   <SliderThumb />
                 </Slider>
-                <Icon aria-label="No volume" as={HiSpeakerXMark} />
+                {/* <Icon aria-label="No volume" as={HiSpeakerXMark} /> */}
               </Flex>
             </Flex> :
 
@@ -213,7 +263,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   <IconButton
                     aria-label="Close settings"
                     icon={<HiXMark />}
-                    mr="10px"
+                    // mr="10px"
                     px="10px"
                     variant="unstyled"
                     onClick={onCloseSettings}
@@ -246,8 +296,11 @@ const _PageHeader: FC<FlexProps> = (props) => {
                       width="100%"
                       onClick={onPressShowVolumeSlider}
                     >
-                      <Icon aria-label="Adjust volume" as={HiSpeakerWave} />
-                      <Text>Adjust volume</Text>
+                      <HStack alignItems="center" width="100%">
+                        <Icon aria-label="Adjust volume" as={HiSpeakerWave} />
+                        <Text>Adjust volume</Text>
+                      </HStack>
+                      <Text>{`${localVolume}%`}</Text>
                     </HStack>
                     <Divider />
                   </> :
@@ -255,12 +308,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 }
 
                 <HStack height="35px">
-                  <Icon aria-label={`${isSocketConnected ? "Connected" : "Offline"}`} as={HiChartBar} color={isSocketConnected ? "green" : "orange"} />
-                  <Text>{`${isSocketConnected ? "Connected" : "Offline"}`}</Text>
+                  <Icon
+                    aria-label={`${isConnected ? "Connected" : "Offline"}`}
+                    as={HiChartBar}
+                    color={isConnected ? "green" : "orange"}
+                    mt="3px"
+                  />
+                  <Text>{`${isConnected ? "Connected" : "Offline"}`}</Text>
                 </HStack>
                 <Divider />
 
-                <Text fontSize="14" opacity={0.7} textTransform="uppercase">Personalise</Text>
+                <Text fontSize="14" opacity={0.7} textTransform="uppercase">Customise</Text>
 
                 <ColorModeSwitcher disableTooltip withText />
 
@@ -272,7 +330,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   width="100%"
                   onClick={toggleBgAnimated}
                 >
-                  <Icon aria-label={`${isBgAnimated ? "Disable" : "enable"} background animations `} as={isBgAnimated ? HiOutlineRocketLaunch : HiRocketLaunch} />
+                  <Icon aria-label={`${isBgAnimated ? "Disable" : "enable"} background animations `} as={isBgAnimated ? HiOutlineRocketLaunch : HiRocketLaunch} mt="3px" />
                   <Text>{`${isBgAnimated ? "Disable" : "Enable"} background animations `}</Text>
                 </HStack>
                 <Divider />
