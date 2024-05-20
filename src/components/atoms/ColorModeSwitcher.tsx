@@ -26,7 +26,7 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, 
       width="100%"
       onClick={toggleColorMode}
     >
-      <Icon as={SwitchIcon} />
+      <Icon as={SwitchIcon} mt="3px" />
       <Text>{`Switch to ${text} mode`}</Text>
     </HStack>
   );
