@@ -3,7 +3,7 @@
  * 
  * Ensure that the client and server **have matching event keys.**
  */
-export const WebSocketEventKeys = {
+export const SOCKET_EVENT_KEYS = {
   /** Used to return the current state to the newly connect client. */
   getInitialState: "get-initial-state",
   /** Gets the current video. */
@@ -25,9 +25,14 @@ export const WebSocketEventKeys = {
 };
 
 
+/** In milliseconds. */
 export const TooltipOpenDelay = 500;
 
+/** In pixsels. */
 export const HEADER_HEIGHT = 60;
 
 /** In pixsels. */
 export const MOBILE_BREAKPOINT = 500;
+
+/** Ensure front and end values match */
+export const SYSTEM_VOLUME_DEFAULT = 30;
