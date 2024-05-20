@@ -16,6 +16,10 @@ const defaultErrorToastStyle = {
   }
 };
 
+/** ID's are used to ensure that toasts do not duplicate and visually stack. */
+const toastIds = {
+  playerError: "we456iuhrskha72"
+};
 
 interface PlayerContextType {
   currentVideo: Video | undefined;
@@ -107,11 +111,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
       socketInstance.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
         setError(errorMessage);
-        toast({
-          title: "Player error",
-          description: errorMessage,
-          ...defaultErrorToastStyle
-        });
+        if (!toast.isActive(toastIds.playerError)) {
+          toast({
+            id: toastIds.playerError,
+            title: "Player error",
+            description: errorMessage,
+            ...defaultErrorToastStyle
+          });
+        }
       });
 
 
@@ -119,7 +126,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         setIsPlayerLoading(loading);
       });
 
-      
+
       socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         if (isPlaying !== incomingIsPlaying) {
           setIsPlaying(incomingIsPlaying);
