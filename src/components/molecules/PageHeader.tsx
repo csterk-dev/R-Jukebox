@@ -146,6 +146,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   <Slider
                     aria-label="Volume control"
                     colorScheme="purple"
+                    focusThumbOnChange={false}
                     max={100}
                     min={0}
                     step={5}
@@ -160,7 +161,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
                     <Tooltip
                       isOpen={showVolumeTooltip}
                       label={`${localVolume}%`}
-                      // placement="top"
                       hasArrow
                     >
                       <SliderThumb />
@@ -246,7 +246,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   </SliderTrack>
                   <SliderThumb />
                 </Slider>
-                {/* <Icon aria-label="No volume" as={HiSpeakerXMark} /> */}
               </Flex>
             </Flex> :
 
