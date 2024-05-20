@@ -111,7 +111,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                     width="75%"
                     zIndex={1}
                   /> :
-                  
+
                   // Placeholder
                   <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
                     <motion.div
@@ -229,17 +229,32 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
             noOfLines={1}
             skeletonHeight="18px"
             speed={skeletonSpeed}
-            width="65%"
+            width={isPlayerLoading ? "65%" : "100%"}
           >
-            <HStack fontSize="18" fontWeight="400">
-              <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-                {currentVideo ? currentVideo.channelTitle : null}
-              </Link>
-              {currentVideo ? <Text>•</Text> : null}
-              <Text>
-                {videoPublishedAt}
-              </Text>
-            </HStack>
+            {isMobile ?
+              <VStack 
+                alignItems="flex-start"
+                fontSize="18" 
+                fontWeight="400" 
+                width="100%"
+              >
+                <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                  {currentVideo ? currentVideo.channelTitle : null}
+                </Link>
+                <Text>
+                  {videoPublishedAt}
+                </Text>
+              </VStack> :
+              <HStack fontSize="18" fontWeight="400" width="100%">
+                <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                  {currentVideo ? currentVideo.channelTitle : null}
+                </Link>
+                {currentVideo ? <Text>•</Text> : null}
+                <Text>
+                  {videoPublishedAt}
+                </Text>
+              </HStack>
+            }
           </SkeletonText>
         </Flex>
       </Flex>
