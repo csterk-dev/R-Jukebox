@@ -1,23 +1,25 @@
 import { sliderAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
-const { definePartsStyle, defineMultiStyleConfig } =
-  createMultiStyleConfigHelpers(parts.keys)
+
+const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpers(parts.keys)
+
 
 const horizontal = definePartsStyle({
   track: defineStyle({
-    h: "10px"
+    h: "12px"
   }),
   thumb: defineStyle({
-    boxSize: "14px"
+    boxSize: "16px"
   })
 });
 
 const vertical = definePartsStyle({
   track: defineStyle({
-    w: "40px"
+    borderRadius: 10,
+    w: "50px"
   }),
   thumb: defineStyle({
-    boxSize: "44px"
+    boxSize: "54px"
   })
 });
 

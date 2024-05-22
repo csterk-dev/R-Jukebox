@@ -1,6 +1,6 @@
 import { useMediaQuery, useToast, UseToastOptions } from "@chakra-ui/react";
 import { MOBILE_BREAKPOINT } from "../constants";
-import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 
 const infoToastStyle = {
@@ -30,7 +30,7 @@ interface PlayerContextType {
 
 const defaultPlayerContextVal: PlayerContextType = {
   isMobile: false,
-  isBgAnimated: false,
+  isBgAnimated: true,
   toggleBgAnimated: () => void 0
 };
 
@@ -43,8 +43,14 @@ const AppContext = createContext<PlayerContextType>(defaultPlayerContextVal);
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-  const [isBgAnimated, setIsBgAnimated] = useState<PlayerContextType["isBgAnimated"]>(isMobile ? false : true);
+  const [isBgAnimated, setIsBgAnimated] = useState<PlayerContextType["isBgAnimated"]>(true);
 
+  /*
+   * Save user's batteries by default
+   */
+  useEffect(() => {
+    if (isMobile) setIsBgAnimated(false);
+  }, [isMobile]);
 
   /** Turns on animations for the background. */
   const toggleBgAnimated = useCallback(() => {
