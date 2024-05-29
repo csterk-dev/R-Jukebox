@@ -16,7 +16,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
    * Player State
    */
   const { isPlaying, currentVideo, isPlayerLoading } = usePlayer();
-
+  const isLoading = isPlayerLoading;
+  
   /*
    * ------------------------------------------------------------------------------------------------------------------ 
    * UI Styling
@@ -98,7 +99,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 width="95%"
               />
 
-              {isPlayerLoading ?
+              {isLoading ?
                 <Spinner /> :
 
                 currentVideo ?
@@ -172,7 +173,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
         >
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
-              isLoaded={!isPlayerLoading}
+              isLoaded={!isLoading}
               noOfLines={1}
               skeletonHeight="14px"
               speed={skeletonSpeed}
@@ -182,7 +183,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               </Text>
             </SkeletonText>
 
-            {currentVideo && isPlaying && !isPlayerLoading ?
+            {currentVideo && isPlaying && !isLoading ?
               <Tag
                 bg="red.600"
                 color="white"
@@ -198,7 +199,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                   • Playing
                 </motion.div>
               </Tag> :
-              currentVideo && !isPlayerLoading ?
+              currentVideo && !isLoading ?
                 <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
                 null
             }
@@ -207,7 +208,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 
           <Flex flex={1} flexDirection="column">
             <SkeletonText
-              isLoaded={!isPlayerLoading}
+              isLoaded={!isLoading}
               noOfLines={2}
               skeletonHeight="20px"
               speed={skeletonSpeed}
@@ -225,11 +226,11 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           </Flex>
 
           <SkeletonText
-            isLoaded={!isPlayerLoading}
+            isLoaded={!isLoading}
             noOfLines={1}
             skeletonHeight="18px"
             speed={skeletonSpeed}
-            width={isPlayerLoading ? "65%" : "100%"}
+            width={isLoading ? "65%" : "100%"}
           >
             {isMobile ?
               <VStack 

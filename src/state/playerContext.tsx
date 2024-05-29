@@ -102,13 +102,19 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (isConnected) {
 
+      // Sync current video state
       socketInstance.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
+        console.log("currentVideo", currentVideo);
+        console.log("incomingVideo", incomingVideo);
+
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
+          console.log("current video synced");
           setCurrentVideo(incomingVideo);
         }
       });
 
 
+      // Sync error state
       socketInstance.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
         setError(errorMessage);
         if (!toast.isActive(toastIds.playerError)) {
@@ -122,25 +128,36 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       });
 
 
+      // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
       });
 
-
+      
+      // Sync playing state
       socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
+        console.log("isPlaying", isPlaying);
+        console.log("incomingIsPlaying", incomingIsPlaying);
+
         if (isPlaying !== incomingIsPlaying) {
+          console.log("isPlaying synced");
           setIsPlaying(incomingIsPlaying);
         }
       });
 
 
+      // Sync system volume state
       socketInstance.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
+        console.log("volume", volume);
+        console.log("incomingVolume", incomingVolume);
+
         if (incomingVolume !== volume) {
+          console.log("volume synced");
           setVolume(incomingVolume);
         }
       });
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socketInstance, toast, volume]);
+  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socketInstance, toast, volume, currentVideo]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -156,7 +173,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       systemVolume: volume,
       setSystemVolume
     }
-  }, [currentVideo, error, isPlayerLoading, isPlaying, isConnected, pauseCurrentVideo, playVideo, resumeCurrentVideo, setSystemVolume, volume]);
+  }, [currentVideo, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setSystemVolume, volume]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
