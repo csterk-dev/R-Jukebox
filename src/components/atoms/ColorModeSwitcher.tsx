@@ -35,7 +35,6 @@ export const ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, 
     <Tooltip isDisabled={disableTooltip} label={`Switch to ${text} mode`}>
       <IconButton
         aria-label={`Switch to ${text} mode`}
-        colorScheme="purple"
         icon={<SwitchIcon />}
         variant="ghost"
         onClick={toggleColorMode}

@@ -23,7 +23,7 @@ export const App = () => {
       <AppProvider>
         <PlayerProvider>
           <PageContainer mb="10px">
-            {/* Header */}
+
             <PageHeader height={`${HEADER_HEIGHT}px`} />
 
             {/* Body Content */}
@@ -51,6 +51,7 @@ export const App = () => {
                 <QueueHistoryTabs />
               </Flex>
             </Flex>
+            
           </PageContainer>
         </PlayerProvider>
       </AppProvider>

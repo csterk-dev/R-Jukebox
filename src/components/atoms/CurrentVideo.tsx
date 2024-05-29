@@ -2,7 +2,7 @@ import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, 
 import { FC, memo, useMemo } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
-import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
+import { formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
@@ -64,7 +64,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
    */
   const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.duration), [currentVideo?.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
-  const videoTitle = useMemo(() => replaceAmps(currentVideo?.title), [currentVideo?.title]);
+  const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
 
 
   return (

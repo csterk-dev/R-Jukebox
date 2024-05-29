@@ -84,12 +84,34 @@ export function formatVideoPublishedDate(date?: string) {
   return `${noOfDays} ${noOfDays === 1 ? "day" : "days"} ago`;
 }
 
+
 /**
- * Parses the supplied string and replaces any occurances of '&amp' with with correct & symbol.
+ * Parses the supplied string and replaces any occurrences of HTML entities with their correct symbols.
  * @param str String to parse.
  * @returns The formatted string.
  */
-export function replaceAmps(str?: string) {
+export function replaceHtmlEntities(str?: string) {
   if (!str) return;
-  return str.replace(/&amp;/g, "&");
+
+  // Define a mapping of HTML entities to their corresponding characters
+  const entities: { [key: string]: string } = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": "\"",
+    "&#39;": "'",
+    "&apos;": "'",
+    "&nbsp;": " ",
+    "&cent;": "¢",
+    "&pound;": "£",
+    "&yen;": "¥",
+    "&euro;": "€",
+    "&copy;": "©",
+    "&reg;": "®"
+  };
+
+  // Use a regular expression to replace all occurrences of the entities
+  return str.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&apos;|&nbsp;|&cent;|&pound;|&yen;|&euro;|&copy;|&reg;/g, (match) => {
+    return entities[match] || match;
+  });
 }

@@ -2,7 +2,7 @@ import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, To
 import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
-import { formatVideoDuration, formatVideoPublishedDate, replaceAmps } from "utils/misc";
+import { formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
 import { useAppState } from "state/appContext";
 
 /** Enable when queue/ history is implemented */
@@ -23,7 +23,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
 
   const videoDuration = useMemo(() => formatVideoDuration(video.duration), [video?.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video.publishedAt), [video.publishedAt]);
-  const videoTitle = useMemo(() => replaceAmps(video.title), [video.title]);
+  const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
 
   const isLive = videoDuration === "Live";
 

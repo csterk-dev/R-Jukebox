@@ -60,6 +60,7 @@ export const buttonStyles = defineStyleConfig({
     }
   },
   defaultProps: {
+    colorScheme: "neutral",
     size: "md", // Same as default
     variant: "solid" // Same as default
   }

@@ -120,15 +120,21 @@ const _PageHeader: FC<FlexProps> = (props) => {
         >
           {isMobile ?
             <>
-              <SearchBarBox flex={1} isMobile={isMobile} onOpen={onOpenSearch} />
+              <SearchBarBox flex={1} isMobile onOpen={onOpenSearch} />
               <VideoControls flex={1} />
-              <IconButton aria-label="Open settings" icon={<HiCog6Tooth opacity={0.9} />} onClick={onOpenSettings} />
+              <IconButton 
+                aria-label="Open settings" 
+                colorScheme="purple"
+                icon={<HiCog6Tooth opacity={0.9} />} 
+                variant="ghost"
+                onClick={onOpenSettings} 
+              />
             </> :
 
             // Default view
             <>
               <VideoControls flex={1} />
-              <SearchBarBox flex={1} isMobile={isMobile} onOpen={onOpenSearch} />
+              <SearchBarBox flex={1} isMobile={false} onOpen={onOpenSearch} />
               <Flex
                 alignItems="center"
                 flex={1}
@@ -171,7 +177,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
               </Flex>
               <IconButton
                 aria-label="Open settings"
-                colorScheme="purple"
                 icon={<HiCog6Tooth opacity={0.9} />}
                 variant="ghost"
                 onClick={onOpenSettings}
@@ -379,6 +384,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 borderRadius="6px"
                 boxShadow="md"
                 height="40px"
+                id="search"
                 placeholder="Search"
                 px="10px"
                 value={searchVal}
@@ -459,7 +465,13 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
 
 
   if (isMobile) return (
-    <IconButton aria-label="Open search" icon={<HiMagnifyingGlass />} onClick={onOpen} />
+    <IconButton 
+      aria-label="Open search" 
+      colorScheme="purple"
+      icon={<HiMagnifyingGlass />} 
+      variant="ghost"
+      onClick={onOpen} 
+    />
   )
   return (
     <Box

@@ -40,7 +40,6 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         <Tooltip isDisabled={showNextPrevButtons} label="Restart song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="rewind"
-            colorScheme="purple"
             icon={<HiBackward />}
             isDisabled={showNextPrevButtons}
             variant="ghost"
@@ -48,7 +47,6 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         </Tooltip>
         <IconButton
           aria-label="play/pause"
-          colorScheme="purple"
           icon={playPauseIcon}
           isDisabled={!currentVideo}
           variant="ghost"
@@ -57,7 +55,6 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
         <Tooltip isDisabled={showNextPrevButtons} label="Next song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="forward"
-            colorScheme="purple"
             icon={<HiForward />}
             isDisabled={showNextPrevButtons}
             variant="ghost"
