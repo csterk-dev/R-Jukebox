@@ -1,4 +1,3 @@
-
 import { ChakraProvider, Flex, useMediaQuery } from "@chakra-ui/react";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { PageHeader } from "components/molecules/PageHeader";
@@ -34,6 +33,7 @@ export const App = () => {
               justifyContent="space-between"
               mt="10px"
             >
+
               {/* Video Thumbnail & Metadata Container */}
               <CurrentVideo
                 flex={{
