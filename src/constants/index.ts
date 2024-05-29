@@ -28,10 +28,10 @@ export const SOCKET_EVENT_KEYS = {
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;
 
-/** In pixsels. */
+/** In pixels. */
 export const HEADER_HEIGHT = 60;
 
-/** In pixsels. */
+/** In pixels. */
 export const MOBILE_BREAKPOINT = 500;
 
 /** Ensure front and end values match */
