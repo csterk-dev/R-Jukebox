@@ -22,20 +22,20 @@ const toastIds = {
   bgAnimatedFalse: "hjk238sdhs83qas"
 };
 
-interface PlayerContextType {
+interface AppContextType {
   isMobile: boolean;
   isBgAnimated: boolean;
   toggleBgAnimated: () => void;
 }
 
-const defaultPlayerContextVal: PlayerContextType = {
+const defaultAppContextVal: AppContextType = {
   isMobile: false,
   isBgAnimated: true,
   toggleBgAnimated: () => void 0
 };
 
 
-const AppContext = createContext<PlayerContextType>(defaultPlayerContextVal);
+const AppContext = createContext<AppContextType>(defaultAppContextVal);
 
 /**
  * Manage the app context.
@@ -43,18 +43,22 @@ const AppContext = createContext<PlayerContextType>(defaultPlayerContextVal);
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-  const [isBgAnimated, setIsBgAnimated] = useState<PlayerContextType["isBgAnimated"]>(true);
+  const [isBgAnimated, setIsBgAnimated] = useState<AppContextType["isBgAnimated"]>(true);
+  const [manualIsBgAnimated, setManualIsBgAnimated] = useState(true);
 
   /*
    * Save user's batteries by default
    */
   useEffect(() => {
     if (isMobile) setIsBgAnimated(false);
-  }, [isMobile]);
+    else if (manualIsBgAnimated) setIsBgAnimated(true);
+  }, [isMobile, manualIsBgAnimated]);
 
   /** Turns on animations for the background. */
   const toggleBgAnimated = useCallback(() => {
+    setManualIsBgAnimated(prev => !prev);
     setIsBgAnimated(prev => !prev);
+
     if (!toast.isActive(toastIds.bgAnimatedTrue) && isBgAnimated) {
       toast({
         id: toastIds.bgAnimatedTrue,
@@ -73,7 +77,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [isBgAnimated, toast]);
 
 
-  const playerContext: PlayerContextType = useMemo(() => {
+  const appContext: AppContextType = useMemo(() => {
     return {
       isMobile,
       isBgAnimated,
@@ -82,11 +86,11 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [isBgAnimated, isMobile, toggleBgAnimated]);
 
   return (
-    <AppContext.Provider value={playerContext}>
+    <AppContext.Provider value={appContext}>
       {children}
     </AppContext.Provider>
   )
 }
 
 /** Allows access to the current app context values and functions. */
-export const useAppState = (): PlayerContextType => useContext(AppContext);
+export const useAppState = (): AppContextType => useContext(AppContext);
