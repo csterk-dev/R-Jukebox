@@ -36,3 +36,6 @@ export const MOBILE_BREAKPOINT = 500;
 
 /** Ensure front and end values match */
 export const SYSTEM_VOLUME_DEFAULT = 30;
+
+/** URL of the server. */
+export const SOCKET_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;

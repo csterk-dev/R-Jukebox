@@ -67,8 +67,8 @@ export const useWebSockets = () => {
   useEffect(() => {
 
     function onConnect() {
-      setIsConnected(true);
       // Tell the server that the client is ready to sync state
+      setIsConnected(true);
       socketInstance.emit(SOCKET_EVENT_KEYS.getInitialState, socketInstance.id);
     }
 
