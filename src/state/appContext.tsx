@@ -44,14 +44,14 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
   const [isBgAnimated, setIsBgAnimated] = useState<AppContextType["isBgAnimated"]>(true);
-  const [manualIsBgAnimated, setManualIsBgAnimated] = useState(true);
+  const [manualIsBgAnimated, setManualIsBgAnimated] = useState(isMobile);
 
   /*
    * Save user's batteries by default
    */
   useEffect(() => {
-    if (isMobile) setIsBgAnimated(false);
-    else if (manualIsBgAnimated) setIsBgAnimated(true);
+    if (isMobile && !manualIsBgAnimated) setIsBgAnimated(false);
+
   }, [isMobile, manualIsBgAnimated]);
 
   /** Turns on animations for the background. */
