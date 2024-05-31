@@ -13,7 +13,6 @@ import { useAppState } from "state/appContext";
 export const PageContainer: FC<BoxProps> = (props) => {
   const { isBgAnimated } = useAppState();
 
-
   return (
     <Box
       height="100vh"

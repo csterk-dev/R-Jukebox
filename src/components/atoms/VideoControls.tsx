@@ -4,44 +4,31 @@ import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 
-const showNextPrevButtons = true;
+/** Set false when previous and next functionality is implemented. */
+const DISABLE_PREV_NEXT = true;
 
 
-type VideoControlsProps = FlexProps & {}
-
-
-const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
-
-  /*
-   * Get the current state of the player
-   */
+const _VideoControls: FC<FlexProps> = ({ ...props }) => {
   const { currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo } = usePlayer();
+  const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
 
-  /**
-   * Toggles the current playing state of the player.
-   */
+
+  /** Handles the toggling of the player playback. */
   const onPressPlayPause = useCallback(() => {
     if (!currentVideo) return;
     if (isPlaying) return pauseCurrentVideo();
     resumeCurrentVideo();
   }, [currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
 
-  /** The play pause icons */
-  const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
-
 
   return (
     <Flex justifyContent="center" {...props}>
-      <Flex
-        alignItems="center"
-        gap="5px"
-        zIndex={100}
-      >
-        <Tooltip isDisabled={showNextPrevButtons} label="Restart song" openDelay={TooltipOpenDelay}>
+      <Flex alignItems="center" gap="5px" zIndex={100}>
+        <Tooltip isDisabled={DISABLE_PREV_NEXT} label="Restart song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="rewind"
             icon={<HiBackward />}
-            isDisabled={showNextPrevButtons}
+            isDisabled={DISABLE_PREV_NEXT}
             variant="ghost"
           />
         </Tooltip>
@@ -52,11 +39,11 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
           variant="ghost"
           onClick={onPressPlayPause}
         />
-        <Tooltip isDisabled={showNextPrevButtons} label="Next song" openDelay={TooltipOpenDelay}>
+        <Tooltip isDisabled={DISABLE_PREV_NEXT} label="Next song" openDelay={TooltipOpenDelay}>
           <IconButton
             aria-label="forward"
             icon={<HiForward />}
-            isDisabled={showNextPrevButtons}
+            isDisabled={DISABLE_PREV_NEXT}
             variant="ghost"
           />
         </Tooltip>
@@ -66,4 +53,9 @@ const _VideoControls: FC<VideoControlsProps> = ({ ...props }) => {
 }
 _VideoControls.displayName = "VideoControls";
 
+/**
+ * Renders the prev, next and play/pause buttons.
+ * @extends FlexProps Additional props to configure the parent container.
+ * @returns {JSX.Element} The controls.
+ */
 export const VideoControls = memo(_VideoControls);

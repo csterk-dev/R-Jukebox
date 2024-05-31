@@ -38,7 +38,7 @@ const defaultAppContextVal: AppContextType = {
 const AppContext = createContext<AppContextType>(defaultAppContextVal);
 
 /**
- * Manage the app context.
+ * Manages the app's context.
  */
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();

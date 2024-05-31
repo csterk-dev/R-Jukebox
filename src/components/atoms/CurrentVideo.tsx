@@ -7,21 +7,17 @@ import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 
-const skeletonSpeed = 2
 
-type CurrentVideoProps = FlexProps;
-
-const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
-  /*
-   * Player State
-   */
+const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const { isPlaying, currentVideo, isPlayerLoading } = usePlayer();
   const isLoading = isPlayerLoading;
-  
-  /*
-   * ------------------------------------------------------------------------------------------------------------------ 
-   * UI Styling
-   */
+
+
+  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.duration), [currentVideo?.duration]);
+  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
+  const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
+
+
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
@@ -29,51 +25,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const { isMobile } = useAppState();
 
 
-
-  /** A looping opacity animation */
-  const fadingOpacityAnimation: Variants = {
-    initial: {
-      opacity: 1
-    },
-    animate: {
-      opacity: 0.5,
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        repeatType: "reverse" as const
-      }
-    }
-  };
-  const liveTagAnimation: Variants = {
-    initial: {
-      opacity: 1
-    },
-    animate: {
-      opacity: 0.75,
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        repeatType: "reverse" as const
-      }
-    }
-  };
-
-
-  /*
-   * ------------------------------------------------------------------------------------------------------------------ 
-   * Video Details
-   */
-  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.duration), [currentVideo?.duration]);
-  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
-  const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
-
-
   return (
-    <Flex
-      as="article"
-      justifyContent="center"
-      {...props}
-    >
+    <Flex as="article" justifyContent="center" {...props}>
       <Flex flexDir="column" gap="10px">
 
         {/* Video thumbnail preview */}
@@ -115,11 +68,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 
                   // Placeholder
                   <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
-                    <motion.div
-                      animate="animate"
-                      initial="initial"
-                      variants={fadingOpacityAnimation}
-                    >
+                    <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
                       <VStack zIndex={1}>
                         <Icon as={HiSignalSlash} boxSize="80px" />
                         <Text fontSize="22" mt="10px" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
@@ -176,7 +125,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               isLoaded={!isLoading}
               noOfLines={1}
               skeletonHeight="14px"
-              speed={skeletonSpeed}
+              speed={SKELETON_SPEED}
             >
               <Text fontSize="14" fontWeight="500" textTransform="uppercase">
                 {currentVideo ? "Current Song" : "No song selected"}
@@ -191,11 +140,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 pb="2px"
                 userSelect="none"
               >
-                <motion.div
-                  animate="animate"
-                  initial="initial"
-                  variants={liveTagAnimation}
-                >
+                <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.liveTagAnimation}>
                   • Playing
                 </motion.div>
               </Tag> :
@@ -211,7 +156,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               isLoaded={!isLoading}
               noOfLines={2}
               skeletonHeight="20px"
-              speed={skeletonSpeed}
+              speed={SKELETON_SPEED}
             >
               <Text
                 as="h2"
@@ -229,14 +174,14 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
             isLoaded={!isLoading}
             noOfLines={1}
             skeletonHeight="18px"
-            speed={skeletonSpeed}
+            speed={SKELETON_SPEED}
             width={isLoading ? "65%" : "100%"}
           >
             {isMobile ?
-              <VStack 
+              <VStack
                 alignItems="flex-start"
-                fontSize="18" 
-                fontWeight="400" 
+                fontSize="18"
+                fontWeight="400"
                 width="100%"
               >
                 <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
@@ -264,10 +209,38 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 }
 _CurrentVideo.displayName = "CurrentVideo";
 
+
 /**
  * Displays the currently active video and its meta data, or a placeholder.
- * 
  * @extends FlexProps Additional props to configure the parent container.
  * @returns {JSX.Element} The Current video or placeholder.
  */
 export const CurrentVideo = memo(_CurrentVideo);
+
+
+const SKELETON_SPEED = 2;
+
+const TEXT_ANIM_VARIANTS: Record<string, Variants> = {
+  fadingOpacityAnimation: {
+    initial: { opacity: 1 },
+    animate: {
+      opacity: 0.5,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        repeatType: "reverse" as const
+      }
+    }
+  },
+  liveTagAnimation: {
+    initial: { opacity: 1 },
+    animate: {
+      opacity: 0.75,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        repeatType: "reverse" as const
+      }
+    }
+  }
+}

@@ -1,21 +1,204 @@
-import { BoxProps, Circle, Flex, Square } from "@chakra-ui/react";
+import { Circle, Flex, FlexProps, Square } from "@chakra-ui/react";
 import { FC, memo } from "react";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 
 
-const _PageBackdrop: FC<BoxProps> = (props) => {
-  const dimensions = useWindowDimensions();
-  
-  const baseBlur = "70px";
-  const shapeBlur = "30px";
-  const shapeOpacity = 0.75;
 
-  /*
-   * Framer motion animation variants
-   * - Defines how the animation should behave
-   */
-  const circleVariants1: Variants = {
+const _PageBackdrop: FC<FlexProps> = (props) => {
+  const dimensions = useWindowDimensions();
+
+  return (
+    <Flex
+      filter={`blur(${BG_BLUR})`}
+      height="100%"
+      overflow="hidden"
+      position="relative"
+      width="100%"
+      zIndex={1}
+      {...props}
+    >
+      {/* Top Left */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          top: 150,
+          left: dimensions.width / 9,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants3}
+      >
+        <Circle filter={`blur(${SHAPE_BLUR})`} opacity={SHAPE_OPACITY} size={dimensions.width / 4} />
+      </motion.div>
+
+      {/* Bottom Left Small */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: -20,
+          left: dimensions.width / 6,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
+      >
+        <Circle opacity={SHAPE_OPACITY} size="300px" />
+      </motion.div>
+
+      {/* Bottom Left Big */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: 50,
+          left: dimensions.width / 8,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY - 0.3
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+      >
+        <Circle opacity={SHAPE_OPACITY} size="450px" />
+      </motion.div>
+
+      {/* Bottom Middle Left */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: dimensions.width / 4,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+      >
+        <Circle opacity={SHAPE_OPACITY} size={dimensions.width / 4} />
+      </motion.div>
+
+      {/* Top Middle */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: 400,
+          borderRadius: 140,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY,
+          left: dimensions.width / 3
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants1}
+      >
+        <Square opacity={SHAPE_OPACITY} size={dimensions.width / 4} />
+      </motion.div>
+
+      {/* Middle */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: 10,
+          right: dimensions.width / 8,
+          borderRadius: 180,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants2}
+      >
+        <Square
+          filter={`blur(${SHAPE_BLUR})`}
+          opacity={SHAPE_OPACITY}
+          size={dimensions.width / 3}
+          transform="rotate(50deg)"
+        />
+      </motion.div>
+
+      {/* Top Right */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          top: -20,
+          right: dimensions.width / 6,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
+      >
+        <Circle opacity={SHAPE_OPACITY} size="300px" />
+      </motion.div>
+
+      {/* Middle Right */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          top: 100,
+          right: dimensions.width / 18,
+          borderRadius: 360,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+      >
+        <Circle opacity={SHAPE_OPACITY} size={dimensions.width / 4} />
+      </motion.div>
+
+      {/* Bottom Right */}
+      <motion.div
+        animate="animate"
+        initial="initial"
+        style={{
+          position: "absolute",
+          bottom: 30,
+          right: dimensions.width / 11,
+          borderRadius: 270,
+          filter: `blur(${SHAPE_BLUR})`,
+          opacity: SHAPE_OPACITY
+        }}
+        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants3}
+      >
+        <Square opacity={SHAPE_OPACITY} size={dimensions.width / 4} />
+      </motion.div>
+    </Flex>
+  );
+};
+_PageBackdrop.displayName = "PageBackdrop"
+
+
+/**
+ * Renders a styled blured background.
+ * @extends BoxProps Props to configure the backdrop container.
+ * @returns {JSX.Element} The background used for the page.
+ */
+export const PageBackdrop = memo(_PageBackdrop);
+
+
+
+const BG_BLUR = "70px";
+const SHAPE_BLUR = "30px";
+const SHAPE_OPACITY = 0.75;
+
+
+
+/** Defines how the Framer Motion animation variants should behave. */
+const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
+  circleVariants1: {
     initial: {
       x: 0,
       y: 0,
@@ -31,9 +214,8 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-  const circleVariants2: Variants = {
+  },
+  circleVariants2: {
     initial: {
       x: 0,
       y: 0,
@@ -49,9 +231,8 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-  const circleVariants3: Variants = {
+  },
+  circleVariants3: {
     initial: {
       x: 0,
       y: 0,
@@ -67,9 +248,8 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-  const squareVariants1: Variants = {
+  },
+  squareVariants1: {
     initial: {
       x: 0,
       y: 0,
@@ -87,9 +267,8 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-  const squareVariants2: Variants = {
+  },
+  squareVariants2: {
     initial: {
       x: 0,
       y: 0,
@@ -107,9 +286,8 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-  const squareVariants3: Variants = {
+  },
+  squareVariants3: {
     initial: {
       x: 0,
       y: 0,
@@ -127,217 +305,5 @@ const _PageBackdrop: FC<BoxProps> = (props) => {
         repeatType: "reverse" as const
       }
     }
-  };
-
-
-  return (
-    <Flex
-      filter={`blur(${baseBlur})`}
-      height="100%"
-      overflow="hidden"
-      position="relative"
-      width="100%"
-      zIndex={1}
-      {...props}
-    >
-      {/* Top Left */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: 150,
-          left: dimensions.width / 9,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={circleVariants3}
-      >
-        <Circle
-          filter={`blur(${shapeBlur})`}
-          opacity={shapeOpacity}
-          // size="500px"
-          size={dimensions.width / 4}
-        />
-      </motion.div>
-
-      {/* Top Left Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 400,
-          borderRadius: 180,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity,
-          left: dimensions.width / 3
-        }}
-        variants={squareVariants1}
-      >
-        <Square
-          opacity={shapeOpacity}
-          // size="550px"
-          size={dimensions.width / 4}
-        />
-      </motion.div>
-
-      {/* Bottom Left */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: -20,
-          left: dimensions.width / 6,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={circleVariants2}
-      >
-        <Circle
-          opacity={shapeOpacity}
-          size="300px"
-        />
-      </motion.div>
-
-      {/* Bottom Left 2 */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 50,
-          left: dimensions.width / 8,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity - 0.3
-        }}
-        variants={circleVariants1}
-      >
-        <Circle
-          opacity={shapeOpacity}
-          size="450px"
-        />
-      </motion.div>
-
-      {/* Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 10,
-          right: dimensions.width / 8,
-          borderRadius: 270,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={squareVariants2}
-      >
-        <Square
-          filter={`blur(${shapeBlur})`}
-          opacity={shapeOpacity}
-          // size="450px"
-          size={dimensions.width / 3}
-          transform="rotate(50deg)"
-        />
-      </motion.div>
-
-      {/* Bottom Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: dimensions.width / 4,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={circleVariants1}
-      >
-        <Circle
-          opacity={shapeOpacity}
-          size={dimensions.width / 4}
-        />
-      </motion.div>
-
-      {/* Top Left */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: -20,
-          right: dimensions.width / 6,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={circleVariants2}
-      >
-        <Circle
-          opacity={shapeOpacity}
-          size="300px"
-        />
-      </motion.div>
-
-      {/* Right Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: 100,
-          right: dimensions.width / 18,
-          borderRadius: 360,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={circleVariants1}
-      >
-        <Circle
-          opacity={shapeOpacity}
-          size={dimensions.width / 4}
-        />
-      </motion.div>
-
-      {/* Bottom Right */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 30,
-          right: dimensions.width / 11,
-          borderRadius: 270,
-          filter: `blur(${shapeBlur})`,
-          opacity: shapeOpacity
-        }}
-        variants={squareVariants3}
-      >
-        <Square
-          opacity={shapeOpacity}
-          // size="300px"
-          size={dimensions.width / 4}
-        />
-      </motion.div>
-
-    </Flex>
-  );
+  }
 };
-_PageBackdrop.displayName = "PageBackdrop"
-
-
-/**
- * Renders a styled blured background.
- * 
- * @extends BoxProps Props to configure the backdrop container.
- * @returns {JSX.Element} The background used for the page.
- */
-
-export const PageBackdrop = memo(_PageBackdrop);

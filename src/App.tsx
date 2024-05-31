@@ -1,5 +1,4 @@
 import { ChakraProvider, Flex, useMediaQuery } from "@chakra-ui/react";
-import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { PageHeader } from "components/molecules/PageHeader";
 import { theme } from "./theme";
 import { CurrentVideo } from "components/atoms/CurrentVideo";
@@ -10,31 +9,25 @@ import { HEADER_HEIGHT } from "./constants";
 import { AppProvider } from "state/appContext";
 
 
-const controlBarHeight = 50;
-
-
 export const App = () => {
-  const dimensions = useWindowDimensions();
   const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
 
   return (
     <ChakraProvider theme={theme}>
       <AppProvider>
         <PlayerProvider>
-          <PageContainer mb="10px">
+          <PageContainer>
 
             <PageHeader height={`${HEADER_HEIGHT}px`} />
 
-            {/* Body Content */}
             <Flex
               flexDirection={!isLargerThan800 ? "column" : "row"}
               gap="10px"
-              height={dimensions.height - HEADER_HEIGHT - controlBarHeight}
+              height={`calc(100% - ${HEADER_HEIGHT}px)`}
               justifyContent="space-between"
-              mt="10px"
+              pb="20px"
+              pt="10px"
             >
-
-              {/* Video Thumbnail & Metadata Container */}
               <CurrentVideo
                 flex={{
                   base: 1,
@@ -45,9 +38,7 @@ export const App = () => {
                   "2xl": 2.5
                 }}
               />
-
-              {/* Queue & History Container */}
-              <Flex flex={1} justifyContent={!isLargerThan800 ? "center" : "flex-start"} pb={!isLargerThan800 ? "10px" : 0}>
+              <Flex flex={1} justifyContent={!isLargerThan800 ? "center" : "flex-start"} pb={!isLargerThan800 ? "40px" : 0}>
                 <QueueHistoryTabs />
               </Flex>
             </Flex>

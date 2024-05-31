@@ -10,7 +10,7 @@ import { usePlayer } from "state/playerContext";
 import { useAppState } from "state/appContext";
 
 
-const noOfResults = 40;
+const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
@@ -62,7 +62,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
    */
   const [searchVal, setSearchVal] = useState<string>("");
   const query = useDebounce(searchVal, 1000);
-  const { error, loading, videos } = useYoutubeSearch(query, noOfResults);
+  const { error, loading, videos } = useYoutubeSearch(query, NUM_OF_RESULTS);
 
   const [localVolume, setLocalVolume] = useState<number>(systemVolume);
   const prevSystemVolume = useRef<number>();
@@ -93,7 +93,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const onChangeVolumeHandler = useCallback((value: number) => {
     console.log(value);
     setLocalVolume(value);
-
   }, []);
 
 
@@ -324,7 +323,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
                 <Text fontSize="14" opacity={0.7} textTransform="uppercase">Customise</Text>
 
-                <ColorModeSwitcher disableTooltip withText />
+                <ColorModeSwitcher />
 
                 <Divider />
 
@@ -424,7 +423,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
           {videos.length > 0 || error ?
             <ModalBody bg={modalBg} mt="10px">
               <VStack>
-                {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${noOfResults} Youtube video results`}</Text>}
+                {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${NUM_OF_RESULTS} Youtube video results`}</Text>}
                 {videos.map(video => {
                   if (!video) return;
                   return <VideoCard key={video.videoId} playVideo={onClickCard} video={video} />;
@@ -447,6 +446,7 @@ _PageHeader.displayName = "PageHeader";
  * @returns {JSX.Element} The page header component.
  */
 export const PageHeader = memo(_PageHeader);
+
 
 
 type SearchBarBoxProps = BoxProps & {

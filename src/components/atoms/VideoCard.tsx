@@ -9,26 +9,27 @@ import { useAppState } from "state/appContext";
 const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
-  /** The video to render. */
   video: Video;
-  /** Callback to set the video as playing. */
   playVideo: (video: Video) => void;
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
+  const { isMobile } = useAppState();
+  
   const foreground = useColorModeValue("neutral.white", "neutral.900");
   const foregroundHovered = useColorModeValue("neutral.50", "neutral.800");
   const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
-  const { isMobile } = useAppState();
-
+  
   const videoDuration = useMemo(() => formatVideoDuration(video.duration), [video?.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video.publishedAt), [video.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
-
+  
   const isLive = videoDuration === "Live";
+
 
   const [cardRef, cardHovered] = useWebHover();
   const [buttonRef, buttonHovered] = useWebHover();
+
 
   const isHovered = useMemo(() => {
     if (cardHovered || buttonHovered) return true;
@@ -39,6 +40,7 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
   const onClickCard = useCallback(() => {
     playVideo(video);
   }, [playVideo, video]);
+
 
   return (
     <Flex
@@ -172,7 +174,6 @@ const _VideoCard: FC<VideoCardProps> = ({ video, playVideo, ...props }) => {
         </HStack> :
         null
       }
-
     </Flex>
   )
 }
