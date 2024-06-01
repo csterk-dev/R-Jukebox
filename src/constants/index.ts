@@ -8,6 +8,10 @@ export const SOCKET_EVENT_KEYS = {
   getInitialState: "get-initial-state",
   /** Gets the current video. */
   currentVideo: "current-video",
+  /** THe videos duration. */
+  currentVideoDuration: "current-video-duration",
+  /** The videos time. */
+  currentVideoTime: "current-video-time",
   /** Any error values. */
   error: "error",
   /** If the player is loading. */

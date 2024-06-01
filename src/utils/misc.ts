@@ -1,16 +1,16 @@
 import dayjs from "dayjs";
 
 /**
- * Parses video duration strings in ISO 8601 and converts them to a human readable representation.
+ * Parses video duration strings in ISO 8601 and converts them to the total number of seconds.
  * @link [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
  * @example 
  * ```typescript
- * 'PT1H8M41S' -> '1:08:01'
+ * 'PT1H8M41S' -> 4081
  * ```
- * @param duration Duration string.
- * @returns The formatted duration string, 'Live' for live videos, or undefined if no duration is supplied.
+ * @param {string} duration - Duration string.
+ * @returns {number | undefined} The total number of seconds, 'Live' for live videos, or undefined if no duration is supplied.
  */
-export function formatVideoDuration(duration?: string) {
+export function formatISO8601ToSeconds(duration?: string): number | string | undefined {
   if (!duration) return undefined;
 
   if (duration.toLowerCase() === "p0d") return "Live";
@@ -18,39 +18,34 @@ export function formatVideoDuration(duration?: string) {
 
   const prefixTrimmed = duration.toLowerCase().slice(2);
 
-  let hours = "";
-  let mins = "";
-  let seconds = "";
+  let hours = 0;
+  let mins = 0;
+  let seconds = 0;
 
   const hourIndex = prefixTrimmed.indexOf("h");
   if (hourIndex !== -1) {
-    hours = prefixTrimmed.slice(0, hourIndex);
-    hours = `${hours}:`;
+    hours = parseInt(prefixTrimmed.slice(0, hourIndex), 10);
   }
 
   const minIndex = prefixTrimmed.indexOf("m");
   if (minIndex !== -1) {
-    mins = prefixTrimmed.slice(hourIndex + 1, minIndex);
-    if (mins.length === 1) {
-      mins = `0${mins}`
-    }
-    mins = `${mins}:`;
+    mins = parseInt(prefixTrimmed.slice(hourIndex + 1, minIndex), 10);
   }
 
   const secIndex = prefixTrimmed.indexOf("s");
   if (secIndex !== -1) {
     // Ensure that minutes are included, otherwise use hours index
     if (minIndex === -1) {
-      seconds = prefixTrimmed.slice(hourIndex + 1, secIndex);
+      seconds = parseInt(prefixTrimmed.slice(hourIndex + 1, secIndex), 10);
     } else {
-      seconds = prefixTrimmed.slice(minIndex + 1, secIndex);
-    }
-    if (seconds.length === 1) {
-      seconds = `0${seconds}`
+      seconds = parseInt(prefixTrimmed.slice(minIndex + 1, secIndex), 10);
     }
   }
-  // If there are no minutes, they are ommited from the incoming duration, thus manually provide a fallback to match the official youtube duration formatting of '1:08:01'.
-  return `${hours}${minIndex === -1 ? "00:" : mins}${seconds ?? ""}`;
+
+  // Convert hours, minutes, and seconds to total seconds
+  const totalSeconds = (hours * 3600) + (mins * 60) + seconds;
+
+  return totalSeconds;
 }
 
 
@@ -114,4 +109,39 @@ export function replaceHtmlEntities(str?: string) {
   return str.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&apos;|&nbsp;|&cent;|&pound;|&yen;|&euro;|&copy;|&reg;/g, (match) => {
     return entities[match] || match;
   });
+}
+
+
+/**
+ * Converts a given number of seconds into a time string formatted as "MM:SS" or "HH:MM:SS".
+ * 
+ * @param {number} totalSeconds - The total number of seconds to convert.
+ * @returns {string} - The formatted time string.
+ */
+export function formatSecondsToString(totalSeconds?: number): string {
+  if (!totalSeconds) return "0:00";
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const formattedMinutes = hours > 0 ? String(minutes).padStart(2, "0") : String(minutes);
+  const formattedSeconds = String(seconds).padStart(2, "0");
+
+  return hours > 0 ?
+    `${hours}:${formattedMinutes}:${formattedSeconds}` :
+    `${formattedMinutes}:${formattedSeconds}`;
+}
+
+/**
+ * Formats the provided video duration into a readable string representation.
+ * @param duration The duration.
+ * @returns Human readable duration.
+ */
+export function formatVideoDuration(duration?: number | string) {
+  if (!duration) return undefined;
+
+  // For 'live' cases
+  if (typeof duration == "string") return duration;
+
+  return formatSecondsToString(duration);
 }
