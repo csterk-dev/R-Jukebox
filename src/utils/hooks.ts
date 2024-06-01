@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
-import { socket as socketInstance } from "./socket";
-import { SOCKET_EVENT_KEYS } from "../constants";
+import { SOCKET_EVENT_KEYS, SOCKET_URL } from "../constants";
+import { io } from "socket.io-client";
+
 
 /**
  * Custom hooks that returns a momoized list of videos that match the search query.
@@ -56,39 +57,42 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
 };
 
 
+
 /**
  * Custom hooks that connects to the websocket server and provides monitoring and updating functionality.
  *
  * @returns {Object} A momized object containing the current connection state of the socket.
  */
 export const useWebSockets = () => {
-  const [isConnected, setIsConnected] = useState(socketInstance.connected);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const socket = io(SOCKET_URL);
 
   useEffect(() => {
 
     function onConnect() {
       // Tell the server that the client is ready to sync state
       setIsConnected(true);
-      socketInstance.emit(SOCKET_EVENT_KEYS.getInitialState, socketInstance.id);
+      socket.emit(SOCKET_EVENT_KEYS.getInitialState, socket.id);
     }
 
     function onDisconnect() {
       setIsConnected(false);
     }
 
-    socketInstance.on("connect", onConnect);
-    socketInstance.on("disconnect", onDisconnect);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
 
     return () => {
-      socketInstance.off("connect", onConnect);
-      socketInstance.off("disconnect", onDisconnect);
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
     };
-  }, []);
+  }, [socket]);
 
   return useMemo(() => (
     {
       isConnected,
-      socketInstance
+      socket
     }
-  ), [isConnected]);
+  ), [isConnected, socket]);
 }
