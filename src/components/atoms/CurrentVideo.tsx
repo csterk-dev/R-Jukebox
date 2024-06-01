@@ -1,28 +1,49 @@
 import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, SkeletonText, Spinner, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
-import { formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
+import { formatISO8601ToSeconds, formatSecondsToString, formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
-  const { isPlaying, currentVideo, isPlayerLoading } = usePlayer();
-  const isLoading = isPlayerLoading;
+  const { isMobile } = useAppState();
+  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading } = usePlayer();
 
-
-  const videoDuration = useMemo(() => formatVideoDuration(currentVideo?.duration), [currentVideo?.duration]);
+  const [optimisticTime, setOptimisticTime] = useState(currentVideoTime || 0);
+  const videoTime = useMemo(() => formatSecondsToString(optimisticTime), [optimisticTime]);
+  const videoDuration = useMemo(() => formatVideoDuration(formatISO8601ToSeconds(currentVideo?.duration)), [currentVideo?.duration]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
-
 
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
   const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
-  const { isMobile } = useAppState();
+
+  
+  // Optimistic current video time interval
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (currentVideo && isPlaying) {
+      intervalId = setInterval(() => {
+        setOptimisticTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [currentVideo, currentVideoTime, isPlaying]);
+
+
+  // Sync the optimistic time with the current video time from the server
+  useEffect(() => {
+    if (currentVideoTime !== undefined) {
+      setOptimisticTime(currentVideoTime);
+    }
+  }, [currentVideoTime]);
 
 
   return (
@@ -52,7 +73,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 width="95%"
               />
 
-              {isLoading ?
+              {isPlayerLoading ?
                 <Spinner /> :
 
                 currentVideo ?
@@ -98,7 +119,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   right="10px"
                   textAlign="center"
                 >
-                  {videoDuration}
+                  {`${videoTime} / ${videoDuration}`}
                 </Text> :
                 null
               }
@@ -122,7 +143,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         >
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
-              isLoaded={!isLoading}
+              isLoaded={!isPlayerLoading}
               noOfLines={1}
               skeletonHeight="14px"
               speed={SKELETON_SPEED}
@@ -132,7 +153,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               </Text>
             </SkeletonText>
 
-            {currentVideo && isPlaying && !isLoading ?
+            {currentVideo && isPlaying && !isPlayerLoading ?
               <Tag
                 bg="red.600"
                 color="white"
@@ -144,7 +165,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   • Playing
                 </motion.div>
               </Tag> :
-              currentVideo && !isLoading ?
+              currentVideo && !isPlayerLoading ?
                 <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
                 null
             }
@@ -153,7 +174,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
 
           <Flex flex={1} flexDirection="column">
             <SkeletonText
-              isLoaded={!isLoading}
+              isLoaded={!isPlayerLoading}
               noOfLines={2}
               skeletonHeight="20px"
               speed={SKELETON_SPEED}
@@ -171,11 +192,11 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           </Flex>
 
           <SkeletonText
-            isLoaded={!isLoading}
+            isLoaded={!isPlayerLoading}
             noOfLines={1}
             skeletonHeight="18px"
             speed={SKELETON_SPEED}
-            width={isLoading ? "65%" : "100%"}
+            width={isPlayerLoading ? "65%" : "100%"}
           >
             {isMobile ?
               <VStack
