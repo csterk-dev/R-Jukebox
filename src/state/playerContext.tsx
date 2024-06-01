@@ -2,7 +2,6 @@ import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { SOCKET_EVENT_KEYS, SYSTEM_VOLUME_DEFAULT } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
-import { formatISO8601ToSeconds } from "utils/misc";
 
 
 const defaultErrorToastStyle = {
@@ -58,7 +57,7 @@ const PlayerContext = createContext<PlayerContextType>(defaultPlayerContextVal);
  */
 export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
-  const { isConnected, socket } = useWebSockets();
+  const { isConnected, socketInstance } = useWebSockets();
 
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
@@ -71,46 +70,43 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
   /** Set the volume of the player. */
   const setSystemVolume = useCallback((value: number) => {
-    socket.emit(SOCKET_EVENT_KEYS.setSystemVolume, value);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setSystemVolume, value);
 
-  }, [socket]);
+  }, [socketInstance]);
 
 
   /** Starts the player with the provided video. */
   const playVideo = useCallback((video: Video) => {
     if (!video) return;
-    socket.emit(SOCKET_EVENT_KEYS.setCurrentVideo, video);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideo, video);
 
-  }, [socket]);
+  }, [socketInstance]);
 
 
   /** Pauses the current video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socket.emit(SOCKET_EVENT_KEYS.setIsPlaying, false);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, false);
 
-  }, [currentVideo, socket]);
+  }, [currentVideo, socketInstance]);
 
 
   /** Resumes the current video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socket.emit(SOCKET_EVENT_KEYS.setIsPlaying, true);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, true);
 
-  }, [currentVideo, socket]);
+  }, [currentVideo, socketInstance]);
 
 
   /**
-   * Automiatically sync the various states from the server if the socket is connected.
+   * Automiatically sync the various states from the server if the socketInstance is connected.
    */
   useEffect(() => {
     if (isConnected) {
 
       // Sync current video state
-      socket.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
-        console.log("currentVideo", currentVideo);
-        console.log("incomingVideo", incomingVideo);
-
+      socketInstance.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
           console.log("current video synced");
           setCurrentVideo(incomingVideo);
@@ -119,9 +115,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync current video time
-      socket.on(SOCKET_EVENT_KEYS.currentVideoTime, (incomingCurrentVideoTime: number) => {
-        console.log("incomingCurrentVideoTime", incomingCurrentVideoTime);
-
+      socketInstance.on(SOCKET_EVENT_KEYS.currentVideoTime, (incomingCurrentVideoTime: number) => {
         if (currentVideoTime !== incomingCurrentVideoTime) {
           console.log("Time synced");
           setCurrentVideoTime(incomingCurrentVideoTime);
@@ -130,7 +124,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync error state
-      socket.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
+      socketInstance.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
         setError(errorMessage);
         if (!toast.isActive(toastIds.playerError)) {
           toast({
@@ -144,16 +138,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync loading state
-      socket.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
+      socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
       });
 
 
       // Sync playing state
-      socket.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
-        console.log("isPlaying", isPlaying);
-        console.log("incomingIsPlaying", incomingIsPlaying);
-
+      socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         if (isPlaying !== incomingIsPlaying) {
           console.log("isPlaying synced");
           setIsPlaying(incomingIsPlaying);
@@ -162,9 +153,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync system volume state
-      socket.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
-        console.log("volume", volume);
-        console.log("incomingVolume", incomingVolume);
+      socketInstance.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
 
         if (incomingVolume !== volume) {
           console.log("volume synced");
@@ -172,7 +161,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       });
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socket, toast, volume, currentVideo, currentVideoTime]);
+  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
