@@ -2,6 +2,7 @@ import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { SOCKET_EVENT_KEYS, SYSTEM_VOLUME_DEFAULT } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
+import { formatISO8601ToSeconds } from "utils/misc";
 
 
 const defaultErrorToastStyle = {
@@ -23,6 +24,7 @@ const toastIds = {
 
 interface PlayerContextType {
   currentVideo: Video | undefined;
+  currentVideoTime: number | undefined;
   error: string | undefined;
   isConnected: boolean;
   isPlaying: boolean;
@@ -36,6 +38,7 @@ interface PlayerContextType {
 
 const defaultPlayerContextVal: PlayerContextType = {
   currentVideo: undefined,
+  currentVideoTime: undefined,
   error: undefined,
   isConnected: false,
   isPlaying: false,
@@ -54,46 +57,47 @@ const PlayerContext = createContext<PlayerContextType>(defaultPlayerContextVal);
  * Manage the current video player context.
  */
 export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { isConnected, socketInstance } = useWebSockets();
+  const toast = useToast();
+  const { isConnected, socket } = useWebSockets();
 
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
+  const [currentVideoTime, setCurrentVideoTime] = useState<PlayerContextType["currentVideoTime"]>();
   const [isPlaying, setIsPlaying] = useState<PlayerContextType["isPlaying"]>(false);
   const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
   const [error, setError] = useState<PlayerContextType["error"]>();
   const [volume, setVolume] = useState<PlayerContextType["systemVolume"]>(SYSTEM_VOLUME_DEFAULT);
-  const toast = useToast();
 
 
   /** Set the volume of the player. */
   const setSystemVolume = useCallback((value: number) => {
-    socketInstance.emit(SOCKET_EVENT_KEYS.setSystemVolume, value);
+    socket.emit(SOCKET_EVENT_KEYS.setSystemVolume, value);
 
-  }, [socketInstance]);
+  }, [socket]);
 
 
   /** Starts the player with the provided video. */
   const playVideo = useCallback((video: Video) => {
     if (!video) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideo, video);
+    socket.emit(SOCKET_EVENT_KEYS.setCurrentVideo, video);
 
-  }, [socketInstance]);
+  }, [socket]);
 
 
   /** Pauses the current video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, false);
+    socket.emit(SOCKET_EVENT_KEYS.setIsPlaying, false);
 
-  }, [currentVideo, socketInstance]);
+  }, [currentVideo, socket]);
 
 
   /** Resumes the current video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, true);
+    socket.emit(SOCKET_EVENT_KEYS.setIsPlaying, true);
 
-  }, [currentVideo, socketInstance]);
+  }, [currentVideo, socket]);
 
 
   /**
@@ -103,7 +107,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     if (isConnected) {
 
       // Sync current video state
-      socketInstance.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
+      socket.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
         console.log("currentVideo", currentVideo);
         console.log("incomingVideo", incomingVideo);
 
@@ -114,8 +118,19 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       });
 
 
+      // Sync current video time
+      socket.on(SOCKET_EVENT_KEYS.currentVideoTime, (incomingCurrentVideoTime: number) => {
+        console.log("incomingCurrentVideoTime", incomingCurrentVideoTime);
+
+        if (currentVideoTime !== incomingCurrentVideoTime) {
+          console.log("Time synced");
+          setCurrentVideoTime(incomingCurrentVideoTime);
+        }
+      });
+
+
       // Sync error state
-      socketInstance.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
+      socket.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
         setError(errorMessage);
         if (!toast.isActive(toastIds.playerError)) {
           toast({
@@ -129,13 +144,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync loading state
-      socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
+      socket.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
       });
 
-      
+
       // Sync playing state
-      socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
+      socket.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         console.log("isPlaying", isPlaying);
         console.log("incomingIsPlaying", incomingIsPlaying);
 
@@ -147,7 +162,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync system volume state
-      socketInstance.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
+      socket.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
         console.log("volume", volume);
         console.log("incomingVolume", incomingVolume);
 
@@ -157,12 +172,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       });
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socketInstance, toast, volume, currentVideo]);
+  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socket, toast, volume, currentVideo, currentVideoTime]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
     return {
       currentVideo,
+      currentVideoTime,
       error,
       isConnected,
       isPlaying,
@@ -173,7 +189,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       systemVolume: volume,
       setSystemVolume
     }
-  }, [currentVideo, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setSystemVolume, volume]);
+  }, [currentVideo, currentVideoTime, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setSystemVolume, volume]);
 
   return (
     <PlayerContext.Provider value={playerContext}>

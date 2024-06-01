@@ -49,8 +49,8 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
 
   return useMemo(() => (
     {
-      loading,
       error,
+      loading,
       videos
     }
   ), [error, loading, videos]) 
