@@ -18,6 +18,8 @@ export const SOCKET_EVENT_KEYS = {
   isPlaying: "is-playing",
   /** Updates the current video and sets `isPlaying` boolean to true on the server. */
   setCurrentVideo: "set-current-video",
+  /** The videos time. */
+  setCurrentVideoTime: "set-current-video-time",
   /** Updates the isPlaying boolean state. */
   setIsPlaying: "set-is-playing",
   /** Updates the volume of the player. */

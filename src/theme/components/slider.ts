@@ -13,6 +13,23 @@ const horizontal = definePartsStyle({
   })
 });
 
+
+const videoProgress = definePartsStyle({
+  track: defineStyle({
+    bgColor: "#989090",
+    h: "12px",
+    borderBottomStartRadius: 10,
+    borderBottomEndRadius: 10
+  }),
+  thumb: defineStyle({
+    bgColor: "#DA1413",
+    boxSize: "16px"
+  }),
+  filledTrack: defineStyle({
+    bgColor: "#DA1413"
+  })
+});
+
 const vertical = definePartsStyle({
   track: defineStyle({
     borderRadius: 10,
@@ -27,6 +44,7 @@ const vertical = definePartsStyle({
 export const sliderStyles = defineMultiStyleConfig({
   variants: {
     horizontal,
-    vertical
+    vertical,
+    videoProgress
   }
 })

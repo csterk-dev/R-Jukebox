@@ -14,7 +14,7 @@ const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { currentVideo, playVideo, isConnected, playerVolume, setPlayerVolume } = usePlayer();
+  const { currentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume } = usePlayer();
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
   /*
@@ -87,8 +87,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
   /** Send the final value to the player. */
   const onChangeEndVolumeHandler = useCallback((value: number) => {
     prevPlayerVolume.current = value;
-    setPlayerVolume(value);
-  }, [setPlayerVolume]);
+    updatePlayerVolume(value);
+  }, [updatePlayerVolume]);
 
 
   /** Change handler for the volume slider to update its value locally (to allow sliding). */
