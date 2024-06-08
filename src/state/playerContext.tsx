@@ -32,7 +32,8 @@ interface PlayerContextType {
   playVideo: (video: Video) => void;
   resumeCurrentVideo: () => void;
   playerVolume: number;
-  setPlayerVolume: (volume: number) => void;
+  updatePlayerVolume: (volume: number) => void;
+  updateCurrentVideoTime: (newTime: number) => void;
 }
 
 const defaultPlayerContextVal: PlayerContextType = {
@@ -46,7 +47,8 @@ const defaultPlayerContextVal: PlayerContextType = {
   playVideo: () => void 0,
   resumeCurrentVideo: () => void 0,
   playerVolume: SYSTEM_VOLUME_DEFAULT,
-  setPlayerVolume: () => void 0
+  updatePlayerVolume: () => void 0,
+  updateCurrentVideoTime: () => void 0
 };
 
 
@@ -69,10 +71,19 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
   /** Set the volume of the player. */
-  const setPlayerVolume = useCallback((value: number) => {
+  const updateCurrentVideoTime = useCallback((value: number) => {
+    if (!currentVideo) return;
+    socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideoTime, value);
+
+  }, [currentVideo, socketInstance]);
+
+
+  /** Set the volume of the player. */
+  const updatePlayerVolume = useCallback((value: number) => {
+    if (!currentVideo) return;
     socketInstance.emit(SOCKET_EVENT_KEYS.setPlayerVolume, value);
 
-  }, [socketInstance]);
+  }, [currentVideo, socketInstance]);
 
 
   /** Starts the player with the provided video. */
@@ -169,7 +180,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, setPlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
+  }, [currentVideo?.videoId, isPlaying, isConnected, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -184,9 +195,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       playVideo,
       resumeCurrentVideo,
       playerVolume: volume,
-      setPlayerVolume
+      updatePlayerVolume,
+      updateCurrentVideoTime
     }
-  }, [currentVideo, currentVideoTime, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setPlayerVolume, volume]);
+  }, [currentVideo, currentVideoTime, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, updateCurrentVideoTime, updatePlayerVolume, volume]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
