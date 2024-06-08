@@ -24,18 +24,19 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const dimensions = useWindowDimensions();
 
   
-  // Optimistic current video time interval
+  // Optimistically increment the counter if we're playing and havn't reached the end (handle cases where the isPlaying value has yet to be resynced and the optimistic value exceeds the duration)
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
+    const d = formatISO8601ToSeconds(currentVideo?.duration);
 
-    if (currentVideo && isPlaying) {
+    if (currentVideo && isPlaying && d && optimisticTime < d) {
       intervalId = setInterval(() => {
         setOptimisticTime(prevTime => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [currentVideo, currentVideoTime, isPlaying]);
+  }, [currentVideo, currentVideoTime, isPlaying, optimisticTime]);
 
 
   // Sync the optimistic time with the current video time from the server
