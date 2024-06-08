@@ -8,12 +8,12 @@ import dayjs from "dayjs";
  * 'PT1H8M41S' -> 4081
  * ```
  * @param {string} duration - Duration string.
- * @returns {number | undefined} The total number of seconds, 'Live' for live videos, or undefined if no duration is supplied.
+ * @returns {number | undefined} The total number of seconds, -1 for live videos, or undefined if no duration is supplied.
  */
-export function formatISO8601ToSeconds(duration?: string): number | string | undefined {
+export function formatISO8601ToSeconds(duration?: string): number | undefined {
   if (!duration) return undefined;
 
-  if (duration.toLowerCase() === "p0d") return "Live";
+  if (duration.toLowerCase() === "p0d") return -1;
 
 
   const prefixTrimmed = duration.toLowerCase().slice(2);
@@ -137,11 +137,11 @@ export function formatSecondsToString(totalSeconds?: number): string {
  * @param duration The duration.
  * @returns Human readable duration.
  */
-export function formatVideoDuration(duration?: number | string) {
+export function formatVideoDuration(duration?: number) {
   if (!duration) return undefined;
 
   // For 'live' cases
-  if (typeof duration == "string") return duration;
+  if (duration == -1) return "Live";
 
   return formatSecondsToString(duration);
 }
