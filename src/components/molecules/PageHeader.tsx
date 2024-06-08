@@ -14,7 +14,7 @@ const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { currentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume } = usePlayer();
+  const { currentVideo, isPlaying, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume } = usePlayer();
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
   /*
@@ -147,7 +147,13 @@ const _PageHeader: FC<FlexProps> = (props) => {
           {isMobile ?
             <>
               <SearchBarBox flex={1} isMobile onOpen={onOpenSearch} />
-              <VideoControls flex={1} />
+              <VideoControls 
+                currentVideo={currentVideo} 
+                flex={1}
+                isPlaying={isPlaying}
+                pauseCurrentVideo={pauseCurrentVideo}
+                resumeCurrentVideo={resumeCurrentVideo}
+              />
               <IconButton
                 aria-label="Open settings"
                 colorScheme="purple"
@@ -159,7 +165,13 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
             // Default view
             <>
-              <VideoControls flex={1} />
+              <VideoControls 
+                currentVideo={currentVideo} 
+                flex={1}
+                isPlaying={isPlaying}
+                pauseCurrentVideo={pauseCurrentVideo}
+                resumeCurrentVideo={resumeCurrentVideo}
+              />
               <SearchBarBox flex={1} isMobile={false} onOpen={onOpenSearch} />
               <Flex
                 alignItems="center"
@@ -167,17 +179,19 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Flex 
-                  alignItems="center" 
+                <Flex
+                  alignItems="center"
                   cursor={!currentVideo ? "not-allowed" : undefined}
-                  gap="10px" 
-                  width="130px"
+                  gap="5px"
+                  width="155px"
                 >
-                  <Icon
+                  <IconButton
                     aria-label="No volume"
-                    as={HiSpeakerXMark}
-                    color="neutral.300"
-                    role={currentVideo ? "button" : "img"}
+                    colorScheme="neutral"
+                    icon={<HiSpeakerXMark />}
+                    isDisabled={!currentVideo}
+                    size="sm"
+                    variant="ghost"
                     onClick={onClickToggleMute}
                   />
                   <Slider
@@ -198,19 +212,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
                     <SliderTrack>
                       <SliderFilledTrack />
                     </SliderTrack>
-                    <Tooltip
-                      isOpen={showVolumeTooltip}
-                      label={`${localVolume}%`}
-                      hasArrow
-                    >
+                    <Tooltip isOpen={showVolumeTooltip} label={`${localVolume}%`}>
                       <SliderThumb />
                     </Tooltip>
                   </Slider>
-                  <Icon
+                  <IconButton
                     aria-label="Max volume"
-                    as={HiSpeakerWave}
-                    color="neutral.300"
-                    role={currentVideo ? "button" : "img"}
+                    colorScheme="neutral"
+                    icon={<HiSpeakerWave />}
+                    isDisabled={!currentVideo}
+                    size="sm"
+                    variant="ghost"
                     onClick={onClickMaxVolume}
                   />
                 </Flex>

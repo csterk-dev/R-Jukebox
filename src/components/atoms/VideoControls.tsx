@@ -2,14 +2,19 @@ import { Flex, FlexProps, IconButton, Tooltip } from "@chakra-ui/react"
 import { TooltipOpenDelay } from "../../constants";
 import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
-import { usePlayer } from "state/playerContext";
 
 /** Set false when previous and next functionality is implemented. */
 const DISABLE_PREV_NEXT = true;
 
 
-const _VideoControls: FC<FlexProps> = ({ ...props }) => {
-  const { currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo } = usePlayer();
+type VideoControlsProps = FlexProps & {
+  currentVideo: Video | undefined,
+  isPlaying: boolean;
+  pauseCurrentVideo: () => void,
+  resumeCurrentVideo: () => void,
+}
+
+const _VideoControls: FC<VideoControlsProps> = ({ currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo, ...props }) => {
   const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
 
 
@@ -22,7 +27,7 @@ const _VideoControls: FC<FlexProps> = ({ ...props }) => {
 
 
   return (
-    <Flex justifyContent="center" {...props}>
+    <Flex cursor={!currentVideo ? "not-allowed" : undefined} justifyContent="center" {...props}>
       <Flex alignItems="center" gap="5px" zIndex={100}>
         <Tooltip isDisabled={DISABLE_PREV_NEXT} label="Restart song" openDelay={TooltipOpenDelay}>
           <IconButton
