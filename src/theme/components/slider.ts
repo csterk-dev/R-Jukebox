@@ -16,8 +16,6 @@ const horizontal = definePartsStyle({
 
 const videoProgress = definePartsStyle({
   track: defineStyle({
-    // bgColor: "neutral.300",
-    // bgColor: "rgba(70, 73, 88, 0.7)",
     bgColor: "#989090",
     h: "12px",
     borderBottomStartRadius: 10,
