@@ -1,5 +1,5 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Link, LinkBox, LinkOverlay, SkeletonText, Spinner, Tag, Text, useColorModeValue, VStack } from "@chakra-ui/react";
-import { FC, memo, useEffect, useMemo, useState } from "react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Link, SkeletonText, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { formatISO8601ToSeconds, formatSecondsToString, formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
@@ -10,11 +10,17 @@ import { useAppState } from "state/appContext";
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const { isMobile } = useAppState();
-  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading } = usePlayer();
+  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, updateCurrentVideoTime, resumeCurrentVideo } = usePlayer();
 
-  const [optimisticTime, setOptimisticTime] = useState(currentVideoTime || 0);
-  const videoTime = useMemo(() => formatSecondsToString(optimisticTime), [optimisticTime]);
-  const videoDuration = useMemo(() => formatVideoDuration(formatISO8601ToSeconds(currentVideo?.duration)), [currentVideo?.duration]);
+  const [showProgressTooltip, setShowProgressTooltip] = useState(false);
+  const [blockProgressSync, setBlockProgressSync] = useState(false);
+  const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
+  const [optimisticTimeSeconds, setOptimisticTimeSeconds] = useState(currentVideoTime || 0);
+
+  const localProgressString = useMemo(() => formatVideoDuration(localProgressSeconds), [localProgressSeconds]);
+  const videoTimeString = useMemo(() => formatSecondsToString(optimisticTimeSeconds), [optimisticTimeSeconds]);
+  const videoDurationSeconds = useMemo(() => formatISO8601ToSeconds(currentVideo?.duration), [currentVideo?.duration]);
+  const videoDurationString = useMemo(() => formatVideoDuration(videoDurationSeconds), [videoDurationSeconds]);
   const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
 
@@ -23,28 +29,43 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
 
-  
+
+  /** Change handler for the progress slider to update its value locally (to allow sliding). */
+  const onChangeLocalProgressHandler = useCallback((value: number) => {
+    setBlockProgressSync(true);
+    setLocalProgressSeconds(value - 1);
+  }, []);
+
+
+  /** Optimistically update the time and send the final value to the player. */
+  const onChangeEndProgressHandler = useCallback((value: number) => {
+    setBlockProgressSync(false);
+    updateCurrentVideoTime(value);
+    setOptimisticTimeSeconds(value)
+    resumeCurrentVideo();
+  }, [resumeCurrentVideo, updateCurrentVideoTime]);
+
+
   // Optimistically increment the counter if we're playing and havn't reached the end (handle cases where the isPlaying value has yet to be resynced and the optimistic value exceeds the duration)
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    const d = formatISO8601ToSeconds(currentVideo?.duration);
 
-    if (currentVideo && isPlaying && d && optimisticTime < d) {
+    if (currentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
       intervalId = setInterval(() => {
-        setOptimisticTime(prevTime => prevTime + 1);
+        setOptimisticTimeSeconds(prevTime => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [currentVideo, currentVideoTime, isPlaying, optimisticTime]);
+  }, [currentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
 
 
   // Sync the optimistic time with the current video time from the server
   useEffect(() => {
     if (currentVideoTime !== undefined) {
-      setOptimisticTime(currentVideoTime);
+      setOptimisticTimeSeconds(currentVideoTime);
     }
-  }, [currentVideoTime]);
+  }, [currentVideoTime, localProgressSeconds]);
 
 
   return (
@@ -52,84 +73,124 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
       <Flex flexDir="column" gap="10px">
 
         {/* Video thumbnail preview */}
-        <LinkBox as="section">
-          <LinkOverlay href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : undefined} isExternal>
-            <Flex
-              alignItems="center"
-              bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
-              borderRadius={10}
-              height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
-              justifyContent="center"
-              minHeight={isMobile ? "300px" : "400px"}
-              minWidth={isMobile ? "300px" : "400px"}
-              position="relative"
-              width={dimensions.width / 3}
-            >
-              <Box
-                bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
-                borderRadius={10}
-                filter={`blur(${currentVideo ? "10px" : "0px"})`}
-                height="95%"
-                position="absolute"
-                width="95%"
-              />
+        <Flex
+          alignItems="center"
+          bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
+          borderRadius={10}
+          height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
+          justifyContent="center"
+          minHeight={isMobile ? "300px" : "400px"}
+          minWidth={isMobile ? "300px" : "400px"}
+          position="relative"
+          width={dimensions.width / 3}
+        >
+          <Box
+            bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
+            borderRadius={10}
+            filter={`blur(${currentVideo ? "10px" : "0px"})`}
+            height="95%"
+            position="absolute"
+            width="95%"
+          />
 
-              {isPlayerLoading ?
-                <Spinner /> :
+          {isPlayerLoading ?
+            <Spinner /> :
 
-                currentVideo ?
-                  <Image
-                    aria-label="Video thumbnail"
-                    borderRadius={10}
-                    pointerEvents="none"
-                    src={currentVideo.thumbnails.high.url}
-                    userSelect="none"
-                    width="75%"
-                    zIndex={1}
-                  /> :
+            currentVideo ?
+              <Flex
+                as="a"
+                href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : undefined}
+                justifyContent="center"
+                target="_blank"
+                width="75%"
+                zIndex={1}
+              >
+                <Image
+                  aria-label="Video thumbnail"
+                  borderRadius={10}
+                  pointerEvents="none"
+                  src={currentVideo.thumbnails.high.url}
+                  userSelect="none"
+                  width="100%"
+                />
+              </Flex> :
 
-                  // Placeholder
-                  <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
-                    <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
-                      <VStack zIndex={1}>
-                        <Icon as={HiSignalSlash} boxSize="80px" />
-                        <Text fontSize="22" mt="10px" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
-                      </VStack>
-                    </motion.div>
-                    <HStack
-                      alignItems="flex-start"
-                      ml={isMobile ? "12px" : undefined}
-                      mt="10px"
-                      opacity={0.8}
-                      px={isMobile ? "20px" : undefined}
-                    >
-                      <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
-                      <Text mb="5px">Use the search bar to find the music you love!</Text>
-                    </HStack>
+              // Placeholder
+              <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
+                <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
+                  <VStack zIndex={1}>
+                    <Icon as={HiSignalSlash} boxSize="80px" />
+                    <Text fontSize="22" mt="10px" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
                   </VStack>
-              }
-
-              {currentVideo ?
-                <Text
-                  bgColor={durationBg}
-                  borderRadius={4}
-                  bottom="10px"
-                  pb="2px"
-                  position="absolute"
-                  px="8px"
-                  right="10px"
-                  textAlign="center"
+                </motion.div>
+                <HStack
+                  alignItems="flex-start"
+                  ml={isMobile ? "12px" : undefined}
+                  mt="10px"
+                  opacity={0.8}
+                  px={isMobile ? "20px" : undefined}
                 >
-                  {`${videoTime} / ${videoDuration}`}
-                </Text> :
-                null
-              }
-            </Flex>
-          </LinkOverlay>
-        </LinkBox>
+                  <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
+                  <Text mb="5px">Use the search bar to find the music you love!</Text>
+                </HStack>
+              </VStack>
+          }
+
+          {currentVideo ?
+            <Text
+              bgColor={durationBg}
+              borderRadius={4}
+              bottom="20px"
+              pb="2px"
+              position="absolute"
+              px="8px"
+              right="10px"
+              textAlign="center"
+            >
+              {`${videoTimeString} / ${videoDurationString}`}
+            </Text> :
+            null
+          }
+          {currentVideo ?
+            <Box
+              bottom="2px"
+              height="12px"
+              position="absolute"
+              right={0}
+              width="100%"
+              zIndex={10}
+              onMouseEnter={() => setShowProgressTooltip(true)}
+              onMouseLeave={() => setShowProgressTooltip(false)}
+            >
+              <Slider
+                aria-label="Volume control"
+                focusThumbOnChange={false}
+                isDisabled={!currentVideo}
+                max={videoDurationSeconds}
+                min={0}
+                value={blockProgressSync ? localProgressSeconds : optimisticTimeSeconds}
+                variant="videoProgress"
+                onChange={val => onChangeLocalProgressHandler(val)}
+                onChangeEnd={val => onChangeEndProgressHandler(val)}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <Tooltip
+                  isOpen={showProgressTooltip}
+                  label={`${blockProgressSync ? localProgressString ?? "0:00" : videoTimeString}`}
+                  placement="top"
+                  hasArrow
+                >
+                  <SliderThumb />
+                </Tooltip>
+              </Slider>
+            </Box> :
+            null
+          }
+        </Flex>
 
         {/* Current song info */}
-
         <Flex
           as="section"
           bgColor={foreground}
@@ -159,12 +220,10 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 bg="red.600"
                 color="white"
                 fontWeight="bold"
-                pb="2px"
+                pb={!isPlaying ? "2px" : 0}
                 userSelect="none"
               >
-                <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.liveTagAnimation}>
-                  • Playing
-                </motion.div>
+                • Playing
               </Tag> :
               currentVideo && !isPlayerLoading ?
                 <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
