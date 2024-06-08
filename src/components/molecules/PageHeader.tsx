@@ -14,7 +14,7 @@ const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { playVideo, isConnected, systemVolume, setSystemVolume } = usePlayer();
+  const { currentVideo, playVideo, isConnected, playerVolume, setPlayerVolume } = usePlayer();
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
   /*
@@ -64,8 +64,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const query = useDebounce(searchVal, 1000);
   const { error, loading, videos } = useYoutubeSearch(query, NUM_OF_RESULTS);
 
-  const [localVolume, setLocalVolume] = useState<number>(systemVolume);
-  const prevSystemVolume = useRef<number>();
+  const [localVolume, setLocalVolume] = useState<number>(playerVolume);
+  const prevPlayerVolume = useRef<number>();
+  const beforeMuteVolume = useRef<number>();
   const [showVolumeTooltip, setShowVolumeTooltip] = useState(false);
 
 
@@ -83,25 +84,51 @@ const _PageHeader: FC<FlexProps> = (props) => {
   }, [onCloseSearch, playVideo]);
 
 
+  /** Send the final value to the player. */
   const onChangeEndVolumeHandler = useCallback((value: number) => {
-    prevSystemVolume.current = value;
-    setSystemVolume(value);
-  }, [setSystemVolume]);
+    prevPlayerVolume.current = value;
+    setPlayerVolume(value);
+  }, [setPlayerVolume]);
 
 
-  /** Change handler for the volume slider. */
+  /** Change handler for the volume slider to update its value locally (to allow sliding). */
   const onChangeVolumeHandler = useCallback((value: number) => {
-    console.log(value);
     setLocalVolume(value);
   }, []);
 
 
-  // Resync volume
-  useEffect(() => {
-    if (prevSystemVolume.current !== systemVolume) {
-      setLocalVolume(systemVolume);
+  /** Sets the volume to max. */
+  const onClickMaxVolume = useCallback(() => {
+    if (!currentVideo) return;
+
+    onChangeEndVolumeHandler(100);
+    onChangeVolumeHandler(100);
+  }, [currentVideo, onChangeEndVolumeHandler, onChangeVolumeHandler]);
+
+
+  /** Toggles the volume to mute/prev val before mute. */
+  const onClickToggleMute = useCallback(() => {
+    if (!currentVideo) return;
+
+    if (playerVolume !== 0) {
+      beforeMuteVolume.current = playerVolume;
+      onChangeEndVolumeHandler(0);
+      onChangeVolumeHandler(0);
+      console.log(beforeMuteVolume.current);
+    } else if (beforeMuteVolume.current) {
+      console.log(beforeMuteVolume.current);
+      onChangeEndVolumeHandler(beforeMuteVolume.current);
+      onChangeVolumeHandler(beforeMuteVolume.current);
     }
-  }, [prevSystemVolume, systemVolume]);
+  }, [currentVideo, onChangeEndVolumeHandler, onChangeVolumeHandler, playerVolume]);
+
+
+  // Resync player and local volume
+  useEffect(() => {
+    if (prevPlayerVolume.current !== playerVolume) {
+      setLocalVolume(playerVolume);
+    }
+  }, [prevPlayerVolume, playerVolume]);
 
 
   return (
@@ -121,12 +148,12 @@ const _PageHeader: FC<FlexProps> = (props) => {
             <>
               <SearchBarBox flex={1} isMobile onOpen={onOpenSearch} />
               <VideoControls flex={1} />
-              <IconButton 
-                aria-label="Open settings" 
+              <IconButton
+                aria-label="Open settings"
                 colorScheme="purple"
-                icon={<HiCog6Tooth opacity={0.9} />} 
+                icon={<HiCog6Tooth opacity={0.9} />}
                 variant="ghost"
-                onClick={onOpenSettings} 
+                onClick={onOpenSettings}
               />
             </> :
 
@@ -140,18 +167,19 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Flex
-                  alignItems="center"
-                  gap="10px"
-                  width="130px"
-                  onMouseEnter={() => setShowVolumeTooltip(true)}
-                  onMouseLeave={() => setShowVolumeTooltip(false)}
-                >
-                  <Icon aria-label="No volume" as={HiSpeakerXMark} color="neutral.300" />
+                <Flex alignItems="center" gap="10px" width="130px">
+                  <Icon
+                    aria-label="No volume"
+                    as={HiSpeakerXMark}
+                    color="neutral.300"
+                    role={currentVideo ? "button" : "img"}
+                    onClick={onClickToggleMute}
+                  />
                   <Slider
                     aria-label="Volume control"
                     colorScheme="purple"
                     focusThumbOnChange={false}
+                    isDisabled={!currentVideo}
                     max={100}
                     min={0}
                     step={5}
@@ -159,6 +187,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
                     variant="horizontal"
                     onChange={val => onChangeVolumeHandler(val)}
                     onChangeEnd={val => onChangeEndVolumeHandler(val)}
+                    onMouseEnter={() => setShowVolumeTooltip(true)}
+                    onMouseLeave={() => setShowVolumeTooltip(false)}
                   >
                     <SliderTrack>
                       <SliderFilledTrack />
@@ -171,7 +201,13 @@ const _PageHeader: FC<FlexProps> = (props) => {
                       <SliderThumb />
                     </Tooltip>
                   </Slider>
-                  <Icon aria-label="Max volume" as={HiSpeakerWave} color="neutral.300" />
+                  <Icon
+                    aria-label="Max volume"
+                    as={HiSpeakerWave}
+                    color="neutral.300"
+                    role={currentVideo ? "button" : "img"}
+                    onClick={onClickMaxVolume}
+                  />
                 </Flex>
               </Flex>
               <IconButton
@@ -236,6 +272,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   aria-label="Volume control"
                   colorScheme="purple"
                   height="100%"
+                  isDisabled={!currentVideo}
                   max={100}
                   min={0}
                   orientation="vertical"
@@ -426,7 +463,14 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${NUM_OF_RESULTS} Youtube video results`}</Text>}
                 {videos.map(video => {
                   if (!video) return;
-                  return <VideoCard key={video.videoId} playVideo={onClickCard} video={video} />;
+                  return (
+                    <VideoCard
+                      key={video.videoId}
+                      isMobile={isMobile}
+                      playVideo={onClickCard}
+                      video={video}
+                    />
+                  );
                 })}
               </VStack>
             </ModalBody> :
@@ -465,12 +509,12 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
 
 
   if (isMobile) return (
-    <IconButton 
-      aria-label="Open search" 
+    <IconButton
+      aria-label="Open search"
       colorScheme="purple"
-      icon={<HiMagnifyingGlass />} 
+      icon={<HiMagnifyingGlass />}
       variant="ghost"
-      onClick={onOpen} 
+      onClick={onOpen}
     />
   )
   return (
