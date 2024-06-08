@@ -4,7 +4,7 @@ import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { formatISO8601ToSeconds, formatSecondsToString, formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
 import { motion, Variants } from "framer-motion";
-import { useWindowDimensions } from "@usesoftwareau/react-utils";
+import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 
 
@@ -67,6 +67,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
     }
   }, [currentVideoTime, localProgressSeconds]);
 
+  const [progressBarHoverRef, progressBarHover] = useWebHover();
 
   return (
     <Flex as="article" justifyContent="center" {...props}>
@@ -156,6 +157,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               bottom="2px"
               height="12px"
               position="absolute"
+              ref={progressBarHoverRef}
               right={0}
               width="100%"
               zIndex={10}
@@ -180,9 +182,9 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   isOpen={showProgressTooltip}
                   label={`${blockProgressSync ? localProgressString ?? "0:00" : videoTimeString}`}
                   placement="top"
-                  hasArrow
+                  variant="progressBar"
                 >
-                  <SliderThumb />
+                  <SliderThumb boxSize={progressBarHover ? "18px" : "12px"} />
                 </Tooltip>
               </Slider>
             </Box> :
