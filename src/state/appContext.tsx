@@ -63,6 +63,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       toast({
         id: toastIds.bgAnimatedTrue,
         title: "Animations disabled",
+        description: "Battery life and performance may increase.",
         ...infoToastStyle
       });
      
@@ -70,7 +71,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       toast({
         id: toastIds.bgAnimatedFalse,
         title: "Animations enabled",
-        description: "This may affect your battery life",
+        description: "This may affect your battery life and performance",
         ...infoToastStyle
       });
     }
