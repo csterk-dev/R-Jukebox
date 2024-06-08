@@ -15,6 +15,9 @@ const horizontal = definePartsStyle({
 
 
 const videoProgress = definePartsStyle({
+  container: defineStyle({
+    h: "16px"
+  }),
   track: defineStyle({
     bgColor: "#989090",
     h: "12px",
@@ -23,9 +26,10 @@ const videoProgress = definePartsStyle({
   }),
   thumb: defineStyle({
     bgColor: "#DA1413",
-    boxSize: "16px"
+    boxSize: "12px"
   }),
   filledTrack: defineStyle({
+    h: "12px",
     bgColor: "#DA1413"
   })
 });
