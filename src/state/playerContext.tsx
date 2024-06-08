@@ -31,8 +31,8 @@ interface PlayerContextType {
   pauseCurrentVideo: () => void;
   playVideo: (video: Video) => void;
   resumeCurrentVideo: () => void;
-  systemVolume: number;
-  setSystemVolume: (volume: number) => void;
+  playerVolume: number;
+  setPlayerVolume: (volume: number) => void;
 }
 
 const defaultPlayerContextVal: PlayerContextType = {
@@ -45,8 +45,8 @@ const defaultPlayerContextVal: PlayerContextType = {
   pauseCurrentVideo: () => void 0,
   playVideo: () => void 0,
   resumeCurrentVideo: () => void 0,
-  systemVolume: SYSTEM_VOLUME_DEFAULT,
-  setSystemVolume: () => void 0
+  playerVolume: SYSTEM_VOLUME_DEFAULT,
+  setPlayerVolume: () => void 0
 };
 
 
@@ -65,12 +65,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState<PlayerContextType["isPlaying"]>(false);
   const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
   const [error, setError] = useState<PlayerContextType["error"]>();
-  const [volume, setVolume] = useState<PlayerContextType["systemVolume"]>(SYSTEM_VOLUME_DEFAULT);
+  const [volume, setVolume] = useState<PlayerContextType["playerVolume"]>(SYSTEM_VOLUME_DEFAULT);
 
 
   /** Set the volume of the player. */
-  const setSystemVolume = useCallback((value: number) => {
-    socketInstance.emit(SOCKET_EVENT_KEYS.setSystemVolume, value);
+  const setPlayerVolume = useCallback((value: number) => {
+    socketInstance.emit(SOCKET_EVENT_KEYS.setPlayerVolume, value);
 
   }, [socketInstance]);
 
@@ -152,16 +152,24 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       });
 
 
-      // Sync system volume state
-      socketInstance.on(SOCKET_EVENT_KEYS.systemVolume, (incomingVolume: number) => {
-
+      // Sync player volume state
+      socketInstance.on(SOCKET_EVENT_KEYS.playerVolume, (incomingVolume: number) => {
         if (incomingVolume !== volume) {
           console.log("volume synced");
           setVolume(incomingVolume);
         }
       });
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, setSystemVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
+
+    return () => {
+      socketInstance.off(SOCKET_EVENT_KEYS.currentVideo);
+      socketInstance.off(SOCKET_EVENT_KEYS.currentVideoTime);
+      socketInstance.off(SOCKET_EVENT_KEYS.error);
+      socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
+      socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
+      socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
+    }
+  }, [currentVideo?.videoId, isPlaying, isConnected, setPlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -175,10 +183,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       pauseCurrentVideo,
       playVideo,
       resumeCurrentVideo,
-      systemVolume: volume,
-      setSystemVolume
+      playerVolume: volume,
+      setPlayerVolume
     }
-  }, [currentVideo, currentVideoTime, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setSystemVolume, volume]);
+  }, [currentVideo, currentVideoTime, error, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, setPlayerVolume, volume]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
