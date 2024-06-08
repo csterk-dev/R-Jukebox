@@ -167,7 +167,12 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Flex alignItems="center" gap="10px" width="130px">
+                <Flex 
+                  alignItems="center" 
+                  cursor={!currentVideo ? "not-allowed" : undefined}
+                  gap="10px" 
+                  width="130px"
+                >
                   <Icon
                     aria-label="No volume"
                     as={HiSpeakerXMark}
