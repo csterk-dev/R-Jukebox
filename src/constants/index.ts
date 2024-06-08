@@ -8,9 +8,7 @@ export const SOCKET_EVENT_KEYS = {
   getInitialState: "get-initial-state",
   /** Gets the current video. */
   currentVideo: "current-video",
-  /** THe videos duration. */
-  currentVideoDuration: "current-video-duration",
-  /** The videos time. */
+  /** THe videos time. */
   currentVideoTime: "current-video-time",
   /** Any error values. */
   error: "error",
@@ -22,10 +20,10 @@ export const SOCKET_EVENT_KEYS = {
   setCurrentVideo: "set-current-video",
   /** Updates the isPlaying boolean state. */
   setIsPlaying: "set-is-playing",
-  /** Updates the volume of the operating system. */
-  setSystemVolume: "set-system-vol",
-  /** Gets the current ooperating system volume level. */
-  systemVolume: "system-vol"
+  /** Updates the volume of the player. */
+  setPlayerVolume: "set-player-vol",
+  /** Gets the current ooperating player volume level. */
+  playerVolume: "player-vol"
 };
 
 
