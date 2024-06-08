@@ -6,6 +6,7 @@ import { formatISO8601ToSeconds, formatSecondsToString, formatVideoDuration, for
 import { motion, Variants } from "framer-motion";
 import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
+import { FaYoutube } from "react-icons/fa6";
 
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
@@ -102,6 +103,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 as="a"
                 href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : undefined}
                 justifyContent="center"
+                position="relative"
                 target="_blank"
                 width="75%"
                 zIndex={1}
@@ -113,6 +115,16 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   src={currentVideo.thumbnails.high.url}
                   userSelect="none"
                   width="100%"
+                />
+                <Icon
+                  aria-label="Open in youtube"
+                  as={FaYoutube}
+                  bottom={0}
+                  boxSize="8%"
+                  color="neutral.50"
+                  position="absolute"
+                  right={0}
+                  role="button"
                 />
               </Flex> :
 
@@ -222,7 +234,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 bg="red.600"
                 color="white"
                 fontWeight="bold"
-                pb={!isPlaying ? "2px" : 0}
+                pb="2px"
                 userSelect="none"
               >
                 • Playing
