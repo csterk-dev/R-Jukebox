@@ -7,7 +7,7 @@ import { useWebSockets } from "utils/hooks";
 const defaultErrorToastStyle = {
   status: "error" as UseToastOptions["status"],
   variant: "unstyled",
-  duration: 10000,
+  duration: 30000,
   isClosable: true,
   containerStyle: {
     bg: "#B9023A",
