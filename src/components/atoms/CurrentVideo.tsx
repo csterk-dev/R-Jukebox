@@ -12,6 +12,7 @@ import { FaYoutube } from "react-icons/fa6";
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const { isMobile } = useAppState();
   const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, updateCurrentVideoTime, resumeCurrentVideo } = usePlayer();
+  const showingCurrentVideo = currentVideo && !isPlayerLoading;
 
   const [showProgressTooltip, setShowProgressTooltip] = useState(false);
   const [blockProgressSync, setBlockProgressSync] = useState(false);
@@ -77,7 +78,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         {/* Video thumbnail preview */}
         <Flex
           alignItems="center"
-          bg={currentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
+          bg={showingCurrentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
           borderRadius={10}
           height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
           justifyContent="center"
@@ -87,7 +88,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           width={dimensions.width / 3}
         >
           <Box
-            bg={currentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
+            bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
             borderRadius={10}
             filter={`blur(${currentVideo ? "10px" : "0px"})`}
             height="95%"
@@ -149,7 +150,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               </VStack>
           }
 
-          {currentVideo ?
+          {showingCurrentVideo ?
             <Text
               bgColor={durationBg}
               borderRadius={4}
@@ -164,7 +165,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             </Text> :
             null
           }
-          {currentVideo ?
+          {showingCurrentVideo ?
             <Box
               bottom="2px"
               height="12px"
@@ -229,7 +230,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               </Text>
             </SkeletonText>
 
-            {currentVideo && isPlaying && !isPlayerLoading ?
+            {showingCurrentVideo && isPlaying ?
               <Tag
                 bg="red.600"
                 color="white"
@@ -239,7 +240,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               >
                 • Playing
               </Tag> :
-              currentVideo && !isPlayerLoading ?
+              showingCurrentVideo ?
                 <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
                 null
             }
@@ -279,18 +280,18 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 fontWeight="400"
                 width="100%"
               >
-                <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-                  {currentVideo ? currentVideo.channelTitle : null}
+                <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                  {showingCurrentVideo ? currentVideo.channelTitle : null}
                 </Link>
                 <Text>
                   {videoPublishedAt}
                 </Text>
               </VStack> :
               <HStack fontSize="18" fontWeight="400" width="100%">
-                <Link href={currentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-                  {currentVideo ? currentVideo.channelTitle : null}
+                <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                  {showingCurrentVideo ? currentVideo.channelTitle : null}
                 </Link>
-                {currentVideo ? <Text>•</Text> : null}
+                {showingCurrentVideo ? <Text>•</Text> : null}
                 <Text>
                   {videoPublishedAt}
                 </Text>
