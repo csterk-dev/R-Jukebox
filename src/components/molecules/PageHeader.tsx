@@ -8,6 +8,7 @@ import { useDebounce } from "@usesoftwareau/react-utils";
 import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
 import { useAppState } from "state/appContext";
+import { VERSION_NUM } from "../../constants";
 
 
 const NUM_OF_RESULTS = 40;
@@ -114,9 +115,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
       beforeMuteVolume.current = playerVolume;
       onChangeEndVolumeHandler(0);
       onChangeVolumeHandler(0);
-      console.log(beforeMuteVolume.current);
     } else if (beforeMuteVolume.current) {
-      console.log(beforeMuteVolume.current);
       onChangeEndVolumeHandler(beforeMuteVolume.current);
       onChangeVolumeHandler(beforeMuteVolume.current);
     }
@@ -407,7 +406,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   width="100%"
                 >
                   <Text>R Jukebox</Text>
-                  <Text>v 1.0</Text>
+                  <Text>{`v ${VERSION_NUM}`}</Text>
                 </Flex>
                 <Text fontSize="14" mt="5px">By Chris Sterkenburg</Text>
               </ModalFooter>
