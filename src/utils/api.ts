@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
+import { SERVER_URL } from "../constants";
 
 
 const YOUTUBE_API_URL = `${SERVER_URL}/youtube`;

@@ -1,4 +1,4 @@
-import { SOCKET_URL } from "../constants";
+import { SERVER_URL } from "../constants";
 import { io } from "socket.io-client";
 
 /** 
@@ -9,4 +9,4 @@ import { io } from "socket.io-client";
  * 
  * See [this stack overflow article for more info](https://stackoverflow.com/questions/69008820/websocket-connection-error-insufficient-resources).
  */
-export const socket = io(SOCKET_URL);
+export const socket = io(SERVER_URL);
