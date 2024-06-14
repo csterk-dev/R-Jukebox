@@ -52,14 +52,14 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (currentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
+    if (showingCurrentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
       intervalId = setInterval(() => {
         setOptimisticTimeSeconds(prevTime => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [currentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
+  }, [showingCurrentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
 
 
   // Sync the optimistic time with the current video time from the server
