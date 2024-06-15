@@ -7,6 +7,7 @@ import { motion, Variants } from "framer-motion";
 import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 import { FaYoutube } from "react-icons/fa6";
+import dayjs from "dayjs";
 
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
@@ -14,8 +15,9 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, updateCurrentVideoTime, resumeCurrentVideo } = usePlayer();
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
 
+  const [showPublishedAtAsDate, setShowPublishedAtAsDate] = useState(false);
   const [showProgressTooltip, setShowProgressTooltip] = useState(false);
-  const [blockProgressSync, setBlockProgressSync] = useState(false);
+  const [isSlidingLocal, setIsSlidingLocal] = useState(false);
   const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
   const [optimisticTimeSeconds, setOptimisticTimeSeconds] = useState(currentVideoTime || 0);
 
@@ -31,17 +33,18 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
 
+  const togglePublishedAtDate = useCallback(() => setShowPublishedAtAsDate(prev => !prev), []);
 
   /** Change handler for the progress slider to update its value locally (to allow sliding). */
   const onChangeLocalProgressHandler = useCallback((value: number) => {
-    setBlockProgressSync(true);
+    setIsSlidingLocal(true);
     setLocalProgressSeconds(value - 1);
   }, []);
 
 
   /** Optimistically update the time and send the final value to the player. */
   const onChangeEndProgressHandler = useCallback((value: number) => {
-    setBlockProgressSync(false);
+    setIsSlidingLocal(false);
     updateCurrentVideoTime(value);
     setOptimisticTimeSeconds(value)
     resumeCurrentVideo();
@@ -52,14 +55,14 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (showingCurrentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
+    if (!isSlidingLocal && showingCurrentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
       intervalId = setInterval(() => {
         setOptimisticTimeSeconds(prevTime => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [showingCurrentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
+  }, [isSlidingLocal, showingCurrentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
 
 
   // Sync the optimistic time with the current video time from the server
@@ -183,7 +186,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 isDisabled={!currentVideo}
                 max={videoDurationSeconds}
                 min={0}
-                value={blockProgressSync ? localProgressSeconds : optimisticTimeSeconds}
+                value={isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds}
                 variant="videoProgress"
                 onChange={val => onChangeLocalProgressHandler(val)}
                 onChangeEnd={val => onChangeEndProgressHandler(val)}
@@ -191,12 +194,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 <SliderTrack>
                   <SliderFilledTrack />
                 </SliderTrack>
-                <Tooltip
-                  isOpen={showProgressTooltip}
-                  label={`${blockProgressSync ? localProgressString ?? "0:00" : videoTimeString}`}
-                  placement="top"
-                  variant="progressBar"
-                >
+                <Tooltip isOpen={showProgressTooltip} label={`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} placement="top">
                   <SliderThumb boxSize={progressBarHover ? "18px" : "12px"} />
                 </Tooltip>
               </Slider>
@@ -292,8 +290,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   {showingCurrentVideo ? currentVideo.channelTitle : null}
                 </Link>
                 {showingCurrentVideo ? <Text>•</Text> : null}
-                <Text>
-                  {videoPublishedAt}
+                <Text role="button" onClick={togglePublishedAtDate}>
+                  {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
                 </Text>
               </HStack>
             }
