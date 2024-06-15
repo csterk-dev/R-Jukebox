@@ -1,7 +1,7 @@
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react"
 
 // define styles for custom variant
-const progressBar = defineStyle({
+const baseStyle = defineStyle({
   _light: {
     bg: "white",
     color: "current"
@@ -14,4 +14,4 @@ const progressBar = defineStyle({
 
 
 // export the component theme
-export const tooltipStyles = defineStyleConfig({ variants: { progressBar } })
+export const tooltipStyles = defineStyleConfig({ baseStyle })
