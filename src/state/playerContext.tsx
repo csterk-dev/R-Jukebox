@@ -71,17 +71,17 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
   /** Set the volume of the player. */
-  const updateCurrentVideoTime = useCallback((value: number) => {
+  const updateCurrentVideoTime = useCallback((time: number) => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideoTime, value);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideoTime, socketInstance.id, time);
 
   }, [currentVideo, socketInstance]);
 
 
   /** Set the volume of the player. */
-  const updatePlayerVolume = useCallback((value: number) => {
+  const updatePlayerVolume = useCallback((volLevel: number) => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setPlayerVolume, value);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setPlayerVolume, socketInstance.id, volLevel);
 
   }, [currentVideo, socketInstance]);
 
@@ -97,7 +97,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   /** Pauses the current video. */
   const pauseCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, false);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, socketInstance.id, false);
 
   }, [currentVideo, socketInstance]);
 
@@ -105,7 +105,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   /** Resumes the current video. */
   const resumeCurrentVideo = useCallback(() => {
     if (!currentVideo) return;
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, true);
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, socketInstance.id, true);
 
   }, [currentVideo, socketInstance]);
 
