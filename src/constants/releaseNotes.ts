@@ -25,24 +25,36 @@ const v1_0_2: ReleaseNote[] = [
 
 const v1_0_3: ReleaseNote[] = [
   {
+    details: "Fixed a crash caused by prematurely calling a method on an Element that is null when updating the player's volume",
+    kind: "bugFix"
+  },
+  {
+    details: "Fixed a bug that caused video playback scrubbing to update the player's current time to < 1min",
+    kind: "bugFix"
+  },
+  {
+    details: "Added 'Rewind to start' function to video controls.",
+    kind: "newFeature"
+  },
+  {
+    details: "Added the ability to toggle how the current video's 'published at' date is displayed (i.e. 'X ago' vs 'DD/MM/YYYY').",
+    kind: "newFeature"
+  },
+  {
+    details: "Added 'Release Notes' and 'Known Bugs' settings screens!",
+    kind: "newFeature"
+  },
+  {
+    details: "Updated error message logging to only return to the user who caused the error (previously the error message was sent to all connected users).",
+    kind: "improvement"
+  },
+  {
     details: "Cleanup page header modals.",
     kind: "improvement"
   },
   {
     details: "Add additional tooltips and info notes to improve user experience.",
     kind: "improvement"
-  },
-  {
-    details: "Add 'Release Notes' and 'Known Bugs' settings screens!",
-    kind: "newFeature"
-  },
-  {
-    details: "Fixed error messages to only return to the user who caused the error (previously the error message was sent to all connected users).",
-    kind: "bugFix"
-  },
-  {
-    details: "Fixed a crash caused by prematurely calling a method on an Element that is null when updating the player's volume",
-    kind: "bugFix"
   }
 ]
 
