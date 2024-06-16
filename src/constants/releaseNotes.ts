@@ -25,11 +25,11 @@ const v1_0_2: ReleaseNote[] = [
 
 const v1_0_3: ReleaseNote[] = [
   {
-    details: "Fixed a crash caused by prematurely calling a method on an Element that is null when updating the player's volume",
+    details: "Fixed a crash caused by prematurely calling a method on an Element that is null when updating the player's volume.",
     kind: "bugFix"
   },
   {
-    details: "Fixed a bug that caused video playback scrubbing to update the player's current time to < 1min",
+    details: "Fixed a bug that caused video playback scrubbing to incorrectly update the player's current time.",
     kind: "bugFix"
   },
   {

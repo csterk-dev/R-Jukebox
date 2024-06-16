@@ -481,18 +481,23 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
 
                   <List spacing="10px">
                     {bugList.map(note => (
-                      <ListItem key={note}>
+                      <ListItem key={note.title}>
                         <Flex gap="10px">
-                          <Box mt="2px">
+                          <Box mt="3px">
                             <Icon aria-roledescription="Bullet point" as={HiBugAnt} color="red.300" />
                           </Box>
-                          <Flex flex={1}>{note}</Flex>
+                          <Flex flex={1}>
+                            <VStack alignItems="flex-start">
+                              <Text>{note.title}</Text>
+                              <Text opacity={0.7}>{note.desc}</Text>
+                            </VStack>
+                          </Flex>
                         </Flex>
                       </ListItem>
                     ))}
                   </List>
                   <Box>
-                    <Text fontSize="14" opacity={0.7}>If you find any bugs that are not listed here, please let me know 😊</Text>
+                    <Text fontSize="14" opacity={0.7}>Let me know if you encounter any new bugs not already listed here 😊</Text>
                     <Text fontSize="14" opacity={0.7}>- Sterk</Text>
                   </Box>
                 </VStack>
@@ -676,8 +681,8 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
       <ModalContent bg="transparent" boxShadow={0}>
         <Flex alignItems="center" flexDir="column">
           <InputGroup as="search">
-            <InputLeftElement>
-              <Icon aria-label="search icon" as={HiMagnifyingGlass} pointerEvents="none" />
+            <InputLeftElement pointerEvents="none">
+              <Icon aria-label="search icon" as={HiMagnifyingGlass} />
             </InputLeftElement>
             <Input
               bg={foreground}
@@ -685,7 +690,7 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
               boxShadow="md"
               height="40px"
               id="search"
-              placeholder="Search"
+              placeholder="Search Youtube"
               px="10px"
               value={searchVal}
               variant="unstyled"
