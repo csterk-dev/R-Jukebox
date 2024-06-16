@@ -8,39 +8,41 @@ const DISABLE_PREV_NEXT = true;
 
 
 type VideoControlsProps = FlexProps & {
-  currentVideo: Video | undefined,
+  disableButtons: boolean,
   isPlaying: boolean;
   pauseCurrentVideo: () => void,
   resumeCurrentVideo: () => void,
+  updateCurrentVideoTime: (time: number) => void,
 }
 
-const _VideoControls: FC<VideoControlsProps> = ({ currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo, ...props }) => {
+const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pauseCurrentVideo, resumeCurrentVideo, updateCurrentVideoTime, ...props }) => {
   const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
 
 
   /** Handles the toggling of the player playback. */
   const onPressPlayPause = useCallback(() => {
-    if (!currentVideo) return;
+    if (disableButtons) return;
     if (isPlaying) return pauseCurrentVideo();
     resumeCurrentVideo();
-  }, [currentVideo, isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
+  }, [disableButtons, isPlaying, pauseCurrentVideo, resumeCurrentVideo]);
 
+
+  const _updateCurrentVideoTime = useCallback(() => updateCurrentVideoTime(0), [updateCurrentVideoTime]);
 
   return (
-    <Flex cursor={!currentVideo ? "not-allowed" : undefined} justifyContent="center" {...props}>
+    <Flex cursor={!disableButtons ? "not-allowed" : undefined} justifyContent="center" {...props}>
       <Flex alignItems="center" gap="5px" zIndex={100}>
-        <Tooltip isDisabled={DISABLE_PREV_NEXT} label="Restart song" openDelay={TooltipOpenDelay}>
-          <IconButton
-            aria-label="rewind"
-            icon={<HiBackward />}
-            isDisabled={DISABLE_PREV_NEXT}
-            variant="ghost"
-          />
-        </Tooltip>
+        <IconButton
+          aria-label="rewind"
+          icon={<HiBackward />}
+          isDisabled={disableButtons}
+          variant="ghost"
+          onClick={_updateCurrentVideoTime}
+        />
         <IconButton
           aria-label="play/pause"
           icon={playPauseIcon}
-          isDisabled={!currentVideo}
+          isDisabled={disableButtons}
           variant="ghost"
           onClick={onPressPlayPause}
         />
