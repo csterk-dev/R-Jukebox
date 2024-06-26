@@ -81,22 +81,23 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         {/* Video thumbnail preview */}
         <Flex
           alignItems="center"
-          bg={showingCurrentVideo ? "rgba(13, 15, 24, 0.75)" : videoContainer}
+          bg={showingCurrentVideo ? "rgba(13, 15, 24, 1)" : videoContainer}
           borderRadius={10}
           height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
           justifyContent="center"
           minHeight={isMobile ? "300px" : "400px"}
           minWidth={isMobile ? "300px" : "400px"}
+          overflow="hidden"
           position="relative"
           width={dimensions.width / 3}
         >
           <Box
             bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
-            borderRadius={10}
+            borderRadius={5}
             filter={`blur(${currentVideo ? "10px" : "0px"})`}
-            height="95%"
+            height="100%"
             position="absolute"
-            width="95%"
+            width="100%"
           />
 
           {isPlayerLoading ?
@@ -168,6 +169,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             </Text> :
             null
           }
+          
           {showingCurrentVideo ?
             <Box
               bottom="2px"
