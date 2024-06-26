@@ -281,8 +281,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
                   {showingCurrentVideo ? currentVideo.channelTitle : null}
                 </Link>
-                <Text>
-                  {videoPublishedAt}
+                <Text role="button" onClick={togglePublishedAtDate}>
+                  {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
                 </Text>
               </VStack> :
               <HStack fontSize="18" fontWeight="400" width="100%">
