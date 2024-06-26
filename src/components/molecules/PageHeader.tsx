@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Stack, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiBugAnt, HiChartBar, HiChevronLeft, HiClipboardDocumentList, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSparkles, HiSpeakerWave, HiSpeakerXMark, HiWrenchScrewdriver, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
@@ -361,7 +361,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
           </Flex> :
 
           screen == "relNotes" ?
-            <Flex flexDirection="column" minHeight="483px">
+            <Flex flexDirection="column" height="483px">
               <Flex
                 alignItems="center"
                 fontWeight="600"
@@ -440,7 +440,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
             </Flex> :
 
             screen == "bugList" ?
-              <Flex flexDirection="column" minHeight="483px">
+              <Flex flexDirection="column" maxHeight="483px">
                 <Flex
                   alignItems="center"
                   fontWeight="600"
@@ -479,7 +479,34 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                     Known Bugs
                   </Text>
 
-                  <List spacing="10px">
+                  <Accordion width="100%" allowToggle>
+                    {bugList.map(note => (
+                      <AccordionItem key={note.title}>
+                        <h2>
+                          <Flex
+                            _hover={{ bgColor: "transparent" }}
+                            alignItems="flex-start"
+                            as={AccordionButton}
+                            gap="10px"
+                            px={0}
+                          >
+                            <Box mt="3px">
+                              <Icon aria-roledescription="Bullet point" as={HiBugAnt} color="red.300" />
+                            </Box>
+                            <Box as="span" flex={1} textAlign="left">
+                              {note.title}
+                            </Box>
+                            <AccordionIcon />
+                          </Flex>
+                        </h2>
+                        <AccordionPanel pb={4} px={0}>
+                          {note.details}
+                        </AccordionPanel>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+
+                  {/* <List spacing="10px">
                     {bugList.map(note => (
                       <ListItem key={note.title}>
                         <Flex gap="10px">
@@ -489,13 +516,14 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                           <Flex flex={1}>
                             <VStack alignItems="flex-start">
                               <Text>{note.title}</Text>
-                              <Text opacity={0.7}>{note.desc}</Text>
+                              <Text opacity={0.7}>{note.details}</Text>
                             </VStack>
                           </Flex>
                         </Flex>
                       </ListItem>
                     ))}
-                  </List>
+                  </List> */}
+                  <Spacer />
                   <Box>
                     <Text fontSize="14" opacity={0.7}>Let me know if you encounter any new bugs not already listed here 😊</Text>
                     <Text fontSize="14" opacity={0.7}>- Sterk</Text>
