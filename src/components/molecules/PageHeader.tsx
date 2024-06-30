@@ -506,24 +506,6 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                     ))}
                   </Accordion>
 
-                  {/* <List spacing="10px">
-                    {bugList.map(note => (
-                      <ListItem key={note.title}>
-                        <Flex gap="10px">
-                          <Box mt="3px">
-                            <Icon aria-roledescription="Bullet point" as={HiBugAnt} color="red.300" />
-                          </Box>
-                          <Flex flex={1}>
-                            <VStack alignItems="flex-start">
-                              <Text>{note.title}</Text>
-                              <Text opacity={0.7}>{note.details}</Text>
-                            </VStack>
-                          </Flex>
-                        </Flex>
-                      </ListItem>
-                    ))}
-                  </List> */}
-                  <Spacer />
                   <Box>
                     <Text fontSize="14" opacity={0.7}>Let me know if you encounter any new bugs not already listed here 😊</Text>
                     <Text fontSize="14" opacity={0.7}>- Sterk</Text>
