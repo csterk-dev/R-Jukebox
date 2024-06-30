@@ -10,7 +10,7 @@ const v1_0_1: ReleaseNote[] = [
     details: "Update the server URL with the correct production URL.",
     kind: "bugFix"
   }
-]
+];
 
 const v1_0_2: ReleaseNote[] = [
   {
@@ -21,7 +21,7 @@ const v1_0_2: ReleaseNote[] = [
     details: "Update how release numbering is defined.",
     kind: "improvement"
   }
-]
+];
 
 const v1_0_3: ReleaseNote[] = [
   {
@@ -56,9 +56,28 @@ const v1_0_3: ReleaseNote[] = [
     details: "Add additional tooltips and info notes to improve user experience.",
     kind: "improvement"
   }
-]
+];
 
 const v1_0_4: ReleaseNote[] = [
+  {
+    details: "Fixed an issue where video published dates were incorrectly calculated resulting in a negative.",
+    kind: "bugFix"
+  },
+  {
+    details: "Fixed a bug where the current video would keep optimistically 'playing' after the iframe threw an error.",
+    kind: "bugFix"
+  },
+  {
+    details: "Added a new static background for when background animations are disabled.",
+    kind: "newFeature"
+  },
+  {
+    details: "Minor UI cleanups and improvements.",
+    kind: "improvement"
+  }
+]
+
+const v1_0_5: ReleaseNote[] = [
   {
     details: "Add new 'refresh video' button to refresh the current video while maintaining its current progress time.",
     kind: "newFeature"
@@ -68,6 +87,10 @@ const v1_0_4: ReleaseNote[] = [
 
 
 export const v1ReleaseNotes = [
+  {
+    title: "Release 1.0.4",
+    notes: v1_0_4
+  },
   {
     title: "Release 1.0.3",
     notes: v1_0_3

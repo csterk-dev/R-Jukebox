@@ -1,4 +1,4 @@
-import { Box, BoxProps } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, useColorMode } from "@chakra-ui/react";
 import { FC } from "react";
 import { PageBackdrop } from "components/atoms/PageBackdrop";
 import { useAppState } from "state/appContext";
@@ -12,6 +12,7 @@ import { useAppState } from "state/appContext";
  */
 export const PageContainer: FC<BoxProps> = (props) => {
   const { isBgAnimated } = useAppState();
+  const { colorMode } = useColorMode();
 
   return (
     <Box
@@ -30,7 +31,18 @@ export const PageContainer: FC<BoxProps> = (props) => {
       >
         {props.children}
       </Box>
-      {isBgAnimated ? <PageBackdrop /> : null}
+
+      {isBgAnimated ?
+        <PageBackdrop /> :
+        <Flex
+          bg={colorMode === "dark" ? "url('dark_bg_static.png') center/cover no-repeat" : "url('light_bg_static.png') center/cover no-repeat"}
+          height="100%"
+          overflow="hidden"
+          position="relative"
+          width="100%"
+          zIndex={1}
+        />
+      }
     </Box>
   )
 }

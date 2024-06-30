@@ -1,5 +1,4 @@
-import { Flex, FlexProps, IconButton, Tooltip } from "@chakra-ui/react"
-import { TooltipOpenDelay } from "../../constants";
+import { Flex, FlexProps, IconButton } from "@chakra-ui/react"
 import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 
@@ -18,7 +17,6 @@ type VideoControlsProps = FlexProps & {
 const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pauseCurrentVideo, resumeCurrentVideo, updateCurrentVideoTime, ...props }) => {
   const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
 
-
   /** Handles the toggling of the player playback. */
   const onPressPlayPause = useCallback(() => {
     if (disableButtons) return;
@@ -30,8 +28,13 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pau
   const _updateCurrentVideoTime = useCallback(() => updateCurrentVideoTime(0), [updateCurrentVideoTime]);
 
   return (
-    <Flex cursor={!disableButtons ? "not-allowed" : undefined} justifyContent="center" {...props}>
-      <Flex alignItems="center" gap="5px" zIndex={100}>
+    <Flex justifyContent="center" {...props}>
+      <Flex
+        alignItems="center"
+        cursor={disableButtons ? "not-allowed" : undefined}
+        gap="5px"
+        zIndex={100}
+      >
         <IconButton
           aria-label="rewind"
           icon={<HiBackward />}
@@ -46,14 +49,12 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pau
           variant="ghost"
           onClick={onPressPlayPause}
         />
-        <Tooltip isDisabled={DISABLE_PREV_NEXT} label="Next song" openDelay={TooltipOpenDelay}>
-          <IconButton
-            aria-label="forward"
-            icon={<HiForward />}
-            isDisabled={DISABLE_PREV_NEXT}
-            variant="ghost"
-          />
-        </Tooltip>
+        <IconButton
+          aria-label="forward"
+          icon={<HiForward />}
+          isDisabled={DISABLE_PREV_NEXT}
+          variant="ghost"
+        />
       </Flex>
     </Flex>
   );

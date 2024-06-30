@@ -57,26 +57,33 @@ export function formatISO8601ToSeconds(duration?: string): number | undefined {
 export function formatVideoPublishedDate(date?: string) {
   if (!date) return undefined;
 
-  const noOfYears = dayjs().year() - dayjs(date).year();
-
+  const noOfYears = dayjs().diff(date, "years");
   if (noOfYears >= 1) {
     return `${noOfYears} ${noOfYears === 1 ? "year" : "years"} ago`;
   }
-  const noOfMonths = dayjs().month() - dayjs(date).month();
+
+  const noOfMonths = dayjs().diff(date, "months");
   if (noOfMonths >= 1) {
     return `${noOfMonths} ${noOfMonths === 1 ? "month" : "months"} ago`;
   }
 
-  const noOfDays = dayjs(date).day() - dayjs().day();
-  if (noOfDays === 0) {
-    const noOfHours = dayjs().hour() - dayjs(date).hour();
-    if (noOfHours < 1) {
-      const noOfMins = dayjs().minute() - dayjs(date).minute();
-      return `${noOfMins === 0 ? 1 : noOfMins} ${noOfMins === 1 ? "min" : "hours"} ago`;
-    }
+  const noOfWeeks = dayjs().diff(date, "weeks");
+  if (noOfWeeks >= 1) {
+    return `${noOfWeeks} ${noOfWeeks === 1 ? "week" : "weeks"} ago`;
+  }
+
+  const noOfDays = dayjs().diff(date, "days");
+  if (noOfDays >= 1) {
+    return `${noOfDays} ${noOfDays === 1 ? "day" : "days"} ago`;
+  }
+
+  const noOfHours = dayjs().diff(date, "hours");
+  if (noOfHours >= 1) {
     return `${noOfHours === 0 ? 1 : noOfHours} ${noOfHours === 1 ? "hour" : "hours"} ago`;
   }
-  return `${noOfDays} ${noOfDays === 1 ? "day" : "days"} ago`;
+
+  const noOfMins = dayjs().diff(date, "minutes");
+  return `${noOfMins === 0 ? 1 : noOfMins} ${noOfMins === 1 ? "min" : "hours"} ago`;
 }
 
 
@@ -114,7 +121,6 @@ export function replaceHtmlEntities(str?: string) {
 
 /**
  * Converts a given number of seconds into a time string formatted as "MM:SS" or "HH:MM:SS".
- * 
  * @param {number} totalSeconds - The total number of seconds to convert.
  * @returns {string} - The formatted time string.
  */
