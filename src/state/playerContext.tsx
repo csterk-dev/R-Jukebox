@@ -1,7 +1,8 @@
 import { useToast, UseToastOptions } from "@chakra-ui/react";
-import { SOCKET_EVENT_KEYS, SYSTEM_VOLUME_DEFAULT } from "../constants";
+import { APP_TITLE, SOCKET_EVENT_KEYS, SYSTEM_VOLUME_DEFAULT } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
+import { replaceHtmlEntities } from "utils/misc";
 
 
 const defaultErrorToastStyle = {
@@ -121,6 +122,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
           console.log("current video synced");
           setCurrentVideo(incomingVideo);
+          const vidTitle = replaceHtmlEntities(incomingVideo?.title);
+          if (vidTitle) {
+            document.title = vidTitle;
+          } else {
+            document.title = APP_TITLE
+          }
         }
       });
 
@@ -151,6 +158,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
+        document.title = "Loading song"
       });
 
 

@@ -50,3 +50,5 @@ const LOCAL_SERVER_URL = `${window.location.protocol}//${window.location.host.sl
 
 /** The server URL. */
 export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL : LOCAL_SERVER_URL
+
+export const APP_TITLE = "R Jukebox";
