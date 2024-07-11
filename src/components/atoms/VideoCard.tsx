@@ -66,7 +66,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }
           height="94px"
           objectFit="cover"
           pointerEvents="none"
-          src={video.thumbnails.high.url}
+          src={video.thumbnails.medium.url}
           width={isMobile ? "130px" : "168px"}
         />
         <Tag
