@@ -230,4 +230,3 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 /** Allows access to the current player context values and functions. */
 export const usePlayer = (): PlayerContextType => useContext(PlayerContext);
-// https://inspector.dev/how-to-group-array-by-date-in-javascript-fast-tips/
