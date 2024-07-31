@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
+
 
 /**
  * Parses video duration strings in ISO 8601 and converts them to the total number of seconds.
@@ -10,7 +13,7 @@ import dayjs from "dayjs";
  * @param {string} duration - Duration string.
  * @returns {number | undefined} The total number of seconds, -1 for live videos, or undefined if no duration is supplied.
  */
-export function formatISO8601ToSeconds(duration?: string): number | undefined {
+export function ISO8601ToSeconds(duration?: string): number | undefined {
   if (!duration) return undefined;
 
   if (duration.toLowerCase() === "p0d") return -1;
@@ -54,7 +57,7 @@ export function formatISO8601ToSeconds(duration?: string): number | undefined {
  * @param date Video published date.
  * @returns The formatted date string, or undefined if no date is supplied.
  */
-export function formatVideoPublishedDate(date?: string) {
+export function videoPublishedDateToString(date?: string) {
   if (!date) return undefined;
 
   const noOfYears = dayjs().diff(date, "years");
@@ -124,7 +127,7 @@ export function replaceHtmlEntities(str?: string) {
  * @param {number} totalSeconds - The total number of seconds to convert.
  * @returns {string} - The formatted time string.
  */
-export function formatSecondsToString(totalSeconds?: number): string {
+export function secondsToString(totalSeconds?: number): string {
   if (!totalSeconds) return "0:00";
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -138,16 +141,36 @@ export function formatSecondsToString(totalSeconds?: number): string {
     `${formattedMinutes}:${formattedSeconds}`;
 }
 
+
 /**
  * Formats the provided video duration into a readable string representation.
  * @param duration The duration.
  * @returns Human readable duration.
  */
-export function formatVideoDuration(duration?: number) {
+export function videoDurationToString(duration?: number) {
   if (!duration) return undefined;
 
   // For 'live' cases
   if (duration == -1) return "Live";
 
-  return formatSecondsToString(duration);
+  return secondsToString(duration);
+}
+
+
+/**
+ * Formats the provided date string.
+ * @param playedAt Date in which the video was played.
+ * @param format Format of the string. Defaults to "DD/MM/YYYY".
+ */
+export function videoPlayedAtToString(playedAtDate?: string, format?: string) {
+  if (!playedAtDate) return undefined;
+  const today = dayjs();
+
+  const playedAtObj = dayjs(playedAtDate, format ?? "DD/MM/YYYY");
+
+  if (playedAtObj.isSame(today, "day")) return "Today";
+  if (playedAtObj.diff(today, "day") == 1) return "Yesterday";
+  if (playedAtObj.diff(today, "day") <= 5) return playedAtObj.format("dddd");
+  if (playedAtObj.diff(today, "day") > 5) return playedAtObj.format("ddd DD/MM/YYYY");
+  return playedAtDate;
 }

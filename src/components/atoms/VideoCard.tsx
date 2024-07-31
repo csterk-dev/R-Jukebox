@@ -2,9 +2,9 @@ import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, To
 import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
-import { formatISO8601ToSeconds, formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
+import { ISO8601ToSeconds, replaceHtmlEntities, videoDurationToString, videoPublishedDateToString } from "utils/misc";
 
-/** Enable when queue/ history is implemented */
+/** Enable when queue is implemented */
 const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
@@ -15,11 +15,10 @@ type VideoCardProps = FlexProps & {
 
 const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
-  const foregroundHovered = useColorModeValue("neutral.50", "neutral.800");
   const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
   
-  const videoDuration = useMemo(() => formatVideoDuration(formatISO8601ToSeconds(video.duration)), [video?.duration]);
-  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(video.publishedAt), [video.publishedAt]);
+  const videoDuration = useMemo(() => videoDurationToString(ISO8601ToSeconds(video.duration)), [video?.duration]);
+  const videoPublishedAt = useMemo(() => videoPublishedDateToString(video.publishedAt), [video.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
   
   const isLive = videoDuration === "Live";
@@ -43,7 +42,8 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }
   return (
     <Flex
       _hover={{ cursor: "pointer" }}
-      bgColor={isHovered ? foregroundHovered : foreground}
+      // bgColor={isHovered ? foregroundHovered : foreground}
+      bgColor={foreground}
       borderRadius={5}
       boxShadow="base"
       flexDir="row"
