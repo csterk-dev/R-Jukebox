@@ -26,7 +26,7 @@ interface PlayerContextType {
   currentVideo: Video | undefined;
   currentVideoTime: number | undefined;
   error: string | undefined;
-  history: Video[];
+  history: HistoryVideo[];
   isConnected: boolean;
   isPlaying: boolean;
   isPlayerLoading: boolean;
@@ -159,7 +159,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync history
-      socketInstance.on(SOCKET_EVENT_KEYS.history, (incomingHistory: Video[]) => {
+      socketInstance.on(SOCKET_EVENT_KEYS.history, (incomingHistory: HistoryVideo[]) => {
         console.log("history synced");
         setHistory(incomingHistory);
       });
@@ -230,3 +230,4 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 /** Allows access to the current player context values and functions. */
 export const usePlayer = (): PlayerContextType => useContext(PlayerContext);
+// https://inspector.dev/how-to-group-array-by-date-in-javascript-fast-tips/
