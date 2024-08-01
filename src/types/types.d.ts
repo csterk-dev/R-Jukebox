@@ -1,8 +1,6 @@
 
-/**
- * Video type used as the collated data structure from the various results.
- */
-declare interface Video {
+/** Video type used as the collated data structure from the various results. */
+interface Video {
   channelId: string;
   channelTitle: string;
   duration: string;
@@ -12,9 +10,7 @@ declare interface Video {
   videoId: string;
 }
 
-/**
- * Structure of the thumbnail object within the Video item return.
- */
+/** Structure of the thumbnail object within the Video item return. */
 type Thumbnails = {
   default: {
     url: string,
@@ -32,3 +28,23 @@ type Thumbnails = {
     height: number
   }
 }
+
+
+interface HistoryVideo extends Video {
+  playedAt: string;
+  playedDate: string;
+}
+
+
+type ReleaseNote = {
+  details: string;
+  kind: NoteType;
+}
+type NoteType = "improvement" | "bugFix" | "newFeature";
+
+
+type ReleaseNotes = {
+  title: string;
+  notes: ReleaseNote[];
+  date?: string;
+}[]

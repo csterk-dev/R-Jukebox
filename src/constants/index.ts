@@ -1,31 +1,33 @@
 /** 
- * An object containing the all possible connection events and their event key. 
- * 
- * Ensure that the client and server **have matching event keys.**
+ * Socket Event Keys.
+ * @description An object containing the all possible connection events and their event key. 
+ * @remarks Ensure that the client and server **have matching event keys.**
  */
 export const SOCKET_EVENT_KEYS = {
   /** Used to return the current state to the newly connect client. */
   getInitialState: "get-initial-state",
   /** Gets the current video. */
   currentVideo: "current-video",
-  /** THe videos time. */
+  /** The videos time. */
   currentVideoTime: "current-video-time",
   /** Any error values. */
   error: "error",
+  /** The history. */
+  history: "history",
   /** If the player is loading. */
   isLoading: "is-loading",
   /** Gets the value from the isPlaying boolean. */
   isPlaying: "is-playing",
+  /** Gets the current ooperating player volume level. */
+  playerVolume: "player-vol",
   /** Updates the current video and sets `isPlaying` boolean to true on the server. */
   setCurrentVideo: "set-current-video",
-  /** The videos time. */
+  /** THe videos time. */
   setCurrentVideoTime: "set-current-video-time",
   /** Updates the isPlaying boolean state. */
   setIsPlaying: "set-is-playing",
   /** Updates the volume of the player. */
-  setPlayerVolume: "set-player-vol",
-  /** Gets the current ooperating player volume level. */
-  playerVolume: "player-vol"
+  setPlayerVolume: "set-player-vol"
 };
 
 export const VERSION_NUM = "1.1.0";
@@ -39,8 +41,8 @@ export const HEADER_HEIGHT = 60;
 /** In pixels. */
 export const MOBILE_BREAKPOINT = 500;
 
-/** Ensure front and end values match */
-export const SYSTEM_VOLUME_DEFAULT = 30;
+/** Ensure front and server values match */
+export const PLAYER_VOLUME_DEFAULT = 30;
 
 
 /** Use when interacting with the server running on the RPI. */
@@ -50,3 +52,5 @@ const LOCAL_SERVER_URL = `${window.location.protocol}//${window.location.host.sl
 
 /** The server URL. */
 export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL : LOCAL_SERVER_URL
+
+export const APP_TITLE = "R Jukebox";

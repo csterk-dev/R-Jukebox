@@ -2,7 +2,7 @@ import { Box, Flex, FlexProps, HStack, Icon, Image, Link, SkeletonText, Slider, 
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
-import { formatISO8601ToSeconds, formatSecondsToString, formatVideoDuration, formatVideoPublishedDate, replaceHtmlEntities } from "utils/misc";
+import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoDurationToString, videoPublishedDateToString } from "utils/misc";
 import { motion, Variants } from "framer-motion";
 import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
@@ -21,11 +21,11 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
   const [optimisticTimeSeconds, setOptimisticTimeSeconds] = useState(currentVideoTime || 0);
 
-  const localProgressString = useMemo(() => formatVideoDuration(localProgressSeconds), [localProgressSeconds]);
-  const videoTimeString = useMemo(() => formatSecondsToString(optimisticTimeSeconds), [optimisticTimeSeconds]);
-  const videoDurationSeconds = useMemo(() => formatISO8601ToSeconds(currentVideo?.duration), [currentVideo?.duration]);
-  const videoDurationString = useMemo(() => formatVideoDuration(videoDurationSeconds), [videoDurationSeconds]);
-  const videoPublishedAt = useMemo(() => formatVideoPublishedDate(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
+  const localProgressString = useMemo(() => videoDurationToString(localProgressSeconds), [localProgressSeconds]);
+  const videoTimeString = useMemo(() => secondsToString(optimisticTimeSeconds), [optimisticTimeSeconds]);
+  const videoDurationSeconds = useMemo(() => ISO8601ToSeconds(currentVideo?.duration), [currentVideo?.duration]);
+  const videoDurationString = useMemo(() => videoDurationToString(videoDurationSeconds), [videoDurationSeconds]);
+  const videoPublishedAt = useMemo(() => videoPublishedDateToString(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
 
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
