@@ -30,7 +30,7 @@ export const SOCKET_EVENT_KEYS = {
   setPlayerVolume: "set-player-vol"
 };
 
-export const VERSION_NUM = "1.0.3";
+export const VERSION_NUM = "1.1.0";
 
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;
@@ -42,7 +42,7 @@ export const HEADER_HEIGHT = 60;
 export const MOBILE_BREAKPOINT = 500;
 
 /** Ensure front and server values match */
-export const PLAYER_VOLUME_DEFAULT = 50;
+export const PLAYER_VOLUME_DEFAULT = 30;
 
 
 /** Use when interacting with the server running on the RPI. */

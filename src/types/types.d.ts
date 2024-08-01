@@ -34,3 +34,17 @@ interface HistoryVideo extends Video {
   playedAt: string;
   playedDate: string;
 }
+
+
+type ReleaseNote = {
+  details: string;
+  kind: NoteType;
+}
+type NoteType = "improvement" | "bugFix" | "newFeature";
+
+
+type ReleaseNotes = {
+  title: string;
+  notes: ReleaseNote[];
+  date?: string;
+}[]

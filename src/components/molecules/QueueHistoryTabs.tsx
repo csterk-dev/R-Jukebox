@@ -25,7 +25,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   type SortedHistory = {
     [key: string]: HistoryVideo[];
   }
-  console.log(history)
+
   const historyCards: JSX.Element[] = useMemo(() => {
     const sortedHistory = history.reduce((grouped: SortedHistory, video: HistoryVideo) => {
       const vidDate = video.playedDate;

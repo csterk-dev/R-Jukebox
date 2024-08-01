@@ -1,6 +1,6 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Button, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, ListProps, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
-import { HiBugAnt, HiChartBar, HiChevronLeft, HiClipboardDocumentList, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSparkles, HiSpeakerWave, HiSpeakerXMark, HiWrenchScrewdriver, HiXMark } from "react-icons/hi2";
+import { HiBugAnt, HiChartBar, HiChevronLeft, HiClipboardDocumentList, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSpeakerXMark, HiStar, HiWrenchScrewdriver, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
@@ -9,8 +9,9 @@ import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
 import { useAppState } from "state/appContext";
 import { VERSION_NUM } from "../../constants";
-import { v1ReleaseNotes } from "../../constants/releaseNotes";
+import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
 import { bugList } from "../../constants/bugList";
+import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
 
 
 const NUM_OF_RESULTS = 40;
@@ -34,6 +35,14 @@ const _PageHeader: FC<FlexProps> = (props) => {
   const finalFocusRef = useRef(null);
   const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
   const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
+  const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+
+  useEffect(() => {
+    const currentVersion = localStorage.getItem("current_version");
+    if (!currentVersion || currentVersion !== VERSION_NUM) onOpenNewUpdate();
+    localStorage.setItem("current_version", VERSION_NUM);
+
+  }, [onOpenNewUpdate]);
 
 
   /*
@@ -247,6 +256,8 @@ const _PageHeader: FC<FlexProps> = (props) => {
         onClickCard={onClickCard}
         onClose={onCloseSearch}
       />
+
+      <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
     </>
   )
 }
@@ -397,45 +408,19 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                   opacity={0.7}
                   textTransform="uppercase"
                 >
-                  V1
+                  V1.1
                 </Text>
+                <ReleaseNotesAccordion releaseNotes={v1_1ReleaseNotes} />
 
-                <Accordion width="100%" allowToggle>
-                  {v1ReleaseNotes.map(release => (
-                    <AccordionItem key={release.title}>
-                      <h2>
-                        <HStack
-                          _hover={{ bgColor: "transparent" }}
-                          as={AccordionButton}
-                          px={0}
-                        >
-                          <Box as="span" flex={1} textAlign="left">
-                            {release.title}
-                          </Box>
-                          <AccordionIcon />
-                        </HStack>
-                      </h2>
-                      <AccordionPanel pb={4} px={0}>
-                        <List spacing="10px">
-                          {release.notes.map(note => (
-                            <ListItem key={note.details}>
-                              <Flex gap="10px">
-                                <Box mt="2px">
-                                  <Icon
-                                    aria-roledescription="Bullet point"
-                                    as={note.kind == "bugFix" ? HiBugAnt : note.kind == "improvement" ? HiWrenchScrewdriver : HiSparkles}
-                                    color={note.kind == "bugFix" ? "red.300" : note.kind == "improvement" ? "purple.300" : "yellow.500"}
-                                  />
-                                </Box>
-                                <Flex flex={1}>{note.details}</Flex>
-                              </Flex>
-                            </ListItem>
-                          ))}
-                        </List>
-                      </AccordionPanel>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                <Text
+                  fontSize="14"
+                  mt="10px"
+                  opacity={0.7}
+                  textTransform="uppercase"
+                >
+                  V1.0
+                </Text>
+                <ReleaseNotesAccordion releaseNotes={v1_0ReleaseNotes} />
               </VStack>
             </Flex> :
 
@@ -657,6 +642,45 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
 };
 
 
+type NewUpdateModalProps = Omit<ModalProps, "children"> & {}
+const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
+  const foreground = useColorModeValue("white", "neutral.700");
+
+  return (
+    <Modal
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
+      isOpen={isOpen}
+      scrollBehavior="inside"
+      onClose={onClose}
+    >
+      <ModalOverlay />
+      <ModalContent
+        bg={foreground}
+        boxShadow={0}
+        overflowY="auto"
+        userSelect="none"
+      >
+        <Flex flexDirection="column" p="10px 20px 20px">
+          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_1ReleaseNotes[0].title} is here!`}</Text>
+          <Text
+            as="h2"
+            fontSize="24"
+            fontWeight={500}
+            opacity={0.7}
+          >
+            What's new?
+          </Text>
+          <Notes date={v1_1ReleaseNotes[0].date} mt="10px" notes={v1_1ReleaseNotes[0].notes} />
+
+          <Button mt="30px" pb="2px" onClick={onClose}>Lets go!</Button>
+        </Flex>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+
 type SearchModalProps = Omit<ModalProps, "children"> & {
   finalFocusRef: React.MutableRefObject<null>;
   isMobile: boolean;
@@ -805,5 +829,57 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
         </HStack>
       </HStack>
     </Box>
+  );
+}
+
+
+type ReleaseNotesAccordionProps = { releaseNotes: ReleaseNotes }
+const ReleaseNotesAccordion: FC<ReleaseNotesAccordionProps> = ({ releaseNotes }) => {
+  return (
+    <Accordion width="100%" allowToggle>
+      {releaseNotes.map(release => (
+        <AccordionItem key={release.title}>
+          <h2>
+            <HStack
+              _hover={{ bgColor: "transparent" }}
+              as={AccordionButton}
+              px={0}
+            >
+              <Box as="span" flex={1} textAlign="left">
+                {release.title}
+              </Box>
+              <AccordionIcon />
+            </HStack>
+          </h2>
+          <AccordionPanel pb={4} px={0}>
+            <Notes date={release.date} notes={release.notes} />
+          </AccordionPanel>
+        </AccordionItem>
+      ))}
+    </Accordion>
+  )
+}
+
+
+type NotesProps = ListProps & { notes: ReleaseNote[]; date?: string }
+const Notes: FC<NotesProps> = ({ notes, date, ...props }) => {
+  return (
+    <List spacing="10px" {...props}>
+      <Text fontSize="14" mt="-10px" opacity={0.7}>{date}</Text>
+      {notes.map(note => (
+        <ListItem key={note.details}>
+          <Flex gap="10px">
+            <Box mt="2px">
+              <Icon
+                aria-roledescription="Bullet point"
+                as={note.kind == "bugFix" ? HiBugAnt : note.kind == "improvement" ? HiWrenchScrewdriver : HiStar}
+                color={note.kind == "bugFix" ? "red.300" : note.kind == "improvement" ? "purple.300" : "yellow.500"}
+              />
+            </Box>
+            <Flex flex={1}>{note.details}</Flex>
+          </Flex>
+        </ListItem>
+      ))}
+    </List>
   );
 }
