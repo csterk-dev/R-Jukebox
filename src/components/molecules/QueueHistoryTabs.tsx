@@ -1,6 +1,8 @@
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Flex, FlexProps, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorModeValue } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, FlexProps, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorModeValue } from "@chakra-ui/react";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo } from "react"
+import { IconType } from "react-icons";
+import { HiRectangleStack, HiStar } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
 import { usePlayer } from "state/playerContext";
 import { videoPlayedAtToString } from "utils/misc";
@@ -23,7 +25,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   type SortedHistory = {
     [key: string]: HistoryVideo[];
   }
-
+  console.log(history)
   const historyCards: JSX.Element[] = useMemo(() => {
     const sortedHistory = history.reduce((grouped: SortedHistory, video: HistoryVideo) => {
       const vidDate = video.playedDate;
@@ -97,12 +99,17 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           <Tab color="current">History</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel p={0} px="10px" py="10px">
-            <p>Coming soon</p>
+          <TabPanel
+            height="100%"
+            p={0}
+            px="10px"
+            py="10px"
+          >
+            <Placeholder icon={HiStar} mt="10px" title="Queue coming soon" />
           </TabPanel>
           <TabPanel p={0} py="0px">
             {history.length === 0 ?
-              <p>Nothing to display</p> :
+              <Placeholder icon={HiRectangleStack} mt="20px" title="History will appear here" /> :
               <Accordion
                 defaultIndex={[0]}
                 variant="unstyled"
@@ -126,3 +133,36 @@ _QueueHistoryTabs.displayName = "QueueHistoryTabs";
  * @returns {JSX.Element} The queue and history tabs.
  */
 export const QueueHistoryTabs = memo(_QueueHistoryTabs);
+
+
+type PlaceholderProps = FlexProps & {
+  title: string;
+  icon: IconType;
+}
+
+const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
+  const iconBg = useColorModeValue("neutral.white", "neutral.400");
+
+  return (
+    <Flex
+      alignItems="center"
+      flexDir="column"
+      gap="10px"
+      height="100%"
+      justifyContent="center"
+      {...props}
+    >
+      <Box
+        background={iconBg}
+        borderRadius="90"
+        p="20px"
+      >
+        <Icon
+          as={icon}
+          fontSize="70px"
+        />
+      </Box>
+      <Text fontSize="18px" fontWeight="600" opacity={0.7}>{title}</Text>
+    </Flex>
+  )
+}
