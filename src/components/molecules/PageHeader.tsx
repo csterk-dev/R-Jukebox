@@ -673,7 +673,14 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
           </Text>
           <Notes date={v1_1ReleaseNotes[0].date} mt="10px" notes={v1_1ReleaseNotes[0].notes} />
 
-          <Button mt="30px" pb="2px" onClick={onClose}>Lets go!</Button>
+          <Button
+            colorScheme="purple"
+            mt="30px"
+            pb="2px"
+            onClick={onClose}
+          >
+            Lets go!
+          </Button>
         </Flex>
       </ModalContent>
     </Modal>
