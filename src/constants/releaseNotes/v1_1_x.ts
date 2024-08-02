@@ -32,6 +32,6 @@ export const v1_1ReleaseNotes: ReleaseNotes = [
   {
     title: "Release 1.1.0",
     notes: v1_1_0,
-    date: "01/8/2024"
+    date: "01/08/2024"
   }
 ];
