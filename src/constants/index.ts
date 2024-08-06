@@ -39,7 +39,7 @@ export const TooltipOpenDelay = 500;
 export const HEADER_HEIGHT = 60;
 
 /** In pixels. */
-export const MOBILE_BREAKPOINT = 500;
+export const MOBILE_BREAKPOINT = 550;
 
 /** Ensure front and server values match */
 export const PLAYER_VOLUME_DEFAULT = 30;
