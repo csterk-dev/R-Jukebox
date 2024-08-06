@@ -38,7 +38,7 @@ export const PageContainer: FC<BoxProps> = (props) => {
         <Flex
           bg={colorMode === "dark" ? "url('dark_bg_static.png') center/cover no-repeat" : "url('light_bg_static.png') center/cover no-repeat"}
           height="100%"
-          overflowX="hidden"
+          overflow="hidden"
           position="relative"
           width="100%"
           zIndex={1}
