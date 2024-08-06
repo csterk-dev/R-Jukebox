@@ -712,6 +712,7 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
 
   return (
     <Modal
+      closeOnOverlayClick={false}
       finalFocusRef={finalFocusRef}
       isOpen={isOpen}
       scrollBehavior="inside"
