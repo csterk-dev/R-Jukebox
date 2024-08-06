@@ -38,7 +38,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     const jsx: JSX.Element[] = [];
     Object.entries(sortedHistory).forEach(([date, videos]) => {
       jsx.push(
-        <AccordionItem borderColor="transparent">
+        <AccordionItem key={date} borderColor="transparent">
           {({ isExpanded }) => (
             <>
               <h3>

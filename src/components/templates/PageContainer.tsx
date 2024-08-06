@@ -24,6 +24,7 @@ export const PageContainer: FC<BoxProps> = (props) => {
       <Box
         bg="transparent"
         height="100%"
+        overflowY="auto"
         position="absolute"
         width="100%"
         zIndex={100}
