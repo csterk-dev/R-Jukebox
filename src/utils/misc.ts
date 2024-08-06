@@ -168,9 +168,9 @@ export function videoPlayedAtToString(playedAtDate?: string, format?: string) {
 
   const playedAtObj = dayjs(playedAtDate, format ?? "DD/MM/YYYY");
 
-  if (playedAtObj.isSame(today, "day")) return "Today";
-  if (playedAtObj.diff(today, "day") == 1) return "Yesterday";
-  if (playedAtObj.diff(today, "day") <= 5) return playedAtObj.format("dddd");
-  if (playedAtObj.diff(today, "day") > 5) return playedAtObj.format("ddd DD/MM/YYYY");
+  if (today.isSame(playedAtObj, "days")) return "Today";
+  if (today.diff(playedAtObj, "days") == 1) return "Yesterday";
+  if (today.diff(playedAtObj, "days") <= 5) return playedAtObj.format("dddd");
+  if (today.diff(playedAtObj, "days") > 5) return playedAtObj.format("ddd DD/MM/YYYY");
   return playedAtDate;
 }
