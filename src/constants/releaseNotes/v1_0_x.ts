@@ -76,18 +76,22 @@ const v1_0_4: ReleaseNote[] = [
 export const v1_0ReleaseNotes: ReleaseNotes = [
   {
     title: "Release 1.0.4",
-    notes: v1_0_4
+    notes: v1_0_4,
+    date: "30/06/2024"
   },
   {
     title: "Release 1.0.3",
-    notes: v1_0_3
+    notes: v1_0_3,
+    date: "17/06/2024"
   },
   {
     title: "Release 1.0.2",
-    notes: v1_0_2
+    notes: v1_0_2,
+    date: "14/06/2024"
   },
   {
     title: "Release 1.0.1",
-    notes: v1_0_1
+    notes: v1_0_1,
+    date: "13/06/2024"
   }
 ];

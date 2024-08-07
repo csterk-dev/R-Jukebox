@@ -43,16 +43,23 @@ const AppContext = createContext<AppContextType>(defaultAppContextVal);
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-  const [isBgAnimated, setIsBgAnimated] = useState<AppContextType["isBgAnimated"]>(true);
+
+  const [isBgAnimated, setIsBgAnimated] = useState<AppContextType["isBgAnimated"]>(() => {
+    const storedVal = localStorage.getItem("animated_background");
+    const parsed = storedVal ? JSON.parse(storedVal) : true;
+    return parsed
+  });
   const [manualIsBgAnimated, setManualIsBgAnimated] = useState(isMobile);
 
-  /*
-   * Save user's batteries by default
-   */
+  // Disabled animated bg by default when mobile device.
   useEffect(() => {
     if (isMobile && !manualIsBgAnimated) setIsBgAnimated(false);
-
   }, [isMobile, manualIsBgAnimated]);
+
+  useEffect(() => {
+    localStorage.setItem("animated_background", `${isBgAnimated}`);
+  }, [isBgAnimated]);
+
 
   /** Turns on animations for the background. */
   const toggleBgAnimated = useCallback(() => {
@@ -66,7 +73,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         description: "Battery life and performance may increase.",
         ...infoToastStyle
       });
-     
+
     } else if (!toast.isActive(toastIds.bgAnimatedFalse) && !isBgAnimated) {
       toast({
         id: toastIds.bgAnimatedFalse,

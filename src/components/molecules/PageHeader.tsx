@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Button, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, ListProps, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Button, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, ListProps, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, useMediaQuery, VStack } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiBugAnt, HiChartBar, HiChevronLeft, HiClipboardDocumentList, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSpeakerXMark, HiStar, HiWrenchScrewdriver, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
@@ -26,16 +26,17 @@ const _PageHeader: FC<FlexProps> = (props) => {
    * Styling variables
    */
   const headerBg = useColorModeValue("white", "neutral.900");
-
+  const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
 
   /*
    * Modals
    */
-  /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
-  const finalFocusRef = useRef(null);
   const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
   const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
   const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+  /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
+  const finalFocusRef = useRef(null);
+
 
   useEffect(() => {
     const currentVersion = localStorage.getItem("current_version");
@@ -171,7 +172,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Tooltip isDisabled={showingCurrentVideo} label="You can only change volume while a video is playing.">
+                <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
                   <Flex
                     alignItems="center"
                     cursor={!showingCurrentVideo ? "not-allowed" : undefined}
@@ -221,6 +222,20 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   </Flex>
                 </Tooltip>
               </Flex>
+              {isLargerThan800 ?
+                <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
+                  <span>
+                    <Icon
+                      aria-label={`${isConnected ? "Connected" : "Offline"}`}
+                      as={HiChartBar}
+                      color={isConnected ? "green" : "orange"}
+                      mt="7px"
+                    />
+                  </span>
+                </Tooltip> :
+                null
+              }
+
               <IconButton
                 aria-label="Open settings"
                 icon={<HiCog6Tooth opacity={0.9} />}
@@ -257,7 +272,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
         onClose={onCloseSearch}
       />
 
-      <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+      <NewUpdateModal isMobile={isMobile} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
     </>
   )
 }
@@ -642,8 +657,8 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
 };
 
 
-type NewUpdateModalProps = Omit<ModalProps, "children"> & {}
-const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
+type NewUpdateModalProps = Omit<ModalProps, "children"> & { isMobile: boolean }
+const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) => {
   const foreground = useColorModeValue("white", "neutral.700");
 
   return (
@@ -652,6 +667,7 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
       closeOnOverlayClick={false}
       isOpen={isOpen}
       scrollBehavior="inside"
+      size={isMobile ? "sm" : "md"}
       onClose={onClose}
     >
       <ModalOverlay />
@@ -712,6 +728,7 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
 
   return (
     <Modal
+      closeOnOverlayClick={false}
       finalFocusRef={finalFocusRef}
       isOpen={isOpen}
       scrollBehavior="inside"

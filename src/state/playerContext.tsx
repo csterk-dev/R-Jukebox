@@ -168,7 +168,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
-        document.title = "Loading song"
+        document.title = "Loading..."
       });
 
 

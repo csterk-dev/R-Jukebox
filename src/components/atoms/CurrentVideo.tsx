@@ -106,7 +106,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             currentVideo ?
               <Flex
                 as="a"
-                href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}` : undefined}
+                href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}` : undefined}
                 justifyContent="center"
                 position="relative"
                 target="_blank"
