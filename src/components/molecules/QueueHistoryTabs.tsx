@@ -105,11 +105,16 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
             px="10px"
             py="10px"
           >
-            <Placeholder icon={HiStar} mt="10px" title="Queue coming soon" />
+            <Placeholder icon={HiStar} my="10px" title="Queue coming soon" />
           </TabPanel>
-          <TabPanel p={0} py="0px">
+          <TabPanel p={0} pb="10px">
             {history.length === 0 ?
-              <Placeholder icon={HiRectangleStack} mt="20px" title="History will appear here" /> :
+              <Placeholder
+                icon={HiRectangleStack}
+                mb="10px"
+                mt="20px"
+                title="History will appear here"
+              /> :
               <Accordion
                 defaultIndex={[0]}
                 variant="unstyled"

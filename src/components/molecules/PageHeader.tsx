@@ -172,7 +172,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 gap="5px"
                 justifyContent="center"
               >
-                <Tooltip isDisabled={showingCurrentVideo} label="You can only change volume while a video is playing.">
+                <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
                   <Flex
                     alignItems="center"
                     cursor={!showingCurrentVideo ? "not-allowed" : undefined}
@@ -223,7 +223,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 </Tooltip>
               </Flex>
               {isLargerThan800 ?
-                <Tooltip label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
+                <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
                   <span>
                     <Icon
                       aria-label={`${isConnected ? "Connected" : "Offline"}`}
@@ -272,7 +272,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
         onClose={onCloseSearch}
       />
 
-      <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+      <NewUpdateModal isMobile={isMobile} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
     </>
   )
 }
@@ -657,8 +657,8 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
 };
 
 
-type NewUpdateModalProps = Omit<ModalProps, "children"> & {}
-const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
+type NewUpdateModalProps = Omit<ModalProps, "children"> & { isMobile: boolean }
+const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) => {
   const foreground = useColorModeValue("white", "neutral.700");
 
   return (
@@ -667,6 +667,7 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
       closeOnOverlayClick={false}
       isOpen={isOpen}
       scrollBehavior="inside"
+      size={isMobile ? "sm" : "md"}
       onClose={onClose}
     >
       <ModalOverlay />
