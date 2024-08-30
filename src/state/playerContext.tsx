@@ -23,8 +23,12 @@ const toastIds = {
 };
 
 interface PlayerContextType {
+  addToBottomOfQueue: (video: Video) => void;
+  addToTopOfQueue: (video: Video) => void;
+  clearQueue: () => void;
   currentVideo: Video | undefined;
   currentVideoTime: number | undefined;
+  deleteQueueItem: (videoId: Video["videoId"]) => void;
   error: string | undefined;
   history: HistoryVideo[];
   isConnected: boolean;
@@ -32,15 +36,21 @@ interface PlayerContextType {
   isPlayerLoading: boolean;
   pauseCurrentVideo: () => void;
   playVideo: (video: Video) => void;
-  resumeCurrentVideo: () => void;
+  playNextQueueItem: () => void;
   playerVolume: number;
+  queue: Video[];
+  resumeCurrentVideo: () => void;
   updatePlayerVolume: (volume: number) => void;
   updateCurrentVideoTime: (newTime: number) => void;
 }
 
 const defaultPlayerContextVal: PlayerContextType = {
+  addToBottomOfQueue: () => void 0,
+  addToTopOfQueue: () => void 0,
+  clearQueue: () => void 0,
   currentVideo: undefined,
   currentVideoTime: undefined,
+  deleteQueueItem: () => void 0,
   error: undefined,
   history: [],
   isConnected: false,
@@ -48,8 +58,10 @@ const defaultPlayerContextVal: PlayerContextType = {
   isPlayerLoading: false,
   pauseCurrentVideo: () => void 0,
   playVideo: () => void 0,
-  resumeCurrentVideo: () => void 0,
+  playNextQueueItem: () => void 0,
   playerVolume: PLAYER_VOLUME_DEFAULT,
+  queue: [],
+  resumeCurrentVideo: () => void 0,
   updatePlayerVolume: () => void 0,
   updateCurrentVideoTime: () => void 0
 };
@@ -72,7 +84,8 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [error, setError] = useState<PlayerContextType["error"]>();
   const [volume, setVolume] = useState<PlayerContextType["playerVolume"]>(PLAYER_VOLUME_DEFAULT);
   const [history, setHistory] = useState<PlayerContextType["history"]>([]);
-  
+  const [queue, setQueue] = useState<PlayerContextType["queue"]>([]);
+
 
   /** Pauses the current video. */
   const pauseCurrentVideo = useCallback(() => {
@@ -84,11 +97,42 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
   /** Starts the player with the provided video. */
   const playVideo = useCallback((video: Video) => {
-    if (!video) return;
     socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideo, socketInstance.id, video);
 
   }, [socketInstance]);
 
+
+  /** Adds the provided video to the start of the queue. */
+  const addToTopOfQueue = useCallback((video: Video) => {
+    socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, socketInstance.id, video);
+
+  }, [socketInstance]);
+
+
+  /** Adds the provided video to the end of the queue. */
+  const addToBottomOfQueue = useCallback((video: Video) => {
+    socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, socketInstance.id, video);
+
+  }, [socketInstance]);
+
+
+  /** Plays the next video from the queue. */
+  const playNextQueueItem = useCallback(() => {
+    socketInstance.emit(SOCKET_EVENT_KEYS.playNextQueueItem, socketInstance.id);
+
+  }, [socketInstance]);
+
+  const clearQueue = useCallback(() => {
+    if (queue.length === 0) return;
+    socketInstance.emit(SOCKET_EVENT_KEYS.clearQueue, socketInstance.id);
+
+  }, [queue.length, socketInstance]);
+
+  /** Deletes the specified video from the queue. */
+  const deleteQueueItem = useCallback((videoId: Video["videoId"]) => {
+    socketInstance.emit(SOCKET_EVENT_KEYS.deleteQueueItem, socketInstance.id, videoId);
+
+  }, [socketInstance]);
 
   /** Resumes the current video. */
   const resumeCurrentVideo = useCallback(() => {
@@ -163,7 +207,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         console.log("history synced");
         setHistory(incomingHistory);
       });
-      
+
+
+      // Sync queue
+      socketInstance.on(SOCKET_EVENT_KEYS.queue, (incomingQueue: Video[]) => {
+        console.log("queue synced");
+        setQueue(incomingQueue);
+      });
+
 
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
@@ -196,6 +247,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.currentVideoTime);
       socketInstance.off(SOCKET_EVENT_KEYS.error);
       socketInstance.off(SOCKET_EVENT_KEYS.history);
+      socketInstance.off(SOCKET_EVENT_KEYS.queue);
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
@@ -205,8 +257,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const playerContext: PlayerContextType = useMemo(() => {
     return {
+      clearQueue,
       currentVideo,
       currentVideoTime,
+      deleteQueueItem,
       error,
       history,
       isConnected,
@@ -214,12 +268,16 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       isPlayerLoading,
       pauseCurrentVideo,
       playVideo,
-      resumeCurrentVideo,
+      playNextQueueItem,
+      addToTopOfQueue,
+      addToBottomOfQueue,
       playerVolume: volume,
+      queue,
+      resumeCurrentVideo,
       updatePlayerVolume,
       updateCurrentVideoTime
     }
-  }, [currentVideo, currentVideoTime, error, history, isConnected, isPlayerLoading, isPlaying, pauseCurrentVideo, playVideo, resumeCurrentVideo, updateCurrentVideoTime, updatePlayerVolume, volume]);
+  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, history, isConnected, isPlaying, isPlayerLoading, pauseCurrentVideo, playVideo, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, resumeCurrentVideo, updatePlayerVolume, updateCurrentVideoTime]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
