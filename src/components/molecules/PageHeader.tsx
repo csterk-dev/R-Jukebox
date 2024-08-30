@@ -18,7 +18,7 @@ const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { currentVideo, isPlaying, isPlayerLoading, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime } = usePlayer();
+  const { currentVideo, isPlaying, isPlayerLoading, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
   const showingCurrentVideo = !!currentVideo && !isPlayerLoading;
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
@@ -69,7 +69,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
 
 
   /** Callback to play the selected video from the search results. */
-  const onClickCard = useCallback((video: Video) => {
+  const handlePlayVideo = useCallback((video: Video) => {
     playVideo(video);
     onCloseSearch();
   }, [onCloseSearch, playVideo]);
@@ -142,6 +142,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                   flex={1}
                   isPlaying={isPlaying}
                   pauseCurrentVideo={pauseCurrentVideo}
+                  playNextQueueItem={playNextQueueItem}
                   resumeCurrentVideo={resumeCurrentVideo}
                   updateCurrentVideoTime={updateCurrentVideoTime}
                 />
@@ -162,6 +163,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 flex={1}
                 isPlaying={isPlaying}
                 pauseCurrentVideo={pauseCurrentVideo}
+                playNextQueueItem={playNextQueueItem}
                 resumeCurrentVideo={resumeCurrentVideo}
                 updateCurrentVideoTime={updateCurrentVideoTime}
               />
@@ -175,7 +177,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                 <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
                   <Flex
                     alignItems="center"
-                    cursor={!showingCurrentVideo ? "not-allowed" : undefined}
+                    // cursor={!showingCurrentVideo ? "not-allowed" : undefined}
                     gap="5px"
                     width="155px"
                   >
@@ -247,8 +249,6 @@ const _PageHeader: FC<FlexProps> = (props) => {
         </Flex>
       </header>
 
-
-      {/* Settings Modal */}
       <SettingsModal
         finalFocusRef={finalFocusRef}
         isBgAnimated={isBgAnimated}
@@ -263,12 +263,13 @@ const _PageHeader: FC<FlexProps> = (props) => {
         onClose={onCloseSettings}
       />
 
-      {/* Search and results */}
       <SearchModal
         finalFocusRef={finalFocusRef}
+        handleAddToBottomOfQueue={addToBottomOfQueue}
+        handleAddToTopOfQueue={addToTopOfQueue}
+        handlePlayVideo={handlePlayVideo}
         isMobile={isMobile}
         isOpen={isSearchOpen}
-        onClickCard={onClickCard}
         onClose={onCloseSearch}
       />
 
@@ -301,7 +302,6 @@ type SettingsModalProps = Omit<ModalProps, "children"> & {
 
 
 const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, isConnected, isMobile, isOpen, volumeLevel, isVolumeDisabled, onChangeEndVolumeHandler, onChangeVolumeHandler, onClose, toggleBgAnimated }) => {
-  const foreground = useColorModeValue("white", "neutral.700");
   const [screen, setScreen] = useState<"settings" | "volume" | "relNotes" | "bugList">("settings");
 
   const onCloseSettings = useCallback(() => {
@@ -323,7 +323,6 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
     >
       <ModalOverlay />
       <ModalContent
-        bg={foreground}
         boxShadow={0}
         overflowY="auto"
         userSelect="none"
@@ -513,7 +512,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                 </VStack>
               </Flex> :
               <>
-                <ModalHeader fontSize="16px">
+                <ModalHeader>
                   <Flex
                     alignItems="center"
                     fontWeight="600"
@@ -624,10 +623,8 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                 </VStack>
                 <ModalFooter
                   alignItems="flex-start"
-                  flexDirection="column"
                   opacity={0.7}
                   pt="0px"
-                  px="20px"
                 >
                   <Flex
                     alignItems="center"
@@ -642,7 +639,6 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                     alignItems="center"
                     fontSize="14"
                     justifyContent="space-between"
-                    mt="5px"
                     width="100%"
                   >
                     <Text>By Chris Sterkenburg</Text>
@@ -707,12 +703,13 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) 
 type SearchModalProps = Omit<ModalProps, "children"> & {
   finalFocusRef: React.MutableRefObject<null>;
   isMobile: boolean;
-  onClickCard: (video: Video) => void;
+  handlePlayVideo: (video: Video) => void;
+  handleAddToBottomOfQueue: (video: Video) => void;
+  handleAddToTopOfQueue: (video: Video) => void;
 }
 
-const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, onClickCard, onClose }) => {
+const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
   const foreground = useColorModeValue("white", "neutral.700");
-  const modalBg = useColorModeValue("neutral.offWhite", "neutral.700");
 
   const [searchVal, setSearchVal] = useState<string>("");
   const query = useDebounce(searchVal, 1000);
@@ -728,7 +725,6 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
 
   return (
     <Modal
-      closeOnOverlayClick={false}
       finalFocusRef={finalFocusRef}
       isOpen={isOpen}
       scrollBehavior="inside"
@@ -785,7 +781,11 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
         </Flex>
 
         {videos.length > 0 || error ?
-          <ModalBody bg={modalBg} mt="10px">
+          <ModalBody
+            borderRadius={5}
+            mt="10px"
+            px="10px"
+          >
             <VStack>
               {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${NUM_OF_RESULTS} Youtube video results`}</Text>}
               {videos.map(video => {
@@ -793,8 +793,10 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, on
                 return (
                   <VideoCard
                     key={video.videoId}
+                    addToBottomOfQueue={handleAddToBottomOfQueue}
+                    addToTopOfQueue={handleAddToTopOfQueue}
                     isMobile={isMobile}
-                    playVideo={onClickCard}
+                    playVideo={handlePlayVideo}
                     video={video}
                   />
                 );

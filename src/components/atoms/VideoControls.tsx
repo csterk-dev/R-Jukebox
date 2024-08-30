@@ -3,18 +3,19 @@ import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 
 /** Set false when previous and next functionality is implemented. */
-const DISABLE_PREV_NEXT = true;
+// const DISABLE_PREV_NEXT = true;
 
 
 type VideoControlsProps = FlexProps & {
   disableButtons: boolean,
   isPlaying: boolean;
+  playNextQueueItem: () => void,
   pauseCurrentVideo: () => void,
   resumeCurrentVideo: () => void,
   updateCurrentVideoTime: (time: number) => void,
 }
 
-const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pauseCurrentVideo, resumeCurrentVideo, updateCurrentVideoTime, ...props }) => {
+const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, playNextQueueItem, pauseCurrentVideo, resumeCurrentVideo, updateCurrentVideoTime, ...props }) => {
   const playPauseIcon = useMemo(() => isPlaying ? <HiPause /> : <HiPlay />, [isPlaying]);
 
   /** Handles the toggling of the player playback. */
@@ -52,8 +53,8 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableButtons, isPlaying, pau
         <IconButton
           aria-label="forward"
           icon={<HiForward />}
-          isDisabled={DISABLE_PREV_NEXT}
           variant="ghost"
+          onClick={playNextQueueItem}
         />
       </Flex>
     </Flex>

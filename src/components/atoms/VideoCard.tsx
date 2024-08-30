@@ -1,64 +1,59 @@
-import { Flex, FlexProps, HStack, Icon, IconButton, Image, Spacer, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
 import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
-import { HiBarsArrowDown, HiQueueList, HiSignal } from "react-icons/hi2";
+import { HiBarsArrowDown, HiEllipsisVertical, HiQueueList, HiSignal } from "react-icons/hi2";
 import { ISO8601ToSeconds, replaceHtmlEntities, videoDurationToString, videoPublishedDateToString } from "utils/misc";
-
-/** Enable when queue is implemented */
-const SHOW_OPTIONS = false;
 
 type VideoCardProps = FlexProps & {
   isMobile: boolean;
   video: Video;
   playVideo: (video: Video) => void;
+  addToBottomOfQueue: (video: Video) => void;
+  addToTopOfQueue: (video: Video) => void;
 }
 
-const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }) => {
+const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBottomOfQueue, addToTopOfQueue, ...props }) => {
   const foreground = useColorModeValue("neutral.white", "neutral.900");
-  const optionButtonBg = useColorModeValue("neutral.white", "neutral.900");
-  
+  const moreActionsIconColor = useColorModeValue("neutral.900", "neutral.white");
+
   const videoDuration = useMemo(() => videoDurationToString(ISO8601ToSeconds(video.duration)), [video?.duration]);
   const videoPublishedAt = useMemo(() => videoPublishedDateToString(video.publishedAt), [video.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
-  
+
   const isLive = videoDuration === "Live";
-
-
   const [cardRef, cardHovered] = useWebHover();
-  const [buttonRef, buttonHovered] = useWebHover();
 
 
-  const isHovered = useMemo(() => {
-    if (cardHovered || buttonHovered) return true;
-    return false;
-  }, [buttonHovered, cardHovered]);
-
-
-  const onClickCard = useCallback(() => {
-    playVideo(video);
-  }, [playVideo, video]);
+  const onClickPlay = useCallback(() => playVideo(video), [playVideo, video]);
+  const onClickNext = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    addToTopOfQueue(video);
+  }, [addToTopOfQueue, video]);
+  const onClickLast = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    addToBottomOfQueue(video);
+  }, [addToBottomOfQueue, video]);
 
 
   return (
     <Flex
       _hover={{ cursor: "pointer" }}
-      // bgColor={isHovered ? foregroundHovered : foreground}
       bgColor={foreground}
-      borderRadius={5}
+      borderRadius="5px"
       boxShadow="base"
       flexDir="row"
       height="94px"
       position="relative"
       ref={cardRef}
       width="100%"
-      onClick={onClickCard}
       {...props}
     >
       <Flex
-        borderRadius={5}
+        borderRadius="5px 0px 0px 5px"
         filter="auto"
         height="94px"
         position="relative"
+        onClick={onClickPlay}
       >
         <Image
           aria-label="Video thumbnail"
@@ -69,13 +64,49 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }
           src={video.thumbnails.medium.url}
           width={isMobile ? "130px" : "168px"}
         />
+        {cardHovered && !isMobile ?
+          <VStack gap="2px" position="absolute" right="2px">
+            <Tooltip label="Play next" placement="left">
+              <IconButton
+                _hover={{
+                  transition: "all linear 0ms "
+                }}
+                aria-label="Play video next"
+                bgColor="rgba(0,0,0, 0.8)"
+                color="white"
+                fontSize="16px"
+                icon={<HiQueueList />}
+                size="sm"
+                variant="solid"
+                onClick={onClickNext}
+              />
+            </Tooltip>
+            <Tooltip label="Play last" placement="left">
+              <IconButton
+                _hover={{
+                  transition: "all linear 0ms "
+                }}
+                aria-label="Play video last"
+                bgColor="rgba(0,0,0, 0.8)"
+                color="white"
+                fontSize="16px"
+                icon={<HiBarsArrowDown />}
+                size="sm"
+                variant="solid"
+                onClick={onClickLast}
+              />
+            </Tooltip>
+          </VStack> :
+          null
+        }
         <Tag
           alignItems="center"
-          bgColor={isLive ? "red.500" : foreground}
+          bgColor={isLive ? "red.500" : "rgba(0,0,0, 0.6)"}
           borderRadius={2}
-          bottom="4px"
-          color={isLive ? "white" : undefined}
+          bottom="2px"
+          color="white"
           fontSize="14"
+          fontWeight="600"
           position="absolute"
           px="4px"
           right="2px"
@@ -87,26 +118,27 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }
       </Flex>
 
       <Flex
-        borderRadius={10}
+        borderRadius="0px 5px 5px 0px"
         flex={1}
         flexDir="column"
+        fontSize="12"
         justifyContent="space-between"
-        px="10px"
+        px="10px" 
         py="5px"
+        onClick={onClickPlay}
       >
         <Text
           as="h4"
-          fontSize="14"
           fontWeight="600"
           noOfLines={2}
           textOverflow="ellipsis"
         >
           {videoTitle}
         </Text>
-        <Text fontSize="14" noOfLines={1} textOverflow="ellipsis">
+        <Text noOfLines={1} textOverflow="ellipsis">
           {video.channelTitle}
         </Text>
-        <HStack fontSize="14" fontWeight="400">
+        <HStack fontWeight="400">
           {/* <Text>
             Unknown Views
           </Text>
@@ -117,61 +149,29 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, ...props }
             {videoPublishedAt}
           </Text>
         </HStack>
-
       </Flex>
 
-      {isHovered && SHOW_OPTIONS ?
-        <HStack
-          gap="5px"
-          height="100%"
-          justifyContent="center"
-          // pl="60px"
-          position="absolute"
-          pr="5px"
-          ref={buttonRef}
-          width="100%"
-          zIndex={100}
-        >
-          {/* <IconButton
-            _hover={{
-              bgColor: "purple.500",
-              color: "white",
-              transition: "all linear 0ms "
-            }}
-            aria-label="Play video"
-            bg="white"
-            color="neutral.700"
-            icon={<HiPlay size="20px" />}
-            variant="solid"
-          /> */}
-          <Spacer />
-          <VStack>
-            <Tooltip label="Play next" placement="left">
-              <IconButton
-                _hover={{
-                  transition: "all linear 0ms "
-                }}
-                aria-label="Play video next"
-                bgColor={optionButtonBg}
-                icon={<HiQueueList />}
-                variant="solid"
-              />
-            </Tooltip>
-            <Tooltip label="Play last" placement="left">
-              <IconButton
-                _hover={{
-                  transition: "all linear 0ms "
-                }}
-                aria-label="Play video last"
-                bgColor={optionButtonBg}
-                icon={<HiBarsArrowDown />}
-                variant="solid"
-              />
-            </Tooltip>
-          </VStack>
-        </HStack> :
-        null
-      }
+      <Flex flexDirection="column" height="100%">
+        <Menu size="sm">
+          <MenuButton
+            aria-label="More options"
+            as={IconButton}
+            color={moreActionsIconColor}
+            fontSize="18px"
+            icon={<HiEllipsisVertical />}
+            size="sm"
+            variant="ghost"
+          />
+          <MenuList>
+            <MenuItem icon={<HiQueueList />} onClick={onClickNext}>
+              Play Next
+            </MenuItem>
+            <MenuItem icon={<HiBarsArrowDown />} onClick={onClickLast}>
+              Play Last
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </Flex>
     </Flex>
   )
 }
