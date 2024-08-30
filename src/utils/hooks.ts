@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
@@ -91,4 +91,145 @@ export const useWebSockets = () => {
       socketInstance
     }
   ), [isConnected]);
+}
+
+
+/**
+ * THE BELOW IS THE LOCAL COPY OF UTIL FUNCTIONS
+ */
+
+/**
+ * Custom hook to debounce changes in a string.
+ *
+ * @param {string} text - The input string to be debounced.
+ * @param {number} [delay] - The delay in milliseconds before updating the output. Default 300ms.
+ * @returns {string} The debounced output string.
+ * @example
+ * ```tsx
+ * // Input field debouncing
+ * const [inputValue, setInputValue] = useState();
+ * const inputText = useDebounce(inputValue, 400);
+ * 
+ * console.log(inputText) // This will only print every 400ms as the inputText is debounced.
+ * 
+ * ```
+ */
+export function useDebounce(text: string, delay: number = 300) {
+  const [output, setOutput] = useState(text);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setOutput(text);
+    }, delay);
+
+    return () => clearTimeout(timeout);
+  }, [delay, text]);
+
+  return output;
+}
+
+
+/** @returns Current width and height of the window */
+function getWindowDimensions() {
+  const { innerWidth: width = 0, innerHeight: height = 0 } = typeof window !== "undefined" ? window : {};
+  return {
+    width,
+    height
+  };
+}
+
+/**
+ * Custom React Hook to track and provide the dimensions of the browser's window.
+ *
+ * @returns {{width: number, height: number}} An object containing the current width and height of the browser's window.
+ * @example
+ * ```tsx
+ * const windowDimensions = useWindowDimensions();
+ * 
+ * // Resize the window to see the values change
+ * useEffect(() => console.log(windowDimensions.height, windowDimensions.width), [windowDimensions]);
+ * ```
+ */
+export function useWindowDimensions() {
+  // Set the initial window dimensions
+  const [windowDimensions, setWindowDimensions] = useState<{ height: number; width: number; }>({
+    height: 0,
+    width: 0
+  });
+
+
+
+  // Attach event listener for window resize and clean up on component unmount
+  useEffect(() => {
+    // set this after initial render
+    setWindowDimensions(getWindowDimensions());
+    const handleResize = () => setWindowDimensions(getWindowDimensions());
+    /** Function to update window dimensions when the window is resized. */
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Return the current window dimensions
+  return windowDimensions;
+}
+
+
+
+/**
+ * A custom hook that allows you to track whether an element is being hovered over or not, 
+ * enabling you to apply conditional rendering or perform any desired actions based on the hover state.
+ * 
+ * @returns {[instance: HTMLDivElement, boolean]} An array containing a reference to attach to the target element and the current boolean hovering status.
+ * @example
+ * ```tsx
+ * // Chakra UI Box & Text example:
+ * const [boxRef, boxHovered] = useWebHover();
+ * <Box
+ *    bg="blue"
+ *    h="50px"
+ *    ref={boxRef}
+ *    w="100%"
+ *  >
+ *    <Text color={boxHovered ? "red" : "black"}>
+ *        Hover over the box to change my text color!
+ *    </Text>
+ * </Box>
+ * ```
+ */
+export function useWebHover(): [(instance: HTMLDivElement) => void, boolean] {
+  const [hovering, setHovering] = useState(false);
+  const previousNode = useRef<HTMLDivElement>();
+
+  const handleMouseEnter = useCallback(() => {
+    setHovering(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovering(false);
+  }, []);
+
+  const customRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
+        previousNode.current.removeEventListener(
+          "mouseenter",
+          handleMouseEnter
+        );
+        previousNode.current.removeEventListener(
+          "mouseleave",
+          handleMouseLeave
+        );
+      }
+
+      if (node?.nodeType === Node.ELEMENT_NODE) {
+        node.addEventListener("mouseenter", handleMouseEnter);
+        node.addEventListener("mouseleave", handleMouseLeave);
+      }
+
+      previousNode.current = node;
+    },
+    [handleMouseEnter, handleMouseLeave]
+  );
+
+  return [customRef, hovering];
 }
