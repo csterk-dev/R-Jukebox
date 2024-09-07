@@ -134,7 +134,17 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
               <Tab color="current">Queue</Tab>
               <Tab color="current">History</Tab>
             </Flex>
-            {tabIndex == 0 ? <Button size="sm" variant="ghost" onClick={onOpenClearConf}>Clear</Button> : null}
+            {tabIndex == 0 ?
+              <Button
+                isDisabled={queue.length === 0}
+                size="sm"
+                variant="ghost"
+                onClick={onOpenClearConf}
+              >
+                Clear
+              </Button> :
+              null
+            }
           </TabList>
           <TabPanels height="100%" overflowY="auto">
             <TabPanel height="100%" p="10px 10px 10px 0px">
@@ -210,9 +220,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
               >
                 Clear
               </Button>
-              <Button 
-                ref={cancelClearButtonRef} 
-                size="sm" 
+              <Button
+                ref={cancelClearButtonRef}
+                size="sm"
                 variant="outline"
                 width="100%"
                 onClick={onCloseClearConf}

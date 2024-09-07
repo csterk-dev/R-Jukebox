@@ -136,17 +136,15 @@ const _PageHeader: FC<FlexProps> = (props) => {
           {isMobile ?
             <>
               <SearchBarBox flex={1} isMobile onOpen={onOpenSearch} />
-              <Tooltip isDisabled={showingCurrentVideo} label="You can only change volume while a video is playing.">
-                <VideoControls
-                  disableButtons={!showingCurrentVideo}
-                  flex={1}
-                  isPlaying={isPlaying}
-                  pauseCurrentVideo={pauseCurrentVideo}
-                  playNextQueueItem={playNextQueueItem}
-                  resumeCurrentVideo={resumeCurrentVideo}
-                  updateCurrentVideoTime={updateCurrentVideoTime}
-                />
-              </Tooltip>
+              <VideoControls
+                disableButtons={!showingCurrentVideo}
+                flex={1}
+                isPlaying={isPlaying}
+                pauseCurrentVideo={pauseCurrentVideo}
+                playNextQueueItem={playNextQueueItem}
+                resumeCurrentVideo={resumeCurrentVideo}
+                updateCurrentVideoTime={updateCurrentVideoTime}
+              />
               <IconButton
                 aria-label="Open settings"
                 colorScheme="purple"
