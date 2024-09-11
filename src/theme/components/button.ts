@@ -47,16 +47,22 @@ export const buttonStyles = defineStyleConfig({
     },
     // Custom 'destructive' variant:
     destructive: {
-      bg: "#8F252B",
+      _dark: {
+        color: "neutral.white",
+        bg: "#8F252B"
+      },
+      bg: "red.600",
       color: "neutral.white",
       _hover: {
         _disabled: {
           ...disabledStyles
         },
+        _dark: {
+          bg: "red.600"
+        },
         bg: "#C75650",
         color: "neutral.white"
-      },
-      textTransform: "uppercase"
+      }
     }
   },
   defaultProps: {

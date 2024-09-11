@@ -1,12 +1,11 @@
 import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools"
-import { buttonStyles, modalStyles, tooltipStyles } from "./components";
+import { buttonStyles, menuStyles, modalStyles, sliderStyles, tabStyles, tooltipStyles } from "./components";
 import { colors } from "./colors";
 
 // Supports weights 200-800
 import "@fontsource-variable/assistant";
-import { tabStyles } from "./components/tabs";
-import { sliderStyles } from "./components/slider";
+
 
 /*
  * Dark mode by default.
@@ -23,6 +22,7 @@ const theme = extendTheme({
   components: {
     Button: buttonStyles,
     Modal: modalStyles,
+    Menu: menuStyles,
     Tabs: tabStyles,
     Slider: sliderStyles,
     Tooltip: tooltipStyles
@@ -35,8 +35,8 @@ const theme = extendTheme({
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
+        // "#CB70DF" "#d88ff7" "#DFA8F5" - unused bg light colors
         bg: mode("#d88ff7", "#371B3F")(props), 
-        // "#CB70DF" "#d88ff7" "#DFA8F5"
         color: mode("neutral.700", "neutral.white")(props)
       }
     })
