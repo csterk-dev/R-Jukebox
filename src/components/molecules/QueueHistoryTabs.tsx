@@ -54,42 +54,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           ))}
         </Flex>
       )
-    })
-
-    // Object.entries(sortedHistory).forEach(([date, videos]) => {
-    //   jsx.push(
-    //     <AccordionItem key={date} borderColor="transparent">
-    //       {({ isExpanded }) => (
-    //         <>
-    //           <h3>
-    //             <AccordionButton
-    //               display="flex"
-    //               flex="1"
-    //               fontSize="12"
-    //               justifyContent="space-between"
-    //               p="10px"
-    //             >
-    //               <Text>{videoPlayedAtToString(date)}</Text>
-    //               <Text>{!isExpanded ? "Show more" : "Hide"}</Text>
-    //             </AccordionButton>
-    //           </h3>
-    //           <AccordionPanel px="10px" py={0}>
-    //             <Flex flexDirection="column" gap="10px">
-    //               {videos.map(vid => (
-    //                 <VideoCard
-    //                   key={`${vid.videoId}${vid.playedAt}`}
-    //                   isMobile={isMobile}
-    //                   playVideo={onClickHistoryVideo}
-    //                   video={vid}
-    //                 />
-    //               ))}
-    //             </Flex>
-    //           </AccordionPanel>
-    //         </>
-    //       )}
-    //     </AccordionItem>
-    //   )
-    // })
+    });
 
     return jsx;
   }, [history, isMobile, addToBottomOfQueue, addToTopOfQueue, playVideo]);

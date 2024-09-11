@@ -94,8 +94,8 @@ export const useWebSockets = () => {
 }
 
 
-/**
- * THE BELOW IS THE LOCAL COPY OF UTIL FUNCTIONS
+/*
+ * THE BELOW IS THE LOCAL COPY OF UTIL FUNCTIONS FOR OFFLINE USE
  */
 
 /**
