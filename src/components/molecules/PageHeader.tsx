@@ -12,6 +12,7 @@ import { VERSION_NUM } from "../../constants";
 import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
 import { bugList } from "../../constants/bugList";
 import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
+import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
 
 
 const NUM_OF_RESULTS = 40;
@@ -420,6 +421,16 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                   opacity={0.7}
                   textTransform="uppercase"
                 >
+                  V1.2
+                </Text>
+                <ReleaseNotesAccordion releaseNotes={v1_2ReleaseNotes} />
+
+                <Text
+                  fontSize="14"
+                  mt="10px"
+                  opacity={0.7}
+                  textTransform="uppercase"
+                >
                   V1.1
                 </Text>
                 <ReleaseNotesAccordion releaseNotes={v1_1ReleaseNotes} />
@@ -672,7 +683,7 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) 
         userSelect="none"
       >
         <Flex flexDirection="column" p="10px 20px 20px">
-          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_1ReleaseNotes[0].title} is here!`}</Text>
+          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_2ReleaseNotes[0].title} is here!`}</Text>
           <Text
             as="h2"
             fontSize="24"
@@ -681,7 +692,7 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) 
           >
             What's new?
           </Text>
-          <Notes date={v1_1ReleaseNotes[0].date} mt="10px" notes={v1_1ReleaseNotes[0].notes} />
+          <Notes date={v1_2ReleaseNotes[0].date} mt="10px" notes={v1_2ReleaseNotes[0].notes} />
 
           <Button
             colorScheme="purple"
