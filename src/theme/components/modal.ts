@@ -6,7 +6,7 @@ const { definePartsStyle, defineMultiStyleConfig } =
 
 const baseStyle = definePartsStyle({
   dialog: {
-    bgColor: "neutral.offWhite", 
+    bgColor: "neutral.white",
     _dark: {
       bgColor: "neutral.700"
     }
@@ -30,6 +30,28 @@ const baseStyle = definePartsStyle({
   }
 })
 
+const search = definePartsStyle({
+  dialog: {
+    bgColor: "transparent"
+  },
+  header: {
+    ...baseStyle.header
+  },
+  body: {
+    ...baseStyle.body,
+    bgColor: "neutral.white",
+    _dark: {
+      bgColor: "neutral.700"
+    }
+  },
+  footer: {
+    ...baseStyle.footer
+  }
+})
+
 export const modalStyles = defineMultiStyleConfig({
-  baseStyle
+  baseStyle,
+  variants: {
+    search
+  }
 })
