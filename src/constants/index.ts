@@ -58,11 +58,12 @@ export const PLAYER_VOLUME_DEFAULT = 30;
 
 
 /** Use when interacting with the server running on the RPI. */
-const RPI_SERVER_URL = "http://192.168.1.16:3001";
+const RPI_SERVER_URL = `${window.location.protocol}//${window.location.host}:3001`; // If running on RPI 3, change to splice 5
 /** Use when interacting with the local server. */
 const LOCAL_SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
 /** The server URL. */
 export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL : LOCAL_SERVER_URL
+// export const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
 export const APP_TITLE = "R Jukebox";
