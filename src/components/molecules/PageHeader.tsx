@@ -412,6 +412,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                 align="flex-start"
                 fontSize="16px"
                 gap="10px"
+                overflowY="auto"
                 pb="10px"
                 px="20px"
               >
@@ -475,6 +476,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                   align="flex-start"
                   fontSize="16px"
                   gap="10px"
+                  overflowY="auto"
                   pb="10px"
                   px="20px"
                 >
@@ -738,10 +740,11 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, ha
       isOpen={isOpen}
       scrollBehavior="inside"
       size={isMobile ? "xs" : "md"}
+      variant="search"
       onClose={onClickXButton}
     >
       <ModalOverlay />
-      <ModalContent bg="transparent" boxShadow={0}>
+      <ModalContent boxShadow={0}>
         <Flex alignItems="center" flexDir="column">
           <InputGroup as="search">
             <InputLeftElement pointerEvents="none">
