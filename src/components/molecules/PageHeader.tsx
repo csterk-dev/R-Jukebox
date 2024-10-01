@@ -412,6 +412,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                 align="flex-start"
                 fontSize="16px"
                 gap="10px"
+                overflowY="auto"
                 pb="10px"
                 px="20px"
               >
@@ -475,6 +476,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
                   align="flex-start"
                   fontSize="16px"
                   gap="10px"
+                  overflowY="auto"
                   pb="10px"
                   px="20px"
                 >
