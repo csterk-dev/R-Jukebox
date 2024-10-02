@@ -148,7 +148,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
               />
               <IconButton
                 aria-label="Open settings"
-                colorScheme="purple"
+                colorScheme="brand"
                 icon={<HiCog6Tooth opacity={0.9} />}
                 variant="ghost"
                 onClick={onOpenSettings}
@@ -191,7 +191,7 @@ const _PageHeader: FC<FlexProps> = (props) => {
                     />
                     <Slider
                       aria-label="Volume control"
-                      colorScheme="purple"
+                      colorScheme="brand"
                       focusThumbOnChange={false}
                       isDisabled={!showingCurrentVideo}
                       max={100}
@@ -364,7 +364,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnimated, is
               <Text>{`${volumeLevel}%`}</Text>
               <Slider
                 aria-label="Volume control"
-                colorScheme="purple"
+                colorScheme="brand"
                 height="100%"
                 isDisabled={isVolumeDisabled}
                 max={100}
@@ -697,7 +697,7 @@ const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) 
           <Notes date={v1_2ReleaseNotes[0].date} mt="10px" notes={v1_2ReleaseNotes[0].notes} />
 
           <Button
-            colorScheme="purple"
+            colorScheme="brand"
             mt="30px"
             pb="2px"
             onClick={onClose}
@@ -781,7 +781,7 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, ha
               bgColor={foreground}
               borderBottomLeftRadius="6px"
               borderBottomRightRadius="6px"
-              colorScheme="purple"
+              colorScheme="brand"
               height="8px"
               mt="-8px"
               width="100%"
@@ -840,7 +840,7 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
   if (isMobile) return (
     <IconButton
       aria-label="Open search"
-      colorScheme="purple"
+      colorScheme="brand"
       icon={<HiMagnifyingGlass />}
       variant="ghost"
       onClick={onOpen}
@@ -911,7 +911,7 @@ const Notes: FC<NotesProps> = ({ notes, date, ...props }) => {
               <Icon
                 aria-roledescription="Bullet point"
                 as={note.kind == "bugFix" ? HiBugAnt : note.kind == "improvement" ? HiWrenchScrewdriver : HiStar}
-                color={note.kind == "bugFix" ? "red.300" : note.kind == "improvement" ? "purple.300" : "yellow.500"}
+                color={note.kind == "bugFix" ? "red.300" : note.kind == "improvement" ? "brand.300" : "yellow.500"}
               />
             </Box>
             <Flex flex={1}>{note.details}</Flex>

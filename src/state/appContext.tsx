@@ -1,7 +1,10 @@
 import { useMediaQuery, useToast, UseToastOptions } from "@chakra-ui/react";
 import { MOBILE_BREAKPOINT } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { getThemeSeason } from "../utils/misc";
+import dayjs from "dayjs";
 
+const themeSeason: AppContextType["themeSeason"] = getThemeSeason(dayjs());
 
 const infoToastStyle = {
   status: "info" as UseToastOptions["status"],
@@ -9,7 +12,7 @@ const infoToastStyle = {
   duration: 10000,
   isClosable: true,
   containerStyle: {
-    bg: "#8659EF",
+    bg: themeSeason === "halloween" ? "#DD6B20" : "#8659EF",
     color: "#ffffff",
     borderRadius: 5
   }
@@ -26,12 +29,14 @@ interface AppContextType {
   isMobile: boolean;
   isBgAnimated: boolean;
   toggleBgAnimated: () => void;
+  themeSeason: "halloween" | "christmas" | "none";
 }
 
 const defaultAppContextVal: AppContextType = {
   isMobile: false,
   isBgAnimated: true,
-  toggleBgAnimated: () => void 0
+  toggleBgAnimated: () => void 0,
+  themeSeason: "none"
 };
 
 
@@ -89,7 +94,8 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     return {
       isMobile,
       isBgAnimated,
-      toggleBgAnimated
+      toggleBgAnimated,
+      themeSeason
     }
   }, [isBgAnimated, isMobile, toggleBgAnimated]);
 

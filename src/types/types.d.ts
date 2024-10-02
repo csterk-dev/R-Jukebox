@@ -47,4 +47,4 @@ type ReleaseNotes = {
   title: string;
   notes: ReleaseNote[];
   date?: string;
-}[]
+}[];

@@ -2,10 +2,17 @@ import { Circle, Flex, FlexProps, Square } from "@chakra-ui/react";
 import { FC, memo } from "react";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
+import { colors, halloweenThemedBgColors, purpleThemedBgColors } from "theme/colors";
 
 
-const _PageBackdrop: FC<FlexProps> = (props) => {
+type PageBackdropProps = FlexProps & {
+  themeSeason: "halloween" | "christmas" | "none";
+}
+
+const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
   const dimensions = useWindowDimensions();
+  applyColorPalette(themeSeason === "halloween" ? halloweenThemedBgColors : purpleThemedBgColors);
+
 
   return (
     <Flex
@@ -29,7 +36,7 @@ const _PageBackdrop: FC<FlexProps> = (props) => {
           filter: `blur(${SHAPE_BLUR})`,
           opacity: SHAPE_OPACITY
         }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants3}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
       >
         <Circle filter={`blur(${SHAPE_BLUR})`} opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
       </motion.div>
@@ -219,12 +226,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#6C21CC"
+      backgroundColor: colors.neutral[300]
     },
     animate: {
       x: [0, -100, 0],
       y: [0, 100, 0],
-      backgroundColor: ["#6C21CC", "#353FEB", "#0018FB", "#8F31B7"],
+      backgroundColor: [colors.neutral[500]],
       transition: {
         duration: 12,
         repeat: Infinity,
@@ -236,12 +243,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#CA0030"
+      backgroundColor: colors.neutral[300]
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -100, 0],
-      backgroundColor: ["#CA0030", "#CE0088", "#CC69AB", "#FDA1A4"],
+      backgroundColor: [colors.neutral[500]],
       transition: {
         duration: 4,
         repeat: Infinity,
@@ -253,12 +260,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#DF4FA7"
+      backgroundColor: colors.neutral[300]
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -100, 0],
-      backgroundColor: ["#DF4FA7", "#A5279D", "#6C21CC"],
+      backgroundColor: [colors.neutral[500]],
       transition: {
         duration: 5,
         repeat: Infinity,
@@ -270,13 +277,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#4E34DE",
+      backgroundColor: colors.neutral[300],
       rotate: 0
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -50, 0],
-      backgroundColor: ["#4E34DE", "#A616BB", "#D00289", "#B20142"],
+      backgroundColor: [colors.neutral[500]],
       rotate: [0, -180, 0],
       transition: {
         duration: 20,
@@ -289,13 +296,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#B901B1",
+      backgroundColor: colors.neutral[300],
       rotate: 0
     },
     animate: {
       x: [0, -100, 0],
       y: [0, 150, 0],
-      backgroundColor: ["#B901B1", "#AD43A2", "#CC2B5E"],
+      backgroundColor: [colors.neutral[500]],
       rotate: [0, 360, 0],
       transition: {
         duration: 30,
@@ -308,13 +315,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: "#F8A9B4",
+      backgroundColor: colors.neutral[300],
       rotate: 0
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -100, 0],
-      backgroundColor: ["#F8A9B4", "#FF9CA1", "#CE29A2"],
+      backgroundColor: [colors.neutral[500]],
       rotate: [0, 90, 0],
       transition: {
         duration: 15,
@@ -323,4 +330,31 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       }
     }
   }
+};
+
+
+
+type BgColors = {
+  [key in keyof typeof BG_ANIM_SHAPE_VARIANTS]: {
+    initial: string;
+    animate: string[];
+  };
+};
+
+type CustomVariant = {
+  initial: {
+    backgroundColor: string;
+  };
+  animate: {
+    backgroundColor: string[];
+  };
+};
+/** Applies the provided color palette to the animated bg shape variants. */
+const applyColorPalette = (palette: BgColors) => {
+  const newVariants: Variants = { ...BG_ANIM_SHAPE_VARIANTS };
+
+  Object.keys(newVariants).forEach((variant) => {
+    (newVariants[variant] as CustomVariant).initial.backgroundColor = palette[variant].initial;
+    (newVariants[variant] as CustomVariant).animate.backgroundColor = palette[variant].animate;
+  });
 };
