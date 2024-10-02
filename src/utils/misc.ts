@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
@@ -173,4 +173,12 @@ export function videoPlayedAtToString(playedAtDate?: string, format?: string) {
   if (today.diff(playedAtObj, "days") <= 5) return playedAtObj.format("dddd");
   if (today.diff(playedAtObj, "days") > 5) return playedAtObj.format("ddd DD/MM/YYYY");
   return playedAtDate;
+}
+
+
+/** Returns the correct season for the current month of given date. */
+export function getThemeSeason(date: Dayjs) {
+  if (dayjs(date).isSame("2024-10-01", "month")) return "halloween";
+  if (dayjs(date).isSame("2024-12-01", "month")) return "christmas";
+  return "none";
 }

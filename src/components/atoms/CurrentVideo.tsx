@@ -29,7 +29,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
 
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
-  const videoContainer = useColorModeValue("rgba(255, 255, 255, 1)", "rgba(13, 15, 24, 1)");
+  const videoContainer = useColorModeValue("neutral.white", "bg.videoContainer");
   const durationBg = useColorModeValue("white", "neutral.500");
   const dimensions = useWindowDimensions();
 

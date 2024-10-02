@@ -11,7 +11,7 @@ import { useAppState } from "state/appContext";
  * @returns {JSX.Element} The background used for the page.
  */
 export const PageContainer: FC<BoxProps> = (props) => {
-  const { isBgAnimated } = useAppState();
+  const { isBgAnimated, themeSeason } = useAppState();
   const { colorMode } = useColorMode();
 
   return (
@@ -34,9 +34,12 @@ export const PageContainer: FC<BoxProps> = (props) => {
       </Box>
 
       {isBgAnimated ?
-        <PageBackdrop /> :
+        <PageBackdrop themeSeason={themeSeason} /> :
         <Flex
-          bg={colorMode === "dark" ? "url('dark_bg_static.png') center/cover no-repeat" : "url('light_bg_static.png') center/cover no-repeat"}
+          bg={colorMode === "dark" ?
+            themeSeason === "halloween" ? "url('halloween_dark_bg_static.png') center/cover no-repeat" : "url('dark_bg_static.png') center/cover no-repeat" :
+            themeSeason === "halloween" ? "url('halloween_light_bg_static.png') center/cover no-repeat" : "url('light_bg_static.png') center/cover no-repeat"
+          }
           height="100%"
           overflow="hidden"
           position="relative"

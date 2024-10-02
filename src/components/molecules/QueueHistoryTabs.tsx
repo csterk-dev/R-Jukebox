@@ -79,7 +79,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
         {...props}
       >
         <Tabs
-          colorScheme="purple"
+          colorScheme="brand"
           defaultIndex={0}
           display="flex"
           flexDirection="column"
