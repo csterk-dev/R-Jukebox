@@ -5,16 +5,11 @@ import { useWebSockets } from "utils/hooks";
 import { replaceHtmlEntities } from "utils/misc";
 
 
-const defaultErrorToastStyle = {
+const errorToastProps = {
   status: "error" as UseToastOptions["status"],
-  variant: "unstyled",
-  duration: 30000,
-  isClosable: true,
-  containerStyle: {
-    bg: "#B9023A",
-    color: "#ffffff",
-    borderRadius: 5
-  }
+  variant: "error",
+  duration: 10000,
+  isClosable: true
 };
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
@@ -112,7 +107,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   /** Adds the provided video to the end of the queue. */
   const addToBottomOfQueue = useCallback((video: Video) => {
     socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, socketInstance.id, video);
-
+    
   }, [socketInstance]);
 
 
@@ -196,7 +191,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
             id: toastIds.playerError,
             title: "Player error",
             description: errorMessage,
-            ...defaultErrorToastStyle
+            ...errorToastProps
           });
         }
       });

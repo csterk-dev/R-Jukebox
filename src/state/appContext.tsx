@@ -4,18 +4,13 @@ import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffec
 import { getThemeSeason } from "../utils/misc";
 import dayjs from "dayjs";
 
-const themeSeason: AppContextType["themeSeason"] = getThemeSeason(dayjs());
+const themeSeason = getThemeSeason(dayjs());
 
-const infoToastStyle = {
+const infoToastProps = {
   status: "info" as UseToastOptions["status"],
-  variant: "unstyled",
-  duration: 10000,
-  isClosable: true,
-  containerStyle: {
-    bg: themeSeason === "halloween" ? "#DD6B20" : "#8659EF",
-    color: "#ffffff",
-    borderRadius: 5
-  }
+  variant: "info",
+  duration: 7000,
+  isClosable: true
 };
 
 
@@ -29,7 +24,7 @@ interface AppContextType {
   isMobile: boolean;
   isBgAnimated: boolean;
   toggleBgAnimated: () => void;
-  themeSeason: "halloween" | "christmas" | "none";
+  themeSeason: ThemeSeason
 }
 
 const defaultAppContextVal: AppContextType = {
@@ -76,7 +71,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         id: toastIds.bgAnimatedTrue,
         title: "Animations disabled",
         description: "Battery life and performance may increase.",
-        ...infoToastStyle
+        ...infoToastProps
       });
 
     } else if (!toast.isActive(toastIds.bgAnimatedFalse) && !isBgAnimated) {
@@ -84,7 +79,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         id: toastIds.bgAnimatedFalse,
         title: "Animations enabled",
         description: "This may affect your battery life and performance",
-        ...infoToastStyle
+        ...infoToastProps
       });
     }
   }, [isBgAnimated, toast]);

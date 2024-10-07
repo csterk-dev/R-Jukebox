@@ -48,3 +48,6 @@ type ReleaseNotes = {
   notes: ReleaseNote[];
   date?: string;
 }[];
+
+
+ type ThemeSeason = "halloween" | "christmas" | "none";

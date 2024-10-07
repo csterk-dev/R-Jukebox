@@ -24,11 +24,15 @@ const v1_2_0: ReleaseNote[] = [
 
 const v1_2_1: ReleaseNote[] = [
   {
+    details: "Happy Halloween! Jukebox now has a fresh coat of paint for the spooky season.",
+    kind: "newFeature"
+  },
+  {
     details: "Added RPI 5 compatibility.",
     kind: "newFeature"
   },
   {
-    details: "Fixed a style issue with the search results list.",
+    details: "Fixed a few style issues with modals.",
     kind: "bugFix"
   }
 ];
