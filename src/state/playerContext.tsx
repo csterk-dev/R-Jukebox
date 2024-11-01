@@ -7,8 +7,8 @@ import { replaceHtmlEntities } from "utils/misc";
 const queueToastProps = {
   status: "success" as UseToastOptions["status"],
   variant: "success",
-  duration: 6000,
-  isClosable: false
+  duration: 5000,
+  isClosable: true
 };
 
 const errorToastProps = {
@@ -317,6 +317,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
+      socketInstance.off(SOCKET_EVENT_KEYS.info);
     }
   }, [currentVideo?.videoId, isPlaying, isConnected, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 
