@@ -51,3 +51,16 @@ type ReleaseNotes = {
 
 
  type ThemeSeason = "halloween" | "christmas" | "none";
+
+
+/** Ensure cleint and server match. */
+interface QueueRequest {
+  clientId: string;
+  video: Video
+ }
+
+/** Ensure cleint and server match. */
+ interface QueueAcknowledgement {
+  success: boolean;
+  errorMessage?: string;
+ }

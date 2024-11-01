@@ -30,11 +30,20 @@ const error = definePartsStyle({
 });
 
 
+const success = definePartsStyle({
+  container: {
+    bg: "#00a075",
+    color: "#ffffff"
+  }
+});
+
+
 export const alertStyles = defineMultiStyleConfig({
   baseStyle,
   variants: {
     info,
-    error
+    error,
+    success
   },
   defaultProps: {
     variant: "info"
