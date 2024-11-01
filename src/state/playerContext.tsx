@@ -5,9 +5,9 @@ import { useWebSockets } from "utils/hooks";
 import { replaceHtmlEntities } from "utils/misc";
 
 const queueToastProps = {
-  status: "success" as any,
+  status: "success" as UseToastOptions["status"],
   variant: "success",
-  duration: 5000,
+  duration: 6000,
   isClosable: false
 };
 
@@ -17,6 +17,14 @@ const errorToastProps = {
   duration: 10000,
   isClosable: true
 };
+
+const infoToastProps = {
+  status: "info" as UseToastOptions["status"],
+  variant: "info",
+  duration: 6000,
+  isClosable: false
+};
+
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
 const toastIds = {
@@ -116,12 +124,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       if (ack.success) {
         console.log(`Added ${video.title} to the queue`);
         toast({
-          title: `${video.title.slice(0, 20)}... added to the queue`,
+          title: `${video.title.slice(0, 25)}... added to the queue`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: `Unable to add ${video.title.slice(0, 20)}... to the queue`,
+          title: `Unable to add ${video.title.slice(0, 25)}... to the queue`,
           description: ack.errorMessage,
           ...errorToastProps
         });
@@ -243,6 +251,18 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
             title: "Player error",
             description: errorMessage,
             ...errorToastProps
+          });
+        }
+      });
+
+
+      /** Handle any info messages from the player. */
+      socketInstance.on(SOCKET_EVENT_KEYS.info, (info: InfoAcknowledgment) => {
+        if (!toast.isActive(toastIds.playerError)) {
+          toast({
+            title: info.title,
+            description: info.description,
+            ...infoToastProps
           });
         }
       });

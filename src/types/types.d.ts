@@ -54,13 +54,19 @@ type ReleaseNotes = {
 
 
 /** Ensure cleint and server match. */
-interface QueueRequest {
+type QueueRequest = {
   clientId: string;
   video: Video
  }
 
 /** Ensure cleint and server match. */
- interface QueueAcknowledgement {
+ type QueueAcknowledgement = {
   success: boolean;
   errorMessage?: string;
+ }
+
+
+ type InfoAcknowledgment = {
+  title: string;
+  description?: string;
  }
