@@ -4,18 +4,27 @@ import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffec
 import { useWebSockets } from "utils/hooks";
 import { replaceHtmlEntities } from "utils/misc";
 
-
-const defaultErrorToastStyle = {
-  status: "error" as UseToastOptions["status"],
-  variant: "unstyled",
-  duration: 30000,
-  isClosable: true,
-  containerStyle: {
-    bg: "#B9023A",
-    color: "#ffffff",
-    borderRadius: 5
-  }
+const queueToastProps = {
+  status: "success" as UseToastOptions["status"],
+  variant: "success",
+  duration: 5000,
+  isClosable: true
 };
+
+const errorToastProps = {
+  status: "error" as UseToastOptions["status"],
+  variant: "error",
+  duration: 10000,
+  isClosable: true
+};
+
+const infoToastProps = {
+  status: "info" as UseToastOptions["status"],
+  variant: "info",
+  duration: 6000,
+  isClosable: false
+};
+
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
 const toastIds = {
@@ -104,16 +113,61 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
   /** Adds the provided video to the start of the queue. */
   const addToTopOfQueue = useCallback((video: Video) => {
-    socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, socketInstance.id, video);
+    if (!socketInstance.id) return;
+    
+    const data: QueueRequest = {
+      clientId: socketInstance.id,
+      video
+    };
 
-  }, [socketInstance]);
+    const ackCallback = (ack: QueueAcknowledgement) => {
+      if (ack.success) {
+        console.log(`Added ${video.title} to the queue`);
+        toast({
+          title: `${video.title.slice(0, 25)}... added to the queue`,
+          ...queueToastProps
+        });
+      } else {
+        toast({
+          title: `Unable to add ${video.title.slice(0, 25)}... to the queue`,
+          description: ack.errorMessage,
+          ...errorToastProps
+        });
+      }
+    }
+    socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, data, ackCallback);
+    
+  }, [socketInstance, toast]);
 
 
   /** Adds the provided video to the end of the queue. */
   const addToBottomOfQueue = useCallback((video: Video) => {
-    socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, socketInstance.id, video);
+    if (!socketInstance.id) return;
+    
+    const data: QueueRequest = {
+      clientId: socketInstance.id,
+      video
+    };
 
-  }, [socketInstance]);
+    const ackCallback = (ack: QueueAcknowledgement) => {
+      if (ack.success) {
+        console.log(`Added ${video.title} to the queue`);
+        toast({
+          title: `${video.title.slice(0, 20)}... added to the queue`,
+          ...queueToastProps
+        });
+      } else {
+        toast({
+          title: `Unable to add ${video.title.slice(0, 20)}... to the queue`,
+          description: ack.errorMessage,
+          ...errorToastProps
+        });
+      }
+    }
+
+    socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, data, ackCallback);
+    
+  }, [socketInstance, toast]);
 
 
   /** Plays the next video from the queue. */
@@ -196,7 +250,19 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
             id: toastIds.playerError,
             title: "Player error",
             description: errorMessage,
-            ...defaultErrorToastStyle
+            ...errorToastProps
+          });
+        }
+      });
+
+
+      /** Handle any info messages from the player. */
+      socketInstance.on(SOCKET_EVENT_KEYS.info, (info: InfoAcknowledgment) => {
+        if (!toast.isActive(toastIds.playerError)) {
+          toast({
+            title: info.title,
+            description: info.description,
+            ...infoToastProps
           });
         }
       });
@@ -251,6 +317,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
+      socketInstance.off(SOCKET_EVENT_KEYS.info);
     }
   }, [currentVideo?.videoId, isPlaying, isConnected, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 

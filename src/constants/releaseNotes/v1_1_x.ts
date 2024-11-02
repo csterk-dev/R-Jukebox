@@ -62,11 +62,13 @@ const v1_1_1: ReleaseNote[] = [
 export const v1_1ReleaseNotes: ReleaseNotes = [
   {
     title: "Release 1.1.1",
+    versionNum: "1.1.1",
     notes: v1_1_1,
     date: "08/08/2024"
   },
   {
     title: "Release 1.1.0",
+    versionNum: "1.1.0",
     notes: v1_1_0,
     date: "01/08/2024"
   }

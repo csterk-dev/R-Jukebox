@@ -4,7 +4,7 @@ type BugNote = {
   details: string;
 }
 
-export const bugList: BugNote[] = [
+export const BUG_LIST: BugNote[] = [
   {
     title: "Video scrubbing inaccuracy on longer videos",
     details: "When scrubbing video playback, there is a slight inaccuracy between the set value and the optimistic value. This only really becomes noticable on longer videos."

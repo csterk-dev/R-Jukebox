@@ -45,6 +45,29 @@ type NoteType = "improvement" | "bugFix" | "newFeature";
 
 type ReleaseNotes = {
   title: string;
+  versionNum: string;
   notes: ReleaseNote[];
-  date?: string;
+  date: string;
 }[];
+
+
+ type ThemeSeason = "halloween" | "christmas" | "none";
+
+
+/** Ensure cleint and server match. */
+type QueueRequest = {
+  clientId: string;
+  video: Video
+ }
+
+/** Ensure cleint and server match. */
+ type QueueAcknowledgement = {
+  success: boolean;
+  errorMessage?: string;
+ }
+
+
+ type InfoAcknowledgment = {
+  title: string;
+  description?: string;
+ }

@@ -17,15 +17,7 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "@atoms": ["components/atoms"],
-      "@constants": ["./constants"],
-      "@molecules": ["components/molecules"],
-      "@organisms": ["components/organisms"],
-      "@pages": ["./pages"],
-      "@state": ["./state"],
-      "@templates": ["components/templates"],
-      "@theme": ["./theme"],
-      "@utils": ["./utils"],
+      
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

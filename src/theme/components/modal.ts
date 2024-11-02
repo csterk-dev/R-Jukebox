@@ -32,7 +32,10 @@ const baseStyle = definePartsStyle({
 
 const search = definePartsStyle({
   dialog: {
-    bgColor: "transparent"
+    bgColor: "transparent",
+    _dark: {
+      bgColor: "transparent"
+    }
   },
   header: {
     ...baseStyle.header

@@ -22,6 +22,8 @@ export const SOCKET_EVENT_KEYS = {
   getInitialState: "get-initial-state",
   /** Gets the history. */
   history: "history",
+  /** Used for general information on player or queue updates. */
+  info: "info",
   /** If the player is loading. */
   isLoading: "is-loading",
   /** Gets the value from the isPlaying boolean. */
@@ -42,7 +44,7 @@ export const SOCKET_EVENT_KEYS = {
   setPlayerVolume: "set-player-vol"
 };
 
-export const VERSION_NUM = "1.2.1";
+export const VERSION_NUM = "1.2.2";
 
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;
@@ -67,3 +69,6 @@ export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL
 // export const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
 export const APP_TITLE = "R Jukebox";
+
+
+export const NUM_OF_SEARCH_RESULTS = 40;
