@@ -58,6 +58,6 @@ export const YoutubeAPI = {
    * @remarks Quota cost = `100 credits`.
    */
   async searchVideos(query: string, limit?: number) {
-    return await YOUTUBE_CLIENT.get(`/search?val=${query}&limit=${limit}`);
+    return await YOUTUBE_CLIENT.get(`/search?val=${query}&limit=${limit ?? 20}`);
   }
 }
