@@ -45,8 +45,9 @@ type NoteType = "improvement" | "bugFix" | "newFeature";
 
 type ReleaseNotes = {
   title: string;
+  versionNum: string;
   notes: ReleaseNote[];
-  date?: string;
+  date: string;
 }[];
 
 

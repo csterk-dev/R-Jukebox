@@ -37,15 +37,42 @@ const v1_2_1: ReleaseNote[] = [
   }
 ];
 
+const v1_2_2: ReleaseNote[] = [
+  {
+    details: "Added new toast notifications for queue interactions.",
+    kind: "newFeature"
+  },
+  {
+    details: "Updated the search bar to better support mobile devices and search UX practices.",
+    kind: "improvement"
+  },
+  {
+    details: "Update background images to use .Webp format.",
+    kind: "improvement"
+  },
+  {
+    details: "Fixed accidentally auto clearing the user's input when closing the search modal.",
+    kind: "bugFix"
+  }
+];
+
 
 export const v1_2ReleaseNotes: ReleaseNotes = [
   {
+    title: "Welcome to v1.2.2!",
+    versionNum: "1.2.2",
+    notes: v1_2_2,
+    date: "2/11/2024"
+  },
+  {
     title: "Release 1.2.1",
+    versionNum: "1.2.1",
     notes: v1_2_1,
     date: "1/10/2024"
   },
   {
     title: "Release 1.2.0",
+    versionNum: "1.2.0",
     notes: v1_2_0,
     date: "12/09/2024"
   }

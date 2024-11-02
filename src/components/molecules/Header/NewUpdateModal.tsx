@@ -26,7 +26,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
         userSelect="none"
       >
         <Flex flexDirection="column" p="10px 20px 20px">
-          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_2ReleaseNotes[0].title} is here!`}</Text>
+          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_2ReleaseNotes[0].title}`}</Text>
           <Text
             as="h2"
             fontSize="24"

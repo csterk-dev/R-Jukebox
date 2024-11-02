@@ -8,7 +8,7 @@ export const ReleaseNotesAccordion: FC<ReleaseNotesAccordionProps> = ({ releaseN
   return (
     <Accordion width="100%" allowToggle>
       {releaseNotes.map(release => (
-        <AccordionItem key={release.title}>
+        <AccordionItem key={release.versionNum}>
           <h2>
             <HStack
               _hover={{ bgColor: "transparent" }}
@@ -16,7 +16,7 @@ export const ReleaseNotesAccordion: FC<ReleaseNotesAccordionProps> = ({ releaseN
               px={0}
             >
               <Box as="span" flex={1} textAlign="left">
-                {release.title}
+                {release.versionNum}
               </Box>
               <AccordionIcon />
             </HStack>

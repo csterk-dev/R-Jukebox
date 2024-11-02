@@ -145,7 +145,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                   opacity={0.7}
                   textTransform="uppercase"
                 >
-                  V1.2
+                  V1.2 - Queue
                 </Text>
                 <ReleaseNotesAccordion releaseNotes={v1_2ReleaseNotes} />
 
@@ -155,7 +155,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                   opacity={0.7}
                   textTransform="uppercase"
                 >
-                  V1.1
+                  V1.1 - History
                 </Text>
                 <ReleaseNotesAccordion releaseNotes={v1_1ReleaseNotes} />
 
@@ -165,7 +165,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                   opacity={0.7}
                   textTransform="uppercase"
                 >
-                  V1.0
+                  V1.0 - Launch
                 </Text>
                 <ReleaseNotesAccordion releaseNotes={v1_0ReleaseNotes} />
               </VStack>
