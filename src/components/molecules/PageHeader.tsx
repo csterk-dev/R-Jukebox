@@ -1,11 +1,9 @@
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, BoxProps, Button, Divider, Flex, FlexProps, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Kbd, List, ListItem, ListProps, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Text, Tooltip, useColorModeValue, useDisclosure, useMediaQuery, VStack } from "@chakra-ui/react";
-import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
+import { FC, FormEvent, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiBugAnt, HiChartBar, HiChevronLeft, HiClipboardDocumentList, HiCog6Tooth, HiMagnifyingGlass, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSpeakerXMark, HiStar, HiWrenchScrewdriver, HiXMark } from "react-icons/hi2";
 import { ColorModeSwitcher } from "../atoms/ColorModeSwitcher";
 import { VideoCard } from "components/atoms/VideoCard";
 import { VideoControls } from "components/atoms/VideoControls";
-import { useDebounce } from "@usesoftwareau/react-utils";
-import { useYoutubeSearch } from "utils/hooks";
 import { usePlayer } from "state/playerContext";
 import { useAppState } from "state/appContext";
 import { VERSION_NUM } from "../../constants";
@@ -13,13 +11,15 @@ import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
 import { bugList } from "../../constants/bugList";
 import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
 import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
+import { YoutubeAPI } from "utils/api";
+import { AxiosResponse } from "axios";
 
 
 const NUM_OF_RESULTS = 40;
 
 
 const _PageHeader: FC<FlexProps> = (props) => {
-  const { currentVideo, isPlaying, isPlayerLoading, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
+  const { currentVideo, isPlaying, isPlayerLoading, queue, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
   const showingCurrentVideo = !!currentVideo && !isPlayerLoading;
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
@@ -138,7 +138,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
             <>
               <SearchBarBox flex={1} isMobile onOpen={onOpenSearch} />
               <VideoControls
-                disableButtons={!showingCurrentVideo}
+                disableBackButton={!showingCurrentVideo}
+                disablePlayButton={!showingCurrentVideo}
+                disableQueueButton={!queue.length}
                 flex={1}
                 isPlaying={isPlaying}
                 pauseCurrentVideo={pauseCurrentVideo}
@@ -158,7 +160,9 @@ const _PageHeader: FC<FlexProps> = (props) => {
             // Default view
             <>
               <VideoControls
-                disableButtons={!showingCurrentVideo}
+                disableBackButton={!showingCurrentVideo}
+                disablePlayButton={!showingCurrentVideo}
+                disableQueueButton={!queue.length}
                 flex={1}
                 isPlaying={isPlaying}
                 pauseCurrentVideo={pauseCurrentVideo}
@@ -723,14 +727,41 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, ha
   const foreground = useColorModeValue("white", "neutral.700");
 
   const [searchVal, setSearchVal] = useState<string>("");
-  const query = useDebounce(searchVal, 1000);
-  const { error, loading, videos } = useYoutubeSearch(query, NUM_OF_RESULTS);
+  // const query = useDebounce(searchVal, 1000);
+  const [loading, setLoading] = useState(false);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [error, setError] = useState<string>();
+
+  // const { error, loading, videos } = useYoutubeSearch(query, NUM_OF_RESULTS);
 
 
-  /** Clears the input if there is a value otherwise closes the modal. */
-  const onClickXButton = useCallback(() => {
-    if (!searchVal) return onClose();
-    setSearchVal("");
+  const handleSubmit = useCallback(async () => {
+    if (!searchVal) return;
+    try {
+      setError(undefined);
+      setLoading(true);
+
+      const res: AxiosResponse<Video[]> = await YoutubeAPI.searchVideos(searchVal, NUM_OF_RESULTS);
+      setVideos(res.data);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchVal]);
+
+
+  const onFormSubmit = useCallback((e: FormEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    handleSubmit();
+  }, [handleSubmit]);
+
+
+  /** Clears the input if there is a value. */
+  const onClickClear = useCallback(() => {
+    if (searchVal) setSearchVal("");
+    else onClose();
   }, [onClose, searchVal]);
 
 
@@ -741,41 +772,45 @@ const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, ha
       scrollBehavior="inside"
       size={isMobile ? "xs" : "md"}
       variant="search"
-      onClose={onClickXButton}
+      onClose={onClose}
     >
       <ModalOverlay />
       <ModalContent boxShadow={0}>
         <Flex alignItems="center" flexDir="column">
-          <InputGroup as="search">
-            <InputLeftElement pointerEvents="none">
-              <Icon aria-label="search icon" as={HiMagnifyingGlass} />
-            </InputLeftElement>
-            <Input
-              bg={foreground}
-              borderRadius="6px"
-              boxShadow="md"
-              height="40px"
-              id="search"
-              placeholder="Search Youtube"
-              px="10px"
-              value={searchVal}
-              variant="unstyled"
-              width="100%"
-              autoFocus
-              onChange={val => setSearchVal(val.target.value)}
-            />
-            <InputRightElement>
-              <IconButton
-                aria-label="Close search"
+          <form id="search" style={{ width: "100%" }} onSubmit={useCallback((e: any) => onFormSubmit(e), [onFormSubmit])}>
+            <InputGroup as="search">
+              <InputLeftElement pointerEvents="none">
+                <Icon aria-label="search icon" as={HiMagnifyingGlass} opacity={0.7} />
+              </InputLeftElement>
+              <Input
+                bg={foreground}
                 borderRadius="6px"
-                height="100%"
-                icon={<HiXMark />}
-                variant="link"
-                zIndex={10}
-                onClick={onClickXButton}
+                boxShadow="md"
+                className="searchInput"
+                enterKeyHint="search"
+                height="40px"
+                id="searchInput"
+                placeholder="Search Youtube"
+                px="10px"
+                type="search"
+                value={searchVal}
+                variant="unstyled"
+                width="100%"
+                autoFocus
+                onChange={val => setSearchVal(val.target.value)}
               />
-            </InputRightElement>
-          </InputGroup>
+              <InputRightElement mr="10px">
+                <Button
+                  colorScheme="purple"
+                  size="sm"
+                  variant="link"
+                  onClick={onClickClear}
+                >
+                  {searchVal ? "Clear" : "Close"}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </form>
           {loading ?
             <Progress
               bgColor={foreground}
@@ -861,10 +896,7 @@ const SearchBarBox: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => 
         <Icon aria-label="Open search" as={HiMagnifyingGlass} />
         <Text opacity={0.7}>Search</Text>
         <Spacer />
-        <HStack gap={1} userSelect="none">
-          <Kbd>⌘</Kbd>
-          <Kbd>K</Kbd>
-        </HStack>
+        <Kbd userSelect="none">⌘ K</Kbd>
       </HStack>
     </Box>
   );
