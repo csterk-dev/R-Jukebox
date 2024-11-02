@@ -1,5 +1,5 @@
 import { ChakraProvider, Flex, useMediaQuery } from "@chakra-ui/react";
-import { PageHeader } from "components/molecules/PageHeader";
+import { Header } from "components/molecules/Header";
 import { theme } from "./theme";
 import { CurrentVideo } from "components/atoms/CurrentVideo";
 import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
@@ -18,7 +18,7 @@ export const App = () => {
         <PlayerProvider>
           <PageContainer>
 
-            <PageHeader height={`${HEADER_HEIGHT}px`} />
+            <Header height={`${HEADER_HEIGHT}px`} />
 
             <Flex
               flexDirection={!isLargerThan800 ? "column" : "row"}

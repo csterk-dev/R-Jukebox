@@ -1,4 +1,4 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorModeValue, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
 import { IconType } from "react-icons";
@@ -10,15 +10,11 @@ import { videoPlayedAtToString } from "utils/misc";
 type QueueHistoryProps = FlexProps;
 
 const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
-  const foreground = useColorModeValue("rgba(255, 255, 255, 0.8)", "rgba(13, 15, 24, 0.75)");
-  const tabHeader = useColorModeValue("neutral.white", "neutral.900");
-  const deleteQueueVidButton = useColorModeValue("neutral.900", "neutral.white");
   const { isMobile } = useAppState();
   const { history, queue, playVideo, addToBottomOfQueue, addToTopOfQueue, clearQueue, deleteQueueItem } = usePlayer();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { isOpen: isClearConfOpen, onOpen: onOpenClearConf, onClose: onCloseClearConf } = useDisclosure();
   const cancelClearButtonRef = useRef<HTMLButtonElement>(null);
-
 
   const historyCards: JSX.Element[] = useMemo(() => {
     type SortedHistory = { [key: string]: HistoryVideo[] }
@@ -69,8 +65,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   return (
     <>
       <Flex
+        _dark={{ bg: "rgba(13, 15, 24, 0.75)" }}
         as="aside"
-        bg={foreground}
+        bg="rgba(255, 255, 255, 0.8)"
         borderRadius={10}
         boxShadow="lg"
         height="100%"
@@ -89,8 +86,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           onChange={useCallback((index: number) => setTabIndex(index), [])}
         >
           <TabList
+            _dark={{ bg: "neutral.900" }}
             alignItems="center"
-            bgColor={tabHeader}
+            bg="neutral.white"
             boxShadow="base"
             justifyContent="space-between"
             p="10px"
@@ -124,8 +122,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                   {queue.map(vid => (
                     <Flex key={vid.videoId} alignItems="center">
                       <IconButton
+                        _dark={{ color: "neutral.white" }}
                         aria-label="More options"
-                        color={deleteQueueVidButton}
+                        color="neutral.900"
                         fontSize="18px"
                         icon={<HiXMark />}
                         size="sm"
@@ -218,8 +217,6 @@ type PlaceholderProps = FlexProps & {
 }
 
 const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
-  const iconBg = useColorModeValue("neutral.white", "neutral.400");
-
   return (
     <Flex
       alignItems="center"
@@ -229,7 +226,8 @@ const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
       {...props}
     >
       <Box
-        background={iconBg}
+        _dark={{ bg: "neutral.400" }}
+        bg="white"
         borderRadius="90"
         p="20px"
       >

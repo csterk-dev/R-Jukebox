@@ -69,3 +69,6 @@ export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL
 // export const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
 export const APP_TITLE = "R Jukebox";
+
+
+export const NUM_OF_SEARCH_RESULTS = 40;
