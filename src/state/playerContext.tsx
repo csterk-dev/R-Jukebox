@@ -2,7 +2,7 @@ import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { APP_TITLE, PLAYER_VOLUME_DEFAULT, SOCKET_EVENT_KEYS } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
-import { replaceHtmlEntities } from "utils/misc";
+import { replaceHtmlEntities, truncateString } from "utils/misc";
 
 const queueToastProps = {
   status: "success" as UseToastOptions["status"],
@@ -124,12 +124,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       if (ack.success) {
         console.log(`Added ${video.title} to the queue`);
         toast({
-          title: `${video.title.slice(0, 25)}... added to the queue`,
+          title: `${truncateString(video.title, 25)} added to the queue`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: `Unable to add ${video.title.slice(0, 25)}... to the queue`,
+          title: `Unable to add ${truncateString(video.title, 25)} to the queue`,
           description: ack.errorMessage,
           ...errorToastProps
         });
@@ -153,12 +153,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       if (ack.success) {
         console.log(`Added ${video.title} to the queue`);
         toast({
-          title: `${video.title.slice(0, 20)}... added to the queue`,
+          title: `${truncateString(video.title, 25)} added to the queue`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: `Unable to add ${video.title.slice(0, 20)}... to the queue`,
+          title: `Unable to add ${truncateString(video.title, 25)} to the queue`,
           description: ack.errorMessage,
           ...errorToastProps
         });
