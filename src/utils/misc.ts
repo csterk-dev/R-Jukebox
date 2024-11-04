@@ -182,3 +182,8 @@ export function getThemeSeason(date: Dayjs): ThemeSeason {
   if (dayjs(date).isSame("2024-12-01", "month")) return "christmas";
   return "none";
 }
+
+/** Truncates the string to the provided length and adds elipsis. */
+export function truncateString(str: string, n: number) {
+  return (str.length > n) ? `${str.slice(0, n - 1)}...` : str;
+}
