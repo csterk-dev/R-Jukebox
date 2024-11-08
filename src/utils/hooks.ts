@@ -81,8 +81,6 @@ export const useGoogleSuggestions = (query: string) => {
     setLoading(true);
     getGoogleAutoCompleteSuggestions(query)
       .then((res: AxiosResponse) => {
-        console.log("jsonp results >> ", res);
-
         if (res.status !== 200) {
           throw new Error("Suggestion get request unsuccessful");
         }
