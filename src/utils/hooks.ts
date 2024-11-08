@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { YoutubeAPI } from "./api";
+import { getGoogleAutoCompleteSuggestions, YoutubeAPI } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
 import { SOCKET_EVENT_KEYS } from "../constants";
@@ -10,7 +10,7 @@ import { SOCKET_EVENT_KEYS } from "../constants";
  * @param maxResults Total number of results returned per page. Default `20`,
  * @returns {Object} A momized object containing the videos, error and loading states.
  */
-export const useYoutubeSearch = (query: string, maxResults?: number) => {
+const useYoutubeSearch = (query: string, maxResults?: number) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [videos, setVideos] = useState<Video[]>([]);
@@ -52,9 +52,68 @@ export const useYoutubeSearch = (query: string, maxResults?: number) => {
       loading,
       videos
     }
-  ), [error, loading, videos]) 
+  ), [error, loading, videos])
 };
 
+
+/**
+ * Returns a momoized list of suggestions that match the search query.
+ * @note Only begins searching when the query length is greater than 4 chars
+ * @param query The search query.
+ * @returns {Object} A momized object containing the suggestions, error and loading states.
+ */
+export const useGoogleSuggestions = (query: string) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const clearSuggestions = useCallback(() => setSuggestions([]), []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Prevent empty string searches
+    if (!query || query.length < 5) return;
+
+    /*
+     * Get list of videos and their content details.
+     */
+    setLoading(true);
+    getGoogleAutoCompleteSuggestions(query)
+      .then((res: AxiosResponse) => {
+        console.log("jsonp results >> ", res);
+
+        if (res.status !== 200) {
+          throw new Error("Suggestion get request unsuccessful");
+        }
+
+        const suggestionRes: string[] = res.data[1].map((item: any[]) => item[0]);
+        setSuggestions(suggestionRes);
+      })
+      .catch((err: any) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [query]);
+
+
+  return useMemo(() => (
+    {
+      error,
+      loading,
+      suggestions,
+      clearSuggestions
+    }
+  ), [clearSuggestions, error, loading, suggestions])
+};
 
 /**
  * Custom hooks that connects to the websocket server and provides monitoring and updating functionality.

@@ -2778,6 +2778,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@pingtou/axios-jsonp@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@pingtou/axios-jsonp/-/axios-jsonp-0.0.1.tgz#51dcafc631785be2f36578c0489ba0811a9f9207"
+  integrity sha512-zOESX2ePgsaigt6Xw2UgWvT9sr8hkfJ5KtwGeQBvhh7WcaLy7A9zdtF/7OySS63QLnCu5KE5RiBZNnMQbeUAhQ==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
