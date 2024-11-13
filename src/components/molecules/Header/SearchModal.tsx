@@ -1,10 +1,10 @@
-import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Stack, Text, VStack } from "@chakra-ui/react";
-import { FC, FormEvent, useCallback, useRef, useState } from "react";
+import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Stack, Text } from "@chakra-ui/react";
+import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { VideoCard } from "components/atoms/VideoCard";
 import { YoutubeAPI } from "utils/api";
 import { AxiosResponse } from "axios";
-import { NUM_OF_SEARCH_RESULTS } from "constants/index";
+import { MAX_NUM_OF_SUGGESTIONS, NUM_OF_SEARCH_RESULTS } from "constants/index";
 import { useDebounce, useGoogleSuggestions } from "utils/hooks";
 
 
@@ -29,7 +29,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedSearchInput = useDebounce(searchVal);
-  const { suggestions, clearSuggestions } = useGoogleSuggestions(debouncedSearchInput);
+  const { suggestions, clearSuggestions } = useGoogleSuggestions(debouncedSearchInput, MAX_NUM_OF_SUGGESTIONS);
 
 
   const hideSuggestions = useCallback(() => {
@@ -68,26 +68,23 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, [hideSuggestions, onClose]);
 
 
-  const handleOverlayClick = useCallback(() => {
-    if (showSuggestions) {
-      hideSuggestions();
-    } else hideSuggestionsAndClose();
-  }, [hideSuggestions, hideSuggestionsAndClose, showSuggestions]);
-
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (suggestions.length > 0 && showSuggestions) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedSuggestionIndex((prevIndex) => prevIndex < suggestions.length - 1 ? prevIndex + 1 : 0);
+
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedSuggestionIndex((prevIndex) => prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1);
+
       } else if (e.key === "Escape") {
         e.preventDefault();
         if (showSuggestions) {
           hideSuggestions();
         } else hideSuggestionsAndClose();
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setSelectedSuggestionIndex((prevIndex) => prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1);
+
       } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
         setSearchVal(suggestions[selectedSuggestionIndex]);
         handleSubmit();
@@ -99,8 +96,10 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   const handleSuggestionClick = useCallback((suggestion: string) => {
     setSearchVal(suggestion);
     handleSubmit();
-    hideSuggestions()
-  }, [handleSubmit, hideSuggestions]);
+    hideSuggestions();
+    if (isMobile) inputRef.current?.blur();
+    else inputRef.current?.focus();
+  }, [handleSubmit, hideSuggestions, isMobile]);
 
 
   const onClickClear = useCallback(() => {
@@ -115,6 +114,44 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, [clearSuggestions, hideSuggestions, hideSuggestionsAndClose, searchVal]);
 
 
+  // const touching = useRef<TouchEvent | null>(null);
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const clickedElement = event.target as HTMLElement | null;
+
+      // WHen modal overlay is pressed, hide suggestions if showing otherwise close modal
+      if (clickedElement?.outerHTML.includes("chakra-modal__content-container")) {
+        if (searchVal && showSuggestions && suggestions.length) hideSuggestions();
+        else onClose();
+      }
+
+      // Ignore long presses/drag motions to prevent picker closing if scrolling within
+      // if (event.type === "touchend" && touching.current?.touches.item(0)?.pageX !== (event as TouchEvent).changedTouches.item(0)?.pageX) {
+      //   console.log("HIIIII")
+      //   return;
+      // }
+
+      // Only hide suggestions if the list is clicked
+      if (clickedElement?.outerHTML.includes("search_modal_body")) {
+        if (searchVal && showSuggestions && suggestions.length) hideSuggestions();
+      }
+    };
+
+
+    // const touchStart = (ev: TouchEvent) => {
+    //   touching.current = ev;
+    // };
+
+    // Mouse up fires on 'touchend' events so not required to attach a 'touchend' listener
+    window.addEventListener("mouseup", handler);
+    // window.addEventListener("touchstart", touchStart);
+    return () => {
+      window.removeEventListener("mouseup", handler);
+      // window.removeEventListener("touchstart", touchStart);
+    };
+
+  }, [hideSuggestions, onClose, searchVal, showSuggestions, suggestions.length]);
+
 
   return (
     <Modal
@@ -126,7 +163,6 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
       variant="search"
       onClose={() => void 0}
       onEsc={hideSuggestionsAndClose}
-      onOverlayClick={handleOverlayClick}
     >
       <ModalOverlay />
       <ModalContent boxShadow={0}>
@@ -161,8 +197,11 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 variant="unstyled"
                 width="100%"
                 autoFocus
-                onChange={(val) => setSearchVal(val.target.value)}
-                onFocus={() => setShowSuggestions(true)}
+                onChange={useCallback((val: ChangeEvent<HTMLInputElement>) => {
+                  setSearchVal(val?.target.value);
+                  setShowSuggestions(true);
+                }, [])}
+                onClick={useCallback(() => setShowSuggestions(true), [])}
                 onKeyDown={handleKeyDown}
               />
               <InputRightElement mr="10px">
@@ -193,7 +232,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             null
           }
 
-          {showSuggestions && suggestions.length ? (
+          {searchVal && showSuggestions && suggestions.length ? (
             <Stack
               _dark={{ bg: "neutral.700" }}
               bg="white"
@@ -206,12 +245,12 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               width="100%"
               zIndex={10}
             >
-              {suggestions.map((suggestion, index) => index < 10 && (
+              {suggestions.map((suggestion, index) => (
                 <Text
                   key={suggestion}
                   _dark={{ bg: index === selectedSuggestionIndex ? "purple.700" : undefined }}
                   _hover={{
-                    bg: "purple.50",
+                    bg: "purple.200",
                     _dark: { bg: "purple.500" }
                   }}
                   bg={index === selectedSuggestionIndex ? "purple.100" : undefined}
@@ -229,26 +268,30 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
         {videos.length > 0 || error ?
           <ModalBody
+            alignItems="center"
             borderRadius={5}
+            display="flex"
+            flexDir="column"
+            gap="10px"
+            id="search_modal_body"
             mt="10px"
             px="10px"
           >
-            <VStack>
-              {error ? <Text mb="4px">{error}</Text> : <Text mb="4px">{`Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>}
-              {videos.map(video => {
-                if (!video) return;
-                return (
-                  <VideoCard
-                    key={video.videoId}
-                    addToBottomOfQueue={handleAddToBottomOfQueue}
-                    addToTopOfQueue={handleAddToTopOfQueue}
-                    isMobile={isMobile}
-                    playVideo={handlePlayVideo}
-                    video={video}
-                  />
-                );
-              })}
-            </VStack>
+            <Text mb="0px">{error ? error : `Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>
+
+            {videos.map(video => {
+              if (!video) return;
+              return (
+                <VideoCard
+                  key={video.videoId}
+                  addToBottomOfQueue={handleAddToBottomOfQueue}
+                  addToTopOfQueue={handleAddToTopOfQueue}
+                  isMobile={isMobile}
+                  playVideo={handlePlayVideo}
+                  video={video}
+                />
+              );
+            })}
           </ModalBody> :
           null
         }

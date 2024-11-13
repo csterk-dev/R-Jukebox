@@ -60,9 +60,10 @@ const useYoutubeSearch = (query: string, maxResults?: number) => {
  * Returns a momoized list of suggestions that match the search query.
  * @note Only begins searching when the query length is greater than 4 chars
  * @param query The search query.
+ * @param maxNumOfResults Only returns up to the provided number of results (if any).
  * @returns {Object} A momized object containing the suggestions, error and loading states.
  */
-export const useGoogleSuggestions = (query: string) => {
+export const useGoogleSuggestions = (query: string, maxNumOfResults: number) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -86,7 +87,7 @@ export const useGoogleSuggestions = (query: string) => {
         }
 
         const suggestionRes: string[] = res.data[1].map((item: any[]) => item[0]);
-        setSuggestions(suggestionRes);
+        setSuggestions(suggestionRes.slice(0, maxNumOfResults));
       })
       .catch((err: any) => {
         setError(err.message);
@@ -100,7 +101,7 @@ export const useGoogleSuggestions = (query: string) => {
     return () => {
       isMounted = false;
     };
-  }, [query]);
+  }, [maxNumOfResults, query]);
 
 
   return useMemo(() => (
