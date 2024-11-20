@@ -114,7 +114,9 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, [clearSuggestions, hideSuggestions, hideSuggestionsAndClose, searchVal]);
 
 
-  // const touching = useRef<TouchEvent | null>(null);
+  /*
+   * Manually handle the closing of the modal to allow for auto show/hiding of the suggestions
+   */
   useEffect(() => {
     const handler = (event: Event) => {
       const clickedElement = event.target as HTMLElement | null;
@@ -125,32 +127,41 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
         else onClose();
       }
 
-      // Ignore long presses/drag motions to prevent picker closing if scrolling within
-      // if (event.type === "touchend" && touching.current?.touches.item(0)?.pageX !== (event as TouchEvent).changedTouches.item(0)?.pageX) {
-      //   console.log("HIIIII")
-      //   return;
-      // }
-
-      // Only hide suggestions if the list is clicked
+      // Additionally hide suggestions if the list is clicked
       if (clickedElement?.outerHTML.includes("search_modal_body")) {
         if (searchVal && showSuggestions && suggestions.length) hideSuggestions();
       }
     };
 
-
-    // const touchStart = (ev: TouchEvent) => {
-    //   touching.current = ev;
-    // };
-
     // Mouse up fires on 'touchend' events so not required to attach a 'touchend' listener
     window.addEventListener("mouseup", handler);
-    // window.addEventListener("touchstart", touchStart);
     return () => {
       window.removeEventListener("mouseup", handler);
-      // window.removeEventListener("touchstart", touchStart);
     };
 
   }, [hideSuggestions, onClose, searchVal, showSuggestions, suggestions.length]);
+
+
+  /*
+   * Close suggestions when the user scrolls the video results 
+   */
+  const modalBodyRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const container = modalBodyRef.current;
+    
+    // We need to ensure that the modal body div is mounted in the dom as we conditionally show hide the element if not search results.
+    if (container) {
+      const handleScroll = () => {
+        if (searchVal && showSuggestions && suggestions.length) hideSuggestions();
+      };
+
+      container.addEventListener("scroll", handleScroll);
+      return () => {
+        container.removeEventListener("scroll", handleScroll);
+      };
+    }
+
+  }, [hideSuggestions, searchVal, showSuggestions, suggestions.length]);
 
 
   return (
@@ -275,10 +286,11 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             gap="10px"
             id="search_modal_body"
             mt="10px"
+            overflowY="auto"
             px="10px"
+            ref={modalBodyRef}
           >
             <Text mb="0px">{error ? error : `Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>
-
             {videos.map(video => {
               if (!video) return;
               return (
