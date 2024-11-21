@@ -8,6 +8,7 @@ import { ReleaseNotesAccordion } from "./ReleaseNotes";
 import { BUG_LIST } from "constants/bugList";
 import { ColorModeSwitcher } from "components/atoms/ColorModeSwitcher";
 import { VERSION_NUM } from "constants/index";
+import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
 
 
 type SettingsModalProps = Omit<ModalProps, "children"> & {
@@ -139,6 +140,16 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                 pb="10px"
                 px="20px"
               >
+                <Text
+                  fontSize="14"
+                  mt="10px"
+                  opacity={0.7}
+                  textTransform="uppercase"
+                >
+                  V1.3 - Auto complete
+                </Text>
+                <ReleaseNotesAccordion releaseNotes={v1_3ReleaseNotes} />
+
                 <Text
                   fontSize="14"
                   mt="10px"

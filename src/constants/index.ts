@@ -44,7 +44,7 @@ export const SOCKET_EVENT_KEYS = {
   setPlayerVolume: "set-player-vol"
 };
 
-export const VERSION_NUM = "1.2.2";
+export const VERSION_NUM = "1.3.0";
 
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;
@@ -72,3 +72,5 @@ export const APP_TITLE = "R Jukebox";
 
 
 export const NUM_OF_SEARCH_RESULTS = 40;
+
+export const MAX_NUM_OF_SUGGESTIONS = 10;
