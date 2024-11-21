@@ -44,7 +44,7 @@ export const SOCKET_EVENT_KEYS = {
   setPlayerVolume: "set-player-vol"
 };
 
-export const VERSION_NUM = "1.2.2";
+export const VERSION_NUM = "1.3.0";
 
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;
