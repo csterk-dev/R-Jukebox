@@ -1,10 +1,12 @@
 import axios from "axios";
+import { jsonpAdapter } from "@pingtou/axios-jsonp";
 import { SERVER_URL } from "../constants";
 
 
 const YOUTUBE_API_URL = `${SERVER_URL}/youtube`;
 const PLAYER_API_URL = `${SERVER_URL}/player`;
-
+/** A YT undocumented API for auto suggest search queries */
+const GOOGLE_AUTO_COMPLETE_URL = "https://clients1.google.com/complete/search";
 
 const YOUTUBE_CLIENT = axios.create({
   baseURL: YOUTUBE_API_URL,
@@ -60,4 +62,19 @@ export const YoutubeAPI = {
   async searchVideos(query: string, limit?: number) {
     return await YOUTUBE_CLIENT.get(`/search?val=${query}&limit=${limit ?? 20}`);
   }
+}
+
+
+export async function getGoogleAutoCompleteSuggestions(query: string) {
+  
+  return await axios({
+    url: GOOGLE_AUTO_COMPLETE_URL,
+    adapter: jsonpAdapter,
+    params: {
+      client: "youtube",
+      hl: "en",
+      ds: "yt",
+      q: query
+    }
+  });
 }
