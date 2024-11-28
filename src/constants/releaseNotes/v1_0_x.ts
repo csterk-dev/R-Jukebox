@@ -82,13 +82,13 @@ export const v1_0ReleaseNotes: ReleaseNotes = [
   },
   {
     title: "Release 1.0.3",
-    versionNum: "1.0.1",
+    versionNum: "1.0.3",
     notes: v1_0_3,
     date: "17/06/2024"
   },
   {
     title: "Release 1.0.2",
-    versionNum: "1.0.1",
+    versionNum: "1.0.2",
     notes: v1_0_2,
     date: "14/06/2024"
   },
