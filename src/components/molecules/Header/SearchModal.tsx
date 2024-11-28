@@ -217,7 +217,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               />
               <InputRightElement mr="10px">
                 <Button
-                  colorScheme="purple"
+                  colorScheme="brand"
                   size="sm"
                   variant="link"
                   onClick={onClickClear}

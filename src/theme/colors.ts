@@ -1,3 +1,4 @@
+/* eslint-disable no-inline-comments */
 import dayjs from "dayjs";
 import { getThemeSeason } from "utils/misc";
 
@@ -24,16 +25,31 @@ const appColors = {
     white: "#FFFFFF",
     offWhite: "#F4F4F4",
     dark: "#2b201a",
-    50: "#c4bcb4", 
-    100: "#aa9b8d", 
-    200: "#96826f", 
-    300: "#7c6148", 
+    50: "#c4bcb4",
+    100: "#aa9b8d",
+    200: "#96826f",
+    300: "#7c6148",
     400: "#66492e",
     500: "#513f2d",
     600: "#473220",
     700: "#2b1f13",
     800: "#211204",
     900: "#0f0801"
+  },
+  neutralGreen: {
+    white: "#FFFFFF",
+    offWhite: "#F4F4F4",
+    dark: "#0F1A13", // A dark, nearly black shade with a green undertone
+    50: "#E8ECE9", // Very light green-tinted grey
+    100: "#DDE3DF", // Light grey with a subtle green hue
+    200: "#C8CEC9", // Soft medium-light grey-green
+    300: "#B2B9B4", // Neutral grey-green
+    400: "#99A09A", // Balanced green-tinted grey
+    500: "#808780", // Neutral medium grey with green undertones
+    600: "#535653", // Darker grey with subtle green
+    700: "#414442", // Deep grey with a faint green hue
+    800: "#383E39", // Dark grey with green undertones
+    900: "#1F2521" // Nearly black with a hint of green
   },
   purple: {
     50: "#FAF5FF",
@@ -72,27 +88,30 @@ const appColors = {
     900: "#63171B"
   },
   green: {
-    50: "#F0FFF4",
-    100: "#C6F6D5",
-    200: "#9AE6B4",
-    300: "#68D391",
-    400: "#48BB78",
-    500: "#38A169",
-    600: "#2F855A",
-    700: "#276749",
-    800: "#22543D",
-    900: "#1C4532"
+    50: "#E6F7ED", // Light pastel green with a slightly darker tone
+    100: "#BCE9CE", // Muted mint green
+    200: "#8FDCAB", // Soft pastel green with medium brightness
+    300: "#60C888", // Darker pastel green, balanced for richness
+    400: "#4AAA6F", // Muted leaf green
+    500: "#3C8E5E", // Rich forest green, slightly pastel
+    600: "#31784E", // Muted deep green
+    700: "#285F3E", // Dark mossy green
+    800: "#204C32", // Subdued hunter green
+    900: "#193D29" // Very dark earthy green
   }
 }
 
 const bgColors = {
   // "#CB70DF", "#DFA8F5" - unused bg light colors
-  purpleLight: "#d88ff7", 
+  purpleLight: "#d88ff7",
   purpleDark: "#371B3F",
   purpleVideoContainer: appColors.neutralPurple[900],
   halloweenLight: appColors.orange[300],
   halloweenDark: "#0b0014",
-  halloweenDarkVideoContainer: appColors.neutralOrange[900]
+  halloweenDarkVideoContainer: appColors.neutralOrange[900],
+  christmasLight: appColors.red[300],
+  christmasDark: appColors.red[500],
+  christmasDarkVideoContainer: appColors.neutralOrange[900]
 }
 
 
@@ -154,19 +173,48 @@ export const halloweenThemedBgColors = {
 };
 
 
+export const christmasThemedBgColors = {
+  circleVariants1: {
+    initial: "#FEC200", // Bright Yellow
+    animate: ["#FEC200", "#FF9CA1", "#EE9D11", "#FDA1A4"]
+  },
+  circleVariants2: {
+    initial: "#F78608", // Deep Orange
+    animate: ["#F78608", "#EE7111", "#E63711", "#F78608"]
+  },
+  circleVariants3: {
+    initial: "#EE3711", // Bold Red-Orange
+    animate: ["#EE3711", "#E6172F", "#D20983", "#EE3711"]
+  },
+  squareVariants1: {
+    initial: "#E6172F", // Bright Red
+    animate: ["#E6172F", "#D20983", "#C301C5", "#E6172F", "#F78608"]
+  },
+  squareVariants2: {
+    initial: "#D20983", // Magenta
+    animate: ["#D20983", "#C301C5", "#E6172F", "#FEC200", "#F78608"]
+  },
+  squareVariants3: {
+    initial: "#C301C5", // Vivid Purple
+    animate: ["#C301C5", "#D20983", "#F78608", "#FEC200"]
+  }
+};
+
+
+
 /*
  * Base color tokens provided to chakra provider.
  */
 export const colors = {
   bg: {
-    light: themeSeason === "halloween" ? bgColors.halloweenLight : bgColors.purpleLight,
-    dark: themeSeason === "halloween" ? bgColors.halloweenDark : bgColors.purpleDark,
-    videoContainer: themeSeason === "halloween" ? bgColors.halloweenDarkVideoContainer : bgColors.purpleVideoContainer
+    light: themeSeason === "halloween" ? bgColors.halloweenLight : themeSeason === "christmas" ? bgColors.christmasLight : bgColors.purpleLight,
+    dark: themeSeason === "halloween" ? bgColors.halloweenDark : themeSeason === "christmas" ? bgColors.christmasDark : bgColors.purpleDark,
+    videoContainer: themeSeason === "halloween" ? bgColors.halloweenDarkVideoContainer : themeSeason === "christmas" ? bgColors.christmasDarkVideoContainer : bgColors.purpleVideoContainer
   },
   neutral: {
-    ...(themeSeason === "halloween" ? appColors.neutralOrange : appColors.neutralPurple)
+    ...(themeSeason === "halloween" ? appColors.neutralOrange : themeSeason === "christmas" ? appColors.neutralGreen : appColors.neutralPurple)
   },
   brand: {
-    ...(themeSeason === "halloween" ? appColors.orange : appColors.purple)
+    ...(themeSeason === "halloween" ? appColors.orange : themeSeason === "christmas" ? appColors.green : appColors.purple)
   }
 };

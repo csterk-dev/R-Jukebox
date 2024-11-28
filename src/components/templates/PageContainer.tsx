@@ -37,8 +37,8 @@ export const PageContainer: FC<BoxProps> = (props) => {
         <PageBackdrop themeSeason={themeSeason} /> :
         <Flex
           bg={colorMode === "dark" ?
-            themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
-            themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
+            themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
+            themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
           }
           height="100%"
           overflow="hidden"
