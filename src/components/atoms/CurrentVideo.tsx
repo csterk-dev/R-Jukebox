@@ -8,10 +8,11 @@ import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 import { FaYoutube } from "react-icons/fa6";
 import dayjs from "dayjs";
+import { GiWinterHat } from "react-icons/gi";
 
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
-  const { isMobile } = useAppState();
+  const { isMobile, themeSeason } = useAppState();
   const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, updateCurrentVideoTime, resumeCurrentVideo } = usePlayer();
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
 
@@ -169,7 +170,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             </Text> :
             null
           }
-          
+
           {showingCurrentVideo ?
             <Box
               bottom="2px"
@@ -215,9 +216,21 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           gap="10px"
           minWidth={isMobile ? "300px" : "400px"}
           p="10px"
+          position="relative"
           width={dimensions.width / 3}
           zIndex={10}
         >
+          {themeSeason === "christmas" ?
+            <Icon
+              _dark={{ color: "red.100" }}
+              as={GiWinterHat}
+              color="red.700"
+              fontSize={35}
+              position="absolute"
+              right={-3}
+              top={-5}
+              transform="rotate(20deg)"
+            /> : null}
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
               isLoaded={!isPlayerLoading}

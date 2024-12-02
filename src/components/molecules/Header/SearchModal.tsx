@@ -217,7 +217,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               />
               <InputRightElement mr="10px">
                 <Button
-                  colorScheme="purple"
+                  colorScheme="brand"
                   size="sm"
                   variant="link"
                   onClick={onClickClear}
@@ -259,12 +259,12 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               {suggestions.map((suggestion, index) => (
                 <Text
                   key={suggestion}
-                  _dark={{ bg: index === selectedSuggestionIndex ? "purple.700" : undefined }}
+                  _dark={{ bg: index === selectedSuggestionIndex ? "brand.700" : undefined }}
                   _hover={{
-                    bg: "purple.200",
-                    _dark: { bg: "purple.500" }
+                    bg: "brand.200",
+                    _dark: { bg: "brand.500" }
                   }}
-                  bg={index === selectedSuggestionIndex ? "purple.100" : undefined}
+                  bg={index === selectedSuggestionIndex ? "brand.100" : undefined}
                   cursor="pointer"
                   px="10px"
                   py="4px"

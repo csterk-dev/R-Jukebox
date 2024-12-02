@@ -44,6 +44,7 @@ type NoteType = "improvement" | "bugFix" | "newFeature";
 
 
 type ReleaseNotes = {
+  /** Title is shown within the New Update Modal. */
   title: string;
   versionNum: string;
   notes: ReleaseNote[];

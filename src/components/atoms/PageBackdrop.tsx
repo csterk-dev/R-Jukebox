@@ -2,7 +2,7 @@ import { Circle, Flex, FlexProps, Square } from "@chakra-ui/react";
 import { FC, memo } from "react";
 import { motion, Variants } from "framer-motion";
 import { useWindowDimensions } from "@usesoftwareau/react-utils";
-import { colors, halloweenThemedBgColors, purpleThemedBgColors } from "theme/colors";
+import { christmasThemedBgColors, colors, halloweenThemedBgColors, purpleThemedBgColors } from "theme/colors";
 
 
 type PageBackdropProps = FlexProps & {
@@ -11,7 +11,7 @@ type PageBackdropProps = FlexProps & {
 
 const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
   const dimensions = useWindowDimensions();
-  applyColorPalette(themeSeason === "halloween" ? halloweenThemedBgColors : purpleThemedBgColors);
+  applyColorPalette(themeSeason === "halloween" ? halloweenThemedBgColors : themeSeason === "christmas" ? christmasThemedBgColors : purpleThemedBgColors);
 
 
   return (
