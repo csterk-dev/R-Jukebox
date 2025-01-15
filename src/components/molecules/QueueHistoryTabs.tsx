@@ -5,7 +5,7 @@ import { IconType } from "react-icons";
 import { HiClock, HiRectangleStack, HiXMark } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
 import { usePlayer } from "state/playerContext";
-import { videoPlayedAtToString } from "utils/misc";
+import { ISO8601ToSeconds, secondsToString, videoPlayedAtToString } from "utils/misc";
 
 type QueueHistoryProps = FlexProps;
 
@@ -54,6 +54,17 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
 
     return jsx;
   }, [history, isMobile, addToBottomOfQueue, addToTopOfQueue, playVideo]);
+
+
+  const queueDurationSum = useMemo(() => {
+    const seconds = queue.reduce((sum, curr) => {
+      const durationSeconds = ISO8601ToSeconds(curr.duration);
+      if (!durationSeconds) return sum + 0;
+      return sum + durationSeconds;
+    }, 0)
+
+    return secondsToString(seconds, "text");
+  }, [queue]);
 
 
   const confirmClear = useCallback(() => {
@@ -119,6 +130,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                   gap="10px"
                   pb="10px"
                 >
+                  <Text opacity={0.7} px="10px">{queueDurationSum}</Text>
                   {queue.map(vid => (
                     <Flex key={vid.videoId} alignItems="center">
                       <IconButton
