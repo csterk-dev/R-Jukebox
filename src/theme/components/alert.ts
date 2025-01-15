@@ -16,7 +16,7 @@ const baseStyle = definePartsStyle({
 
 const info = definePartsStyle({
   container: {
-    bg: themeSeason === "halloween" ? "#DD6B20" : "#8659EF",
+    bg: themeSeason === "christmas" ? "#D20983" : themeSeason === "halloween" ? "#DD6B20" : "#8659EF",
     color: "#ffffff"
   }
 });

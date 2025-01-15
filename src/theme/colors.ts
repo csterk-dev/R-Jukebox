@@ -6,6 +6,7 @@ const themeSeason = getThemeSeason(dayjs());
 
 
 const appColors = {
+  /** Used for the default theme */
   neutralPurple: {
     white: "#FFFFFF",
     offWhite: "#f4f4f4",
@@ -21,6 +22,7 @@ const appColors = {
     800: "#161925",
     900: "#0d0f18"
   },
+  /** Used for halloween/autumn colors. */
   neutralOrange: {
     white: "#FFFFFF",
     offWhite: "#F4F4F4",
@@ -36,20 +38,21 @@ const appColors = {
     800: "#211204",
     900: "#0f0801"
   },
+  /** Used for Christmas/winter colors. */
   neutralGreen: {
     white: "#FFFFFF",
     offWhite: "#F4F4F4",
-    dark: "#0F1A13", // A dark, nearly black shade with a green undertone
-    50: "#E8ECE9", // Very light green-tinted grey
-    100: "#DDE3DF", // Light grey with a subtle green hue
-    200: "#C8CEC9", // Soft medium-light grey-green
-    300: "#B2B9B4", // Neutral grey-green
-    400: "#99A09A", // Balanced green-tinted grey
-    500: "#808780", // Neutral medium grey with green undertones
-    600: "#535653", // Darker grey with subtle green
-    700: "#414442", // Deep grey with a faint green hue
-    800: "#383E39", // Dark grey with green undertones
-    900: "#1F2521" // Nearly black with a hint of green
+    dark: "#0F1A13",
+    50: "#E8ECE9", 
+    100: "#DDE3DF",
+    200: "#C8CEC9",
+    300: "#B2B9B4",
+    400: "#99A09A",
+    500: "#808780",
+    600: "#535653",
+    700: "#414442",
+    800: "#383E39",
+    900: "#1F2521" 
   },
   purple: {
     50: "#FAF5FF",
@@ -88,34 +91,36 @@ const appColors = {
     900: "#63171B"
   },
   green: {
-    50: "#E6F7ED", // Light pastel green with a slightly darker tone
-    100: "#BCE9CE", // Muted mint green
-    200: "#8FDCAB", // Soft pastel green with medium brightness
-    300: "#60C888", // Darker pastel green, balanced for richness
-    400: "#4AAA6F", // Muted leaf green
-    500: "#3C8E5E", // Rich forest green, slightly pastel
-    600: "#31784E", // Muted deep green
-    700: "#285F3E", // Dark mossy green
-    800: "#204C32", // Subdued hunter green
-    900: "#193D29" // Very dark earthy green
+    50: "#E6F7ED", 
+    100: "#BCE9CE",
+    200: "#8FDCAB",
+    300: "#60C888",
+    400: "#4AAA6F",
+    500: "#3C8E5E",
+    600: "#31784E",
+    700: "#285F3E",
+    800: "#204C32",
+    900: "#193D29" 
   }
 }
 
 const bgColors = {
-  // "#CB70DF", "#DFA8F5" - unused bg light colors
-  purpleLight: "#d88ff7",
-  purpleDark: "#371B3F",
+  purpleLight: ["#8F31B7", "#d88ff7"],
+  purpleDark: ["#44337A", appColors.purple[800]],
+  // purpleDark: ["#371B3F", appColors.purple[800]],
   purpleVideoContainer: appColors.neutralPurple[900],
-  halloweenLight: appColors.orange[300],
-  halloweenDark: "#0b0014",
+  
+  halloweenLight: [appColors.orange[300], "#e87f00"],
+  halloweenDark: ["#0b0014", "#441b00"],
   halloweenDarkVideoContainer: appColors.neutralOrange[900],
-  christmasLight: appColors.red[300],
-  christmasDark: appColors.red[500],
+
+  christmasLight: ["#fc5353", appColors.red[300]],
+  christmasDark: [appColors.red[500], "#e5543e"],
   christmasDarkVideoContainer: appColors.neutralOrange[900]
 }
 
 
-/** Halloween shape animation color cycles for framer motion. */
+/** Default shape animation color cycles for framer motion. */
 export const purpleThemedBgColors = {
   circleVariants1: {
     initial: "#6C21CC",
@@ -135,11 +140,11 @@ export const purpleThemedBgColors = {
   },
   squareVariants2: {
     initial: "#B901B1",
-    animate: ["#B901B1", "#AD43A2", "#CC2B5E"]
+    animate: ["#B901B1", "#CC2B5E", "#0018FB", "#AD43A2", "#353FEB"]
   },
   squareVariants3: {
     initial: "#F8A9B4",
-    animate: ["#F8A9B4", "#FF9CA1", "#CE29A2"]
+    animate: ["#F8A9B4", "#FF9CA1", "#CE29A2", "#CE0088"]
   }
 };
 
@@ -173,29 +178,30 @@ export const halloweenThemedBgColors = {
 };
 
 
+/** Christmas shape animation color cycles for framer motion. */
 export const christmasThemedBgColors = {
   circleVariants1: {
-    initial: "#FEC200", // Bright Yellow
+    initial: "#FEC200",
     animate: ["#FEC200", "#FF9CA1", "#EE9D11", "#FDA1A4"]
   },
   circleVariants2: {
-    initial: "#F78608", // Deep Orange
+    initial: "#F78608", 
     animate: ["#F78608", "#EE7111", "#E63711", "#F78608"]
   },
   circleVariants3: {
-    initial: "#EE3711", // Bold Red-Orange
+    initial: "#EE3711", 
     animate: ["#EE3711", "#E6172F", "#D20983", "#EE3711"]
   },
   squareVariants1: {
-    initial: "#E6172F", // Bright Red
+    initial: "#E6172F",
     animate: ["#E6172F", "#D20983", "#C301C5", "#E6172F", "#F78608"]
   },
   squareVariants2: {
-    initial: "#D20983", // Magenta
+    initial: "#D20983", 
     animate: ["#D20983", "#C301C5", "#E6172F", "#FEC200", "#F78608"]
   },
   squareVariants3: {
-    initial: "#C301C5", // Vivid Purple
+    initial: "#C301C5", 
     animate: ["#C301C5", "#D20983", "#F78608", "#FEC200"]
   }
 };

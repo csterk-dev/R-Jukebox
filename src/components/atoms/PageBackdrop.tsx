@@ -1,7 +1,6 @@
-import { Circle, Flex, FlexProps, Square } from "@chakra-ui/react";
+import { Flex, FlexProps, Square } from "@chakra-ui/react";
 import { FC, memo } from "react";
 import { motion, Variants } from "framer-motion";
-import { useWindowDimensions } from "@usesoftwareau/react-utils";
 import { christmasThemedBgColors, colors, halloweenThemedBgColors, purpleThemedBgColors } from "theme/colors";
 
 
@@ -10,7 +9,6 @@ type PageBackdropProps = FlexProps & {
 }
 
 const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
-  const dimensions = useWindowDimensions();
   applyColorPalette(themeSeason === "halloween" ? halloweenThemedBgColors : themeSeason === "christmas" ? christmasThemedBgColors : purpleThemedBgColors);
 
 
@@ -30,33 +28,17 @@ const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
         initial="initial"
         style={{
           position: "absolute",
-          top: 150,
-          left: dimensions.width / 9,
+          top: 0,
+          left: 0,
           borderRadius: 360,
           filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
+          opacity: SHAPE_OPACITY - 0.2
         }}
         variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
       >
-        <Circle filter={`blur(${SHAPE_BLUR})`} opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
+        <Square size="calc(100vw / 2)" />
       </motion.div>
 
-      {/* Bottom Left Small */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: -20,
-          left: dimensions.width / 6,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
-      >
-        <Circle opacity={SHAPE_OPACITY} size="400px" />
-      </motion.div>
 
       {/* Bottom Left Big */}
       <motion.div
@@ -65,31 +47,31 @@ const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
         style={{
           position: "absolute",
           bottom: 50,
-          left: dimensions.width / 8,
+          left: "calc(100vw / 8)",
           borderRadius: 360,
           filter: `blur(${SHAPE_BLUR})`,
           opacity: SHAPE_OPACITY - 0.3
         }}
         variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
       >
-        <Circle opacity={SHAPE_OPACITY} size="500px" />
+        <Square opacity={SHAPE_OPACITY} size="calc(100vw / 3)" />
       </motion.div>
 
-      {/* Bottom Middle Left */}
+      {/* Top right - center center */}
       <motion.div
         animate="animate"
         initial="initial"
         style={{
           position: "absolute",
           bottom: 0,
-          left: dimensions.width / 4,
+          right: -200,
           borderRadius: 360,
           filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
+          opacity: SHAPE_OPACITY - 0.6
         }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants3}
       >
-        <Circle opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
+        <Square size="calc(100vw / 1.5)" />
       </motion.div>
 
       {/* Top Middle */}
@@ -98,49 +80,15 @@ const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
         initial="initial"
         style={{
           position: "absolute",
+          right: "calc(100vw / 20)",
           bottom: 400,
           borderRadius: 140,
           filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY,
-          left: dimensions.width / 3
+          opacity: SHAPE_OPACITY - 0.5
         }}
         variants={BG_ANIM_SHAPE_VARIANTS.squareVariants1}
       >
-        <Square opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
-      </motion.div>
-
-      {/* Top Right */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: -20,
-          right: dimensions.width / 6,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
-      >
-        <Circle opacity={SHAPE_OPACITY} size="400px" />
-      </motion.div>
-
-      {/* Middle Right */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: 100,
-          right: dimensions.width / 50,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
-      >
-        <Circle opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
+        <Square opacity={SHAPE_OPACITY} size="calc(100vw / 2.5)" />
       </motion.div>
 
       {/* Bottom Right */}
@@ -149,33 +97,15 @@ const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
         initial="initial"
         style={{
           position: "absolute",
-          bottom: 30,
-          right: dimensions.width / 11,
+          top: 30,
+          right: "calc(100vw / 11)",
           borderRadius: 140,
           filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
+          opacity: SHAPE_OPACITY - 0.7
         }}
         variants={BG_ANIM_SHAPE_VARIANTS.squareVariants3}
       >
-        <Square opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
-      </motion.div>
-
-
-      {/* Bottom Middle right */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          right: dimensions.width / 40,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
-      >
-        <Circle opacity={SHAPE_OPACITY} size={dimensions.width / 3.5} />
+        <Square size="calc(100vw / 2.5)" />
       </motion.div>
 
       {/* Middle */}
@@ -185,19 +115,14 @@ const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
         style={{
           position: "absolute",
           bottom: 10,
-          right: dimensions.width / 8,
+          right: "calc(100vw / 8)",
           borderRadius: 180,
           filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY
+          opacity: SHAPE_OPACITY - 0.35
         }}
         variants={BG_ANIM_SHAPE_VARIANTS.squareVariants2}
       >
-        <Square
-          filter={`blur(${SHAPE_BLUR})`}
-          opacity={SHAPE_OPACITY}
-          size={dimensions.width / 2.5}
-          transform="rotate(50deg)"
-        />
+        <Square size="calc(100vw / 2.5)" />
       </motion.div>
     </Flex>
   );
@@ -214,9 +139,11 @@ export const PageBackdrop = memo(_PageBackdrop);
 
 
 
-const BG_BLUR = "70px";
-const SHAPE_BLUR = "30px";
-const SHAPE_OPACITY = 0.75;
+const BG_BLUR = "50px";
+const SHAPE_BLUR = "20px";
+// const SHAPE_BLUR = "50px";
+/** Individual shape opacities are subtracted from this value 1 (100%). Set this to 0 if you want to hide all shapes */
+const SHAPE_OPACITY = 1;
 
 
 
@@ -229,11 +156,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       backgroundColor: colors.neutral[300]
     },
     animate: {
-      x: [0, -100, 0],
-      y: [0, 100, 0],
+      x: [0, 200, 0],
+      y: [0, -150, 0],
       backgroundColor: [colors.neutral[500]],
+      rotate: [0, 360, 0],
+      opacity: [0.7, 0.6, 0.8],
       transition: {
-        duration: 12,
+        duration: 60,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -246,11 +175,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       backgroundColor: colors.neutral[300]
     },
     animate: {
-      x: [0, -100, 0],
-      y: [0, -100, 0],
+      x: [0, -100, 0, 100],
+      y: [0, 200, -150, 100],
       backgroundColor: [colors.neutral[500]],
+      rotate: [0, -270, 0],
+      opacity: [0.8, 0.6, 0.9],
       transition: {
-        duration: 4,
+        duration: 120,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -258,16 +189,18 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
   },
   circleVariants3: {
     initial: {
-      x: 0,
-      y: 0,
+      x: -200,
+      y: -200,
       backgroundColor: colors.neutral[300]
     },
     animate: {
-      x: [0, -100, 0],
-      y: [0, -100, 0],
+      x: [-200, -400, -700, -300, -200],
+      y: [-200, 0, 200, 100, 0, -200],
       backgroundColor: [colors.neutral[500]],
+      rotate: [0, -180, 0],
+      opacity: [0.6, 0.9, 0.65, 0.8],
       transition: {
-        duration: 5,
+        duration: 50,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -282,11 +215,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     },
     animate: {
       x: [0, -100, 0],
-      y: [0, -50, 0],
+      y: [0, -450, 0],
       backgroundColor: [colors.neutral[500]],
       rotate: [0, -180, 0],
+      opacity: [0.5, 0.7, 0.6, 0.65],
       transition: {
-        duration: 20,
+        duration: 90,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -300,12 +234,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       rotate: 0
     },
     animate: {
-      x: [0, -100, 0],
+      x: [0, -500, 0],
       y: [0, 150, 0],
       backgroundColor: [colors.neutral[500]],
       rotate: [0, 360, 0],
+      opacity: [0.75, 0.65, 0.8],
       transition: {
-        duration: 30,
+        duration: 60,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -323,8 +258,9 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       y: [0, -100, 0],
       backgroundColor: [colors.neutral[500]],
       rotate: [0, 90, 0],
+      opacity: [0.3, 0.7],
       transition: {
-        duration: 15,
+        duration: 45,
         repeat: Infinity,
         repeatType: "reverse" as const
       }
@@ -351,7 +287,7 @@ type CustomVariant = {
 };
 /** Applies the provided color palette to the animated bg shape variants. */
 const applyColorPalette = (palette: BgColors) => {
-  const newVariants: Variants = { ...BG_ANIM_SHAPE_VARIANTS };
+  const newVariants: any = { ...BG_ANIM_SHAPE_VARIANTS };
 
   Object.keys(newVariants).forEach((variant) => {
     (newVariants[variant] as CustomVariant).initial.backgroundColor = palette[variant].initial;

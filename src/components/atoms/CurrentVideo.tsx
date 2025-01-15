@@ -4,7 +4,7 @@ import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoDurationToString, videoPublishedDateToString } from "utils/misc";
 import { motion, Variants } from "framer-motion";
-import { useWebHover, useWindowDimensions } from "@usesoftwareau/react-utils";
+import { useWebHover } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 import { FaYoutube } from "react-icons/fa6";
 import dayjs from "dayjs";
@@ -32,7 +32,6 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
   const videoContainer = useColorModeValue("neutral.white", "bg.videoContainer");
   const durationBg = useColorModeValue("white", "neutral.500");
-  const dimensions = useWindowDimensions();
 
   const togglePublishedAtDate = useCallback(() => setShowPublishedAtAsDate(prev => !prev), []);
 
@@ -84,13 +83,13 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           alignItems="center"
           bg={showingCurrentVideo ? "rgba(13, 15, 24, 1)" : videoContainer}
           borderRadius={10}
-          height={dimensions.height < 600 ? "100%" : dimensions.width / 3}
+          height="calc(100vw / 3)"
           justifyContent="center"
           minHeight={isMobile ? "300px" : "400px"}
           minWidth={isMobile ? "300px" : "400px"}
           overflow="hidden"
           position="relative"
-          width={dimensions.width / 3}
+          width="calc(100vw / 3)"
         >
           <Box
             bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
@@ -217,7 +216,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           minWidth={isMobile ? "300px" : "400px"}
           p="10px"
           position="relative"
-          width={dimensions.width / 3}
+          width="calc(100vw / 3)"
           zIndex={10}
         >
           {themeSeason === "christmas" ?

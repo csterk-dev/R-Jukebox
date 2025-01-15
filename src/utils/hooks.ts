@@ -208,7 +208,7 @@ function getWindowDimensions() {
  * useEffect(() => console.log(windowDimensions.height, windowDimensions.width), [windowDimensions]);
  * ```
  */
-export function useWindowDimensions() {
+function useWindowDimensions() {
   // Set the initial window dimensions
   const [windowDimensions, setWindowDimensions] = useState<{ height: number; width: number; }>({
     height: 0,

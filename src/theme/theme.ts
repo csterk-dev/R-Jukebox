@@ -36,8 +36,11 @@ const theme = extendTheme({
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
-        bg: mode(colors.bg.light, colors.bg.dark)(props), 
+        bg: mode(`linear-gradient(40deg, ${colors.bg.light[0]}, ${colors.bg.light[1]})`, `linear-gradient(40deg, ${colors.bg.dark[0]}, ${colors.bg.dark[1]})`)(props),
         color: mode("neutral.700", "neutral.white")(props)
+      },
+      "#searchInput::-webkit-search-cancel-button": {
+        display: "none"
       }
     })
   },

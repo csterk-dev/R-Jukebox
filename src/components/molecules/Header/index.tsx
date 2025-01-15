@@ -29,10 +29,6 @@ const _Header: FC<FlexProps> = (props) => {
   const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
   const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
   const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
-  
-  // const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // const onOpenSettings = useCallback(() => setIsSettingsOpen(true), []);
-  // const onCloseSettings = useCallback(() => setIsSettingsOpen(false), []);
 
   /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
   const finalFocusRef = useRef(null);
