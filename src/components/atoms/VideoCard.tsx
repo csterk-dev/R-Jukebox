@@ -24,7 +24,9 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
   const [cardRef, cardHovered] = useWebHover();
 
 
-  const onClickPlay = useCallback(() => playVideo(video), [playVideo, video]);
+  const onClickPlay = useCallback(() => {
+    if (!isLive) playVideo(video);
+  }, [isLive, playVideo, video]);
   const onClickNext = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     addToTopOfQueue(video);
@@ -37,12 +39,13 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
 
   return (
     <Flex
-      _hover={{ cursor: "pointer" }}
+      _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
       bgColor={foreground}
       borderRadius="5px"
       boxShadow="base"
       flexDir="row"
       height="94px"
+      opacity={isLive ? 0.5 : 1}
       position="relative"
       ref={cardRef}
       width="100%"
@@ -76,6 +79,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 color="white"
                 fontSize="16px"
                 icon={<HiQueueList />}
+                isDisabled={isLive}
                 size="sm"
                 variant="solid"
                 onClick={onClickNext}
@@ -91,6 +95,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 color="white"
                 fontSize="16px"
                 icon={<HiBarsArrowDown />}
+                isDisabled={isLive}
                 size="sm"
                 variant="solid"
                 onClick={onClickLast}
@@ -163,10 +168,10 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
             variant="ghost"
           />
           <MenuList>
-            <MenuItem icon={<HiQueueList />} onClick={onClickNext}>
+            <MenuItem icon={<HiQueueList />} isDisabled={isLive} onClick={onClickNext}>
               Play Next
             </MenuItem>
-            <MenuItem icon={<HiBarsArrowDown />} onClick={onClickLast}>
+            <MenuItem icon={<HiBarsArrowDown />} isDisabled={isLive} onClick={onClickLast}>
               Play Last
             </MenuItem>
           </MenuList>
