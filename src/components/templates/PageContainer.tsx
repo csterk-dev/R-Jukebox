@@ -29,9 +29,7 @@ export const PageContainer: FC<BoxProps> = (props) => {
         width="100%"
         zIndex={100}
         {...props}
-      >
-        {props.children}
-      </Box>
+      />
 
       {isBgAnimated ?
         <PageBackdrop themeSeason={themeSeason} /> :

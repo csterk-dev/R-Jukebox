@@ -123,18 +123,28 @@ export function replaceHtmlEntities(str?: string) {
 
 
 /**
- * Converts a given number of seconds into a time string formatted as "MM:SS" or "HH:MM:SS".
+ * Converts a given number of seconds into a time string formatted as "MM:SS" or "HH:MM:SS" or a text equivalant.
  * @param {number} totalSeconds - The total number of seconds to convert.
  * @returns {string} - The formatted time string.
  */
-export function secondsToString(totalSeconds?: number): string {
-  if (!totalSeconds) return "0:00";
+export function secondsToString(totalSeconds: number | undefined, format?: "numbersOnly" | "text"): string {
+  if (!totalSeconds) return format === "text" ? "0 seconds" : "0:00";
+
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
   const formattedMinutes = hours > 0 ? String(minutes).padStart(2, "0") : String(minutes);
   const formattedSeconds = String(seconds).padStart(2, "0");
+
+  if (format === "text") {
+    const hText = hours > 1 ? "hours" : "hour";
+    const mText = minutes > 1 ? "minutes" : "minute";
+    const sText = seconds > 1 ? "seconds" : "second";
+    return hours > 0 ? 
+      `${hours} ${hText} ${formattedMinutes} ${mText} ${formattedSeconds} ${sText}` :
+      `${formattedMinutes} ${mText} ${formattedSeconds} ${sText}`
+  }
 
   return hours > 0 ?
     `${hours}:${formattedMinutes}:${formattedSeconds}` :

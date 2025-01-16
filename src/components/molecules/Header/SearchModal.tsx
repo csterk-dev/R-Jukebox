@@ -13,8 +13,8 @@ type SearchModalProps = Omit<ModalProps, "children"> & {
   finalFocusRef: React.MutableRefObject<null>;
   isMobile: boolean;
   handlePlayVideo: (video: Video) => void;
-  handleAddToBottomOfQueue: (video: Video) => void;
-  handleAddToTopOfQueue: (video: Video) => void;
+  handleAddToBottomOfQueue: (video: Video, action: "add" | "move") => void;
+  handleAddToTopOfQueue: (video: Video, action: "add" | "move") => void;
 }
 
 export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
@@ -296,8 +296,8 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               return (
                 <VideoCard
                   key={video.videoId}
-                  addToBottomOfQueue={handleAddToBottomOfQueue}
-                  addToTopOfQueue={handleAddToTopOfQueue}
+                  addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
+                  addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
                   isMobile={isMobile}
                   playVideo={handlePlayVideo}
                   video={video}

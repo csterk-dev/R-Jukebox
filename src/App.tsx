@@ -7,7 +7,6 @@ import { PageContainer } from "components/templates/PageContainer";
 import { PlayerProvider } from "state/playerContext";
 import { HEADER_HEIGHT } from "./constants";
 import { AppProvider } from "state/appContext";
-import "theme/styles.css";
 
 export const App = () => {
   const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
