@@ -1,4 +1,4 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
 import { IconType } from "react-icons";
@@ -15,6 +15,15 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { isOpen: isClearConfOpen, onOpen: onOpenClearConf, onClose: onCloseClearConf } = useDisclosure();
   const cancelClearButtonRef = useRef<HTMLButtonElement>(null);
+
+
+  const handleMoveTop = useCallback((video: Video) => {
+    addToTopOfQueue(video, "move");
+  }, [addToTopOfQueue]);
+  const handleMoveBottom = useCallback((video: Video) => {
+    addToBottomOfQueue(video, "move");
+  }, [addToBottomOfQueue]);
+
 
   const historyCards: JSX.Element[] = useMemo(() => {
     type SortedHistory = { [key: string]: HistoryVideo[] }
@@ -37,12 +46,12 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           gap="10px"
           width="100%"
         >
-          <Text fontSize="12">{dateText}</Text>
+          <Text fontSize={14}>{dateText}</Text>
           {videos.map(vid => (
             <VideoCard
               key={`${vid.videoId}${vid.playedAt}`}
-              addToBottomOfQueue={addToBottomOfQueue}
-              addToTopOfQueue={addToTopOfQueue}
+              addToBottomOfQueue={() => handleMoveTop(vid)}
+              addToTopOfQueue={() => handleMoveTop(vid)}
               isMobile={isMobile}
               playVideo={playVideo}
               video={vid}
@@ -53,7 +62,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     });
 
     return jsx;
-  }, [history, isMobile, addToBottomOfQueue, addToTopOfQueue, playVideo]);
+  }, [history, isMobile, playVideo, handleMoveTop]);
 
 
   const queueDurationSum = useMemo(() => {
@@ -130,22 +139,24 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                   gap="10px"
                   pb="10px"
                 >
-                  <Text opacity={0.7} px="10px">{queueDurationSum}</Text>
+                  <Text fontSize={14} opacity={0.7} px="10px">{queueDurationSum}</Text>
                   {queue.map(vid => (
                     <Flex key={vid.videoId} alignItems="center">
-                      <IconButton
-                        _dark={{ color: "neutral.white" }}
-                        aria-label="More options"
-                        color="neutral.900"
-                        fontSize="18px"
-                        icon={<HiXMark />}
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => deleteQueueItem(vid.videoId)}
-                      />
+                      <Tooltip label="Remove item" placement="left">
+                        <IconButton
+                          _dark={{ color: "neutral.white" }}
+                          aria-label="More options"
+                          color="neutral.900"
+                          fontSize="18px"
+                          icon={<HiXMark />}
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteQueueItem(vid.videoId)}
+                        />
+                      </Tooltip>
                       <VideoCard
-                        addToBottomOfQueue={addToBottomOfQueue}
-                        addToTopOfQueue={addToTopOfQueue}
+                        addToBottomOfQueue={() => handleMoveBottom(vid)}
+                        addToTopOfQueue={() => handleMoveTop(vid)}
                         isMobile={isMobile}
                         playVideo={playVideo}
                         video={vid}

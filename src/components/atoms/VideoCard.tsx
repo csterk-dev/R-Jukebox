@@ -8,8 +8,9 @@ type VideoCardProps = FlexProps & {
   isMobile: boolean;
   video: Video;
   playVideo: (video: Video) => void;
-  addToBottomOfQueue: (video: Video) => void;
-  addToTopOfQueue: (video: Video) => void;
+  addToBottomOfQueue: () => void;
+  addToTopOfQueue: () => void;
+
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBottomOfQueue, addToTopOfQueue, ...props }) => {
@@ -29,12 +30,12 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
   }, [isLive, playVideo, video]);
   const onClickNext = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    addToTopOfQueue(video);
-  }, [addToTopOfQueue, video]);
+    addToTopOfQueue();
+  }, [addToTopOfQueue]);
   const onClickLast = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    addToBottomOfQueue(video);
-  }, [addToBottomOfQueue, video]);
+    addToBottomOfQueue();
+  }, [addToBottomOfQueue]);
 
 
   return (
