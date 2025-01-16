@@ -32,8 +32,8 @@ const toastIds = {
 };
 
 interface PlayerContextType {
-  addToBottomOfQueue: (video: Video) => void;
-  addToTopOfQueue: (video: Video) => void;
+  addToBottomOfQueue: (video: Video, action: "add" | "move") => void;
+  addToTopOfQueue: (video: Video, action: "add" | "move") => void;
   clearQueue: () => void;
   currentVideo: Video | undefined;
   currentVideoTime: number | undefined;
@@ -112,7 +112,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
   /** Adds the provided video to the start of the queue. */
-  const addToTopOfQueue = useCallback((video: Video) => {
+  const addToTopOfQueue = useCallback((video: Video, action: "add" | "move") => {
     if (!socketInstance.id) return;
     
     const data: QueueRequest = {
@@ -122,14 +122,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const ackCallback = (ack: QueueAcknowledgement) => {
       if (ack.success) {
-        console.log(`Added ${video.title} to the queue`);
         toast({
-          title: `${truncateString(video.title, 25)} added to the queue`,
+          title: action === "add" ? `${replaceHtmlEntities(truncateString(video.title, 40))} - added to the queue` : `${replaceHtmlEntities(truncateString(video.title, 40))} - moved to the top`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: `Unable to add ${truncateString(video.title, 25)} to the queue`,
+          title: action === "add" ? `Unable to add ${replaceHtmlEntities(truncateString(video.title, 40))} to the queue` : `Unable to move ${replaceHtmlEntities(truncateString(video.title, 40))}`,
           description: ack.errorMessage,
           ...errorToastProps
         });
@@ -141,7 +140,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
   /** Adds the provided video to the end of the queue. */
-  const addToBottomOfQueue = useCallback((video: Video) => {
+  const addToBottomOfQueue = useCallback((video: Video, action: "add" | "move") => {
     if (!socketInstance.id) return;
     
     const data: QueueRequest = {
@@ -151,14 +150,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const ackCallback = (ack: QueueAcknowledgement) => {
       if (ack.success) {
-        console.log(`Added ${video.title} to the queue`);
         toast({
-          title: `${truncateString(video.title, 25)} added to the queue`,
+          title: action === "add" ? `${replaceHtmlEntities(truncateString(video.title, 40))} - added to the queue` : `${replaceHtmlEntities(truncateString(video.title, 40))} - moved to the bottom`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: `Unable to add ${truncateString(video.title, 25)} to the queue`,
+          title: action === "add" ? `Unable to add ${replaceHtmlEntities(truncateString(video.title, 40))} to the queue` : `Unable to move ${replaceHtmlEntities(truncateString(video.title, 40))}`,
           description: ack.errorMessage,
           ...errorToastProps
         });
