@@ -387,7 +387,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                     width="100%"
                   >
                     <Text>By Chris Sterkenburg</Text>
-                    <Text>2024</Text>
+                    <Text>2025</Text>
                   </Flex>
                 </ModalFooter>
               </>

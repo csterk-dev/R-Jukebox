@@ -35,7 +35,7 @@ export const v1_3ReleaseNotes: ReleaseNotes = [
     title: "Welcome to 2025!",
     versionNum: "1.3.1",
     notes: v1_3_1,
-    date: "17/01/2024"
+    date: "17/01/2025"
   },
   {
     title: "Introducing auto complete!",
