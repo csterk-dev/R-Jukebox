@@ -50,9 +50,6 @@ export const VERSION_NUM = "1.3.1";
 export const TooltipOpenDelay = 500;
 
 /** In pixels. */
-export const HEADER_HEIGHT = 60;
-
-/** In pixels. */
 export const MOBILE_BREAKPOINT = 550;
 
 /** Ensure front and server values match */
