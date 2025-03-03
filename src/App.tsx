@@ -30,7 +30,6 @@ export const App = () => {
                 }}
               />
               <Flex
-                bg="oranges" 
                 flex={1} 
                 justifyContent={{
                   base: "center",
