@@ -18,12 +18,12 @@ const errorToastProps = {
   isClosable: true
 };
 
-const infoToastProps = {
-  status: "info" as UseToastOptions["status"],
-  variant: "info",
-  duration: 6000,
-  isClosable: false
-};
+// const infoToastProps = {
+//   status: "info" as UseToastOptions["status"],
+//   variant: "info",
+//   duration: 6000,
+//   isClosable: false
+// };
 
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
@@ -154,12 +154,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     const resCallback = (ack: WSAcknowledgement) => {
       if (ack.success) {
         toast({
-          title: action === "add" ? `Added "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Playing next: "${replaceHtmlEntities(truncateString(video.title, 40))}"`,
+          title: `Playing "${replaceHtmlEntities(truncateString(video.title, 40))}" next`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to play "${replaceHtmlEntities(truncateString(video.title, 40))}" next`,
+          title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to move "${replaceHtmlEntities(truncateString(video.title, 40))}" to the top`,
           description: ack.errorMessage,
           ...errorToastProps
         });
@@ -182,12 +182,12 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     const resCallback = (ack: WSAcknowledgement) => {
       if (ack.success) {
         toast({
-          title: `Added "${replaceHtmlEntities(truncateString(video.title, 40))}" to the end of queue`,
+          title: action === "add" ? `Added "${replaceHtmlEntities(truncateString(video.title, 40))}" to the end of queue` : `Moved "${replaceHtmlEntities(truncateString(video.title, 40))}" to the end of queue`,
           ...queueToastProps
         });
       } else {
         toast({
-          title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to move "${replaceHtmlEntities(truncateString(video.title, 40))}"`,
+          title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to move "${replaceHtmlEntities(truncateString(video.title, 40))}" to the bottom`,
           description: ack.errorMessage,
           ...errorToastProps
         });
@@ -358,15 +358,15 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       /** Handle any info messages from the player. **CURRENTLY NOT IMPLEMENTED ON SERVER**.*/
-      socketInstance.on(SOCKET_EVENT_KEYS.info, (info: InfoAcknowledgment) => {
-        if (!toast.isActive(toastIds.playerError)) {
-          toast({
-            title: info.title,
-            description: info.description,
-            ...infoToastProps
-          });
-        }
-      });
+      // socketInstance.on(SOCKET_EVENT_KEYS.info, (info: InfoAcknowledgment) => {
+      //   if (!toast.isActive(toastIds.playerError)) {
+      //     toast({
+      //       title: info.title,
+      //       description: info.description,
+      //       ...infoToastProps
+      //     });
+      //   }
+      // });
 
 
       // Sync history
@@ -418,7 +418,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
-      socketInstance.off(SOCKET_EVENT_KEYS.info);
+      // socketInstance.off(SOCKET_EVENT_KEYS.info);
     }
   }, [currentVideo?.videoId, isPlaying, isConnected, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 

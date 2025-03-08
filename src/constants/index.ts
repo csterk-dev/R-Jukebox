@@ -16,14 +16,12 @@ export const SOCKET_EVENT_KEYS = {
   currentVideoTime: "current-video-time",
   /** Deletes the provided item from the queue. */
   deleteQueueItem: "delete-queue-item",
-  /** Any error values. */
+  /** Used to broadcast any errors to all connected clients, in instances that a websocket response acknowledgement callback is not/cannot be present. */
   error: "error",
   /** Used to return the current state to the newly connect client. */
   getInitialState: "get-initial-state",
   /** Gets the history. */
   history: "history",
-  /** Used for general information on player or queue updates. */
-  info: "info",
   /** If the player is loading. */
   isLoading: "is-loading",
   /** Gets the value from the isPlaying boolean. */
@@ -56,8 +54,8 @@ export const MOBILE_BREAKPOINT = 550;
 export const PLAYER_VOLUME_DEFAULT = 30;
 
 
-/** Use when interacting with the server running on the RPI. */
-const RPI_SERVER_URL = `${window.location.protocol}//${window.location.host}:3001`; // If running on RPI 3, change to splice 5
+/** Use when interacting with the server running on the RPI. @remarks If running on RPI 3, change to splice 5 */
+const RPI_SERVER_URL = `${window.location.protocol}//${window.location.host}:3001`;
 /** Use when interacting with the local server. */
 const LOCAL_SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
