@@ -55,18 +55,41 @@ type ReleaseNotes = {
  type ThemeSeason = "halloween" | "christmas" | "none";
 
 
-/** Ensure cleint and server match. */
-type QueueRequest = {
-  clientId: string;
-  video: Video
- }
 
-/** Ensure cleint and server match. */
- type QueueAcknowledgement = {
+ type BaseRequest = {
+  clientId: string;
+}
+
+
+type VideoRequest = BaseRequest & {
+  video: Video;
+}
+
+
+type PlayPauseRequest = BaseRequest & {
+  isPlaying: boolean;
+}
+
+
+type UpdatePlayerVolumeRequest = BaseRequest & {
+  volumeLevel: number;
+}
+
+
+type UpdatePlayerTimestampRequest = BaseRequest & {
+  timestamp: number;
+}
+
+
+type RemoveQueueItemRequest = BaseRequest & {
+  videoId: Video["videoId"]
+}
+
+
+type WSAcknowledgement = {
   success: boolean;
   errorMessage?: string;
- }
-
+}
 
  type InfoAcknowledgment = {
   title: string;

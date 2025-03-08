@@ -51,7 +51,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           {videos.map(vid => (
             <VideoCard
               key={`${vid.videoId}${vid.playedAt}`}
-              addToBottomOfQueue={() => handleMoveTop(vid)}
+              addToBottomOfQueue={() => handleMoveBottom(vid)}
               addToTopOfQueue={() => handleMoveTop(vid)}
               as="li"
               isMobile={isMobile}
@@ -64,7 +64,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     });
 
     return jsx;
-  }, [history, isMobile, playVideo, handleMoveTop]);
+  }, [history, isMobile, playVideo, handleMoveBottom, handleMoveTop]);
 
 
   const queueDurationSum = useMemo(() => {

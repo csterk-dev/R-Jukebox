@@ -17,7 +17,7 @@ export const HEADER_HEIGHT = 60;
 
 
 const _Header: FC<FlexProps> = (props) => {
-  const { currentVideo, isPlaying, isPlayerLoading, queue, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
+  const { currentVideo, isPlaying, isPlayerLoading, queue, pauseResumeCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updatePlayerTimestamp, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
   const showingCurrentVideo = !!currentVideo && !isPlayerLoading;
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
@@ -143,10 +143,10 @@ const _Header: FC<FlexProps> = (props) => {
               disableQueueButton={!queue.length}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={pauseCurrentVideo}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
               playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={resumeCurrentVideo}
-              updateCurrentVideoTime={updateCurrentVideoTime}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
             />
             <IconButton
               aria-label="Open settings"
@@ -165,10 +165,10 @@ const _Header: FC<FlexProps> = (props) => {
               disableQueueButton={!queue.length}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={pauseCurrentVideo}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
               playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={resumeCurrentVideo}
-              updateCurrentVideoTime={updateCurrentVideoTime}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
             />
             <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
             <Flex
