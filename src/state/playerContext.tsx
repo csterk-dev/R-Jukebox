@@ -43,6 +43,7 @@ interface PlayerContextType {
   isConnected: boolean;
   isPlaying: boolean;
   isPlayerLoading: boolean;
+  logs: EntryLog[];
   pauseResumeCurrentVideo: (action: "resume" | "pause") => void;
   playVideo: (video: Video) => void;
   playNextQueueItem: () => void;
@@ -64,6 +65,7 @@ const defaultPlayerContextVal: PlayerContextType = {
   isConnected: false,
   isPlaying: false,
   isPlayerLoading: false,
+  logs: [],
   pauseResumeCurrentVideo: () => void 0,
   playVideo: () => void 0,
   playNextQueueItem: () => void 0,
@@ -92,6 +94,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [volume, setVolume] = useState<PlayerContextType["playerVolume"]>(PLAYER_VOLUME_DEFAULT);
   const [history, setHistory] = useState<PlayerContextType["history"]>([]);
   const [queue, setQueue] = useState<PlayerContextType["queue"]>([]);
+  const [logs, setLogs] = useState<PlayerContextType["logs"]>([]);
 
 
   /** Pauses/resumes the current video. */
@@ -383,6 +386,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       });
 
 
+      // Sync logs
+      socketInstance.on(SOCKET_EVENT_KEYS.logs, (incomingLogs: EntryLog[]) => {
+        console.log("logs synced");
+        setLogs(incomingLogs);
+      });
+
+
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
@@ -436,6 +446,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       isPlayerLoading,
       pauseResumeCurrentVideo,
       playVideo,
+      logs,
       playNextQueueItem,
       addToTopOfQueue,
       addToBottomOfQueue,
@@ -444,7 +455,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       updatePlayerVolume,
       updatePlayerTimestamp
     }
-  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, history, isConnected, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, playVideo, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
+  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, history, isConnected, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, playVideo, logs, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
 
   return (
     <PlayerContext.Provider value={playerContext}>

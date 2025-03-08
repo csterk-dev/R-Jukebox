@@ -95,3 +95,13 @@ type WSAcknowledgement = {
   title: string;
   description?: string;
  }
+
+
+type EntryLog = {
+  id: number;
+  dateTime: string;
+  type: "error" | "info";
+  callingFunction?: string | null;
+  /** Stack trace or error message. */
+  stackTrace: string | null;
+}
