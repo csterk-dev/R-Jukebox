@@ -17,14 +17,6 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   const cancelClearButtonRef = useRef<HTMLButtonElement>(null);
 
 
-  const handleMoveTop = useCallback((video: Video) => {
-    addToTopOfQueue(video, "move");
-  }, [addToTopOfQueue]);
-  const handleMoveBottom = useCallback((video: Video) => {
-    addToBottomOfQueue(video, "move");
-  }, [addToBottomOfQueue]);
-
-
   const historyCards: JSX.Element[] = useMemo(() => {
     type SortedHistory = { [key: string]: HistoryVideo[] }
 
@@ -51,8 +43,8 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           {videos.map(vid => (
             <VideoCard
               key={`${vid.videoId}${vid.playedAt}`}
-              addToBottomOfQueue={() => handleMoveBottom(vid)}
-              addToTopOfQueue={() => handleMoveTop(vid)}
+              addToBottomOfQueue={() => addToBottomOfQueue(vid, "add")}
+              addToTopOfQueue={() => addToTopOfQueue(vid, "add")}
               as="li"
               isMobile={isMobile}
               playVideo={playVideo}
@@ -64,7 +56,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     });
 
     return jsx;
-  }, [history, isMobile, playVideo, handleMoveBottom, handleMoveTop]);
+  }, [history, isMobile, playVideo, addToBottomOfQueue, addToTopOfQueue]);
 
 
   const queueDurationSum = useMemo(() => {
@@ -106,9 +98,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           defaultIndex={0}
           display="flex"
           flexDirection="column"
+          isLazy={history.length > 50 || queue.length > 50 ? true : false}
           variant="soft-rounded"
           width="100%"
-          isLazy
           onChange={useCallback((index: number) => setTabIndex(index), [])}
         >
           <TabList
@@ -172,8 +164,8 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                         />
                       </Tooltip>
                       <VideoCard
-                        addToBottomOfQueue={() => handleMoveBottom(vid)}
-                        addToTopOfQueue={() => handleMoveTop(vid)}
+                        addToBottomOfQueue={() => addToBottomOfQueue(vid, "move")}
+                        addToTopOfQueue={() => addToTopOfQueue(vid, "move")}
                         isMobile={isMobile}
                         playVideo={playVideo}
                         video={vid}
