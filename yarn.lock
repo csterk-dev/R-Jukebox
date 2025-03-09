@@ -2768,10 +2768,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@usesoftwareau/eslint-config-react@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@usesoftwareau/eslint-config-react/-/eslint-config-react-1.0.2.tgz#5c62c4215ca70f1e39210f17c12621e57231391f"
-  integrity sha512-MlVoBnnf42b3ie9rFwuEusNlQehH1YEDBAsIsOdylxCOaDiHGI89lWNC8YW81kDIiH/xCmrmBY2INZAVzZzvqQ==
+"@usesoftwareau/eslint-config-react@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@usesoftwareau/eslint-config-react/-/eslint-config-react-1.0.3.tgz#f1fd923ad746d310c6ea4140e4689b15272b57b4"
+  integrity sha512-qauaL5vAsGdWlaVoOuiV/7RTAFNpOIba2aucf1T6oCCWDu+f9nDIAd0TeVJ1JKBWEkqtlvvD80AI+ojy0xpuJw==
 
 "@usesoftwareau/react-utils@^1.0.8":
   version "1.0.8"
@@ -3299,10 +3299,10 @@ axe-core@=4.7.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.7.0.tgz#34ba5a48a8b564f67e103f0aa5768d76e15bbbbf"
   integrity sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==
 
-axios@^1.6.8:
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
-  integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
+axios@^1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.8.2.tgz#fabe06e241dfe83071d4edfbcaa7b1c3a40f7979"
+  integrity sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"

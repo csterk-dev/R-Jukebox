@@ -101,7 +101,8 @@ type EntryLog = {
   id: number;
   dateTime: string;
   type: "error" | "info";
-  callingFunction?: string | null;
+  /** Name of the function that called and caught the error. Useful for nested util functions. */
+  callingFunction: string;
   /** Stack trace or error message. */
   stackTrace: string | null;
 }

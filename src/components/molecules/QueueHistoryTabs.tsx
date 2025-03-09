@@ -1,7 +1,7 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, FlexProps, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { Placeholder } from "components/atoms/Placeholder";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
-import { IconType } from "react-icons";
 import { HiClock, HiRectangleStack, HiXMark } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
 import { usePlayer } from "state/playerContext";
@@ -242,41 +242,3 @@ _QueueHistoryTabs.displayName = "QueueHistoryTabs";
  * @returns {JSX.Element} The queue and history tabs.
  */
 export const QueueHistoryTabs = memo(_QueueHistoryTabs);
-
-
-type PlaceholderProps = FlexProps & {
-  title: string;
-  icon: IconType;
-}
-
-const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
-  return (
-    <Flex
-      alignItems="center"
-      flexDir="column"
-      gap="10px"
-      justifyContent="center"
-      {...props}
-    >
-      <Box
-        _dark={{ bg: "neutral.400" }}
-        bg="white"
-        borderRadius="90"
-        p="20px"
-      >
-        <Icon
-          as={icon}
-          fontSize="70px"
-        />
-      </Box>
-      <Text fontSize="18px" fontWeight="600" opacity={0.7}>{title}</Text>
-    </Flex>
-  )
-}
-
-
-
-/**
- * Need to add queue video variant
- * - Update how history is retrieved and set to match queue - hope that fixes bug
- */
