@@ -8,7 +8,8 @@ import { VERSION_NUM } from "constants/index";
 import { SearchBarButton } from "./SearchBarButton";
 import { NewUpdateModal } from "./NewUpdateModal";
 import { SearchModal } from "./SearchModal";
-import { SettingsModal } from "./SettingsModal";
+import { SettingsModal } from "./SettingsModal/index";
+
 
 
 /** In pixels. */
@@ -17,7 +18,7 @@ export const HEADER_HEIGHT = 60;
 
 
 const _Header: FC<FlexProps> = (props) => {
-  const { currentVideo, isPlaying, isPlayerLoading, queue, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
+  const { currentVideo, isPlaying, isPlayerLoading, queue, pauseResumeCurrentVideo, playVideo, logs, isConnected, playerVolume, updatePlayerVolume, updatePlayerTimestamp, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
   const showingCurrentVideo = !!currentVideo && !isPlayerLoading;
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
@@ -143,10 +144,10 @@ const _Header: FC<FlexProps> = (props) => {
               disableQueueButton={!queue.length}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={pauseCurrentVideo}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
               playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={resumeCurrentVideo}
-              updateCurrentVideoTime={updateCurrentVideoTime}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
             />
             <IconButton
               aria-label="Open settings"
@@ -165,10 +166,10 @@ const _Header: FC<FlexProps> = (props) => {
               disableQueueButton={!queue.length}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={pauseCurrentVideo}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
               playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={resumeCurrentVideo}
-              updateCurrentVideoTime={updateCurrentVideoTime}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
             />
             <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
             <Flex
@@ -252,6 +253,7 @@ const _Header: FC<FlexProps> = (props) => {
       </Flex>
 
       <SettingsModal
+        entryLogs={logs}
         finalFocusRef={finalFocusRef}
         isBgAnimated={isBgAnimated}
         isConnected={isConnected}

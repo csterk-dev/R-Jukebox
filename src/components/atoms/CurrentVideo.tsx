@@ -13,7 +13,7 @@ import { GiWinterHat } from "react-icons/gi";
 
 const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const { isMobile, themeSeason } = useAppState();
-  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, updateCurrentVideoTime, resumeCurrentVideo } = usePlayer();
+  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, updatePlayerTimestamp } = usePlayer();
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
 
   const [showPublishedAtAsDate, setShowPublishedAtAsDate] = useState(false);
@@ -45,10 +45,10 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   /** Optimistically update the time and send the final value to the player. */
   const onChangeEndProgressHandler = useCallback((value: number) => {
     setIsSlidingLocal(false);
-    updateCurrentVideoTime(value);
+    updatePlayerTimestamp(value);
     setOptimisticTimeSeconds(value)
-    resumeCurrentVideo();
-  }, [resumeCurrentVideo, updateCurrentVideoTime]);
+    pauseResumeCurrentVideo("resume");
+  }, [updatePlayerTimestamp, pauseResumeCurrentVideo]);
 
 
   // Optimistically increment the counter if we're playing and havn't reached the end (handle cases where the isPlaying value has yet to be resynced and the optimistic value exceeds the duration)
