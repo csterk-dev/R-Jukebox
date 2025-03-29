@@ -22,6 +22,7 @@ const _ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, isIcon
         <IconButton
           aria-label={`Switch to ${text} mode`}
           icon={<SwitchIcon />}
+          size="md"
           variant="ghost"
           onClick={toggleColorMode}
         />

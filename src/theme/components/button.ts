@@ -22,6 +22,7 @@ const baseStyle = defineStyle({
 export const buttonStyles = defineStyleConfig({
   baseStyle,
   variants: {
+    ghost: {},
     // Brand style
     brand: {
       bg: "neutral.500",
@@ -67,7 +68,7 @@ export const buttonStyles = defineStyleConfig({
   },
   defaultProps: {
     colorScheme: "neutral",
-    size: "md", // Same as default
-    variant: "solid" // Same as default
+    size: "sm",
+    variant: "ghost"
   }
 });

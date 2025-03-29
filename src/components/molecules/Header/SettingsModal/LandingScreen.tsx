@@ -103,7 +103,7 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
           onClick={() => setScreen("logs")}
         >
           <Icon aria-label="Bug list" as={HiMiniCodeBracketSquare} mt="3px" />
-          <Text>Entry Logs</Text>
+          <Text>Logs</Text>
         </HStack>
         <Divider />
 

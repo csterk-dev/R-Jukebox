@@ -41,6 +41,8 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
             colorScheme="brand"
             mt="30px"
             pb="2px"
+            size="md"
+            variant="solid"
             onClick={onClose}
           >
             Lets go!

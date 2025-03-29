@@ -158,8 +158,6 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                           color="neutral.900"
                           fontSize="18px"
                           icon={<HiXMark />}
-                          size="sm"
-                          variant="ghost"
                           onClick={() => deleteQueueItem(vid.videoId)}
                         />
                       </Tooltip>

@@ -153,7 +153,7 @@ const _Header: FC<FlexProps> = (props) => {
               aria-label="Open settings"
               colorScheme="brand"
               icon={<HiCog6Tooth opacity={0.9} />}
-              variant="ghost"
+              size="md"
               onClick={onOpenSettings}
             />
           </> :
@@ -190,8 +190,6 @@ const _Header: FC<FlexProps> = (props) => {
                     colorScheme="neutral"
                     icon={<HiSpeakerXMark />}
                     isDisabled={!showingCurrentVideo}
-                    size="sm"
-                    variant="ghost"
                     onClick={onClickToggleMute}
                   />
                   <Slider
@@ -221,8 +219,6 @@ const _Header: FC<FlexProps> = (props) => {
                     colorScheme="neutral"
                     icon={<HiSpeakerWave />}
                     isDisabled={!showingCurrentVideo}
-                    size="sm"
-                    variant="ghost"
                     onClick={onClickMaxVolume}
                   />
                 </Flex>
@@ -245,7 +241,7 @@ const _Header: FC<FlexProps> = (props) => {
             <IconButton
               aria-label="Open settings"
               icon={<HiCog6Tooth opacity={0.9} />}
-              variant="ghost"
+              size="md"
               onClick={onOpenSettings}
             />
           </>

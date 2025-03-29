@@ -76,6 +76,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
               display="flex"
               icon={<HiXMark />}
               justifyContent="center"
+              size="md"              
               variant="unstyled"
               onClick={onCloseSettings}
             />
