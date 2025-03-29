@@ -2,7 +2,7 @@ import { Divider, Flex, HStack, Icon, ModalFooter, Text, VStack } from "@chakra-
 import { ColorModeSwitcher } from "components/atoms/ColorModeSwitcher";
 import { VERSION_NUM } from "constants/index";
 import { Dispatch, FC, SetStateAction } from "react";
-import { HiChartBar, HiClipboardDocumentList, HiMiniCodeBracketSquare, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave } from "react-icons/hi2";
+import { HiChartBar, HiClipboardDocumentList, HiCodeBracket, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave } from "react-icons/hi2";
 import { SettingScreens } from ".";
 
 type LandScreenProps = {
@@ -102,8 +102,8 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
           width="100%"
           onClick={() => setScreen("logs")}
         >
-          <Icon aria-label="Bug list" as={HiMiniCodeBracketSquare} mt="3px" />
-          <Text>Entry Logs</Text>
+          <Icon aria-label="Bug list" as={HiCodeBracket} mt="3px" />
+          <Text>Player logs</Text>
         </HStack>
         <Divider />
 

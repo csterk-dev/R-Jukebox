@@ -81,7 +81,6 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 fontSize="16px"
                 icon={<HiQueueList />}
                 isDisabled={isLive}
-                size="sm"
                 variant="solid"
                 onClick={onClickNext}
               />
@@ -97,7 +96,6 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 fontSize="16px"
                 icon={<HiBarsArrowDown />}
                 isDisabled={isLive}
-                size="sm"
                 variant="solid"
                 onClick={onClickLast}
               />

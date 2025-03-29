@@ -61,6 +61,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
                   justifyContent="center"
                   leftIcon={<HiChevronLeft style={{ paddingTop: 2 }} />}
                   pl="10px"
+                  size="md"
                   textTransform="uppercase"
                   variant="unstyled"
                   onClick={() => setScreen("settings")}
@@ -76,6 +77,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
               display="flex"
               icon={<HiXMark />}
               justifyContent="center"
+              size="md"              
               variant="unstyled"
               onClick={onCloseSettings}
             />
