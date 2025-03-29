@@ -17,7 +17,7 @@ const FILTER_BY_TYPE_OPTIONS: { label: string; value: FilterByTypeOptions }[] = 
     value: "info"
   },
   {
-    label: "Errors",
+    label: "Error",
     value: "error"
   }
 ]
