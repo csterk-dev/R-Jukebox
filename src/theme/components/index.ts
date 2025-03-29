@@ -5,4 +5,3 @@ export * from "./menu";
 export * from "./tabs";
 export * from "./slider";
 export * from "./alert";
-export * from "./closeButton";
