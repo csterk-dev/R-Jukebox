@@ -5,9 +5,14 @@ import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
 import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
 import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
 import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
+import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
 
 
 const RELEASE_NOTES = [
+  {
+    title: "V1.4 - Player Logs",
+    notes: v1_4ReleaseNotes
+  },
   {
     title: "V1.3 - Auto Complete",
     notes: v1_3ReleaseNotes
