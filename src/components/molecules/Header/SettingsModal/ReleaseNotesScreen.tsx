@@ -29,7 +29,7 @@ const RELEASE_NOTES = [
 
 export const ReleaseNotesScreen: FC = () => {
   return (
-    <Flex flexDirection="column" height="483px">
+    <Flex flexDirection="column" h="448px">
       <Text
         as="h1" 
         fontSize={18}
