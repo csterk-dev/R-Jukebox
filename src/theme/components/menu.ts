@@ -33,4 +33,32 @@ const baseStyle = definePartsStyle({
   }
 });
 
-export const menuStyles = defineMultiStyleConfig({ baseStyle })
+
+const logFilters = definePartsStyle({
+  list: {
+    minW: "150px"
+  },
+  item: {
+    flexDir: "row-reverse",
+    pr: 0,
+    pl: 2,
+    _checked: {
+      _dark: {
+        color: "brand.200"
+      },
+      color: "brand.700"
+    }
+  },
+  groupTitle: {
+    mx: 0,
+    pl: 2,
+    textAlign: "left"
+  }
+});
+
+export const menuStyles = defineMultiStyleConfig({
+  baseStyle,
+  variants: {
+    logFilters
+  }
+})
