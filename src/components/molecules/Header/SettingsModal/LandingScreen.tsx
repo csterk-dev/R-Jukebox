@@ -1,4 +1,4 @@
-import { Divider, Flex, HStack, Icon, ModalFooter, Text, VStack } from "@chakra-ui/react";
+import { Badge, Divider, Flex, HStack, Icon, ModalFooter, Text, VStack } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "components/atoms/ColorModeSwitcher";
 import { VERSION_NUM } from "constants/index";
 import { Dispatch, FC, SetStateAction } from "react";
@@ -104,6 +104,7 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
         >
           <Icon aria-label="Bug list" as={HiCodeBracket} mt="3px" />
           <Text>Player logs</Text>
+          <Badge colorScheme="green" ml="auto">New</Badge>
         </HStack>
         <Divider />
 
