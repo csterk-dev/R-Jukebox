@@ -1,6 +1,6 @@
 import { Button, Flex, Modal, ModalContent, ModalOverlay, ModalProps, Text } from "@chakra-ui/react";
 import { FC } from "react";
-import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
+import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
 import { Notes } from "components/atoms/Notes";
 
 
@@ -26,7 +26,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
         userSelect="none"
       >
         <Flex flexDirection="column" p="10px 20px 20px">
-          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_3ReleaseNotes[0].title}`}</Text>
+          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_4ReleaseNotes[0].title}`}</Text>
           <Text
             as="h2"
             fontSize="24"
@@ -35,12 +35,14 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
           >
             What's new?
           </Text>
-          <Notes date={v1_3ReleaseNotes[0].date} mt="10px" notes={v1_3ReleaseNotes[0].notes} />
+          <Notes date={v1_4ReleaseNotes[0].date} mt="10px" notes={v1_4ReleaseNotes[0].notes} />
 
           <Button
             colorScheme="brand"
             mt="30px"
             pb="2px"
+            size="md"
+            variant="solid"
             onClick={onClose}
           >
             Lets go!

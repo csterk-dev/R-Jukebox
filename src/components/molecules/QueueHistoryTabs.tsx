@@ -1,7 +1,7 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, FlexProps, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, FlexProps, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { Placeholder } from "components/atoms/Placeholder";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
-import { IconType } from "react-icons";
 import { HiClock, HiRectangleStack, HiXMark } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
 import { usePlayer } from "state/playerContext";
@@ -17,14 +17,6 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
   const cancelClearButtonRef = useRef<HTMLButtonElement>(null);
 
 
-  const handleMoveTop = useCallback((video: Video) => {
-    addToTopOfQueue(video, "move");
-  }, [addToTopOfQueue]);
-  const handleMoveBottom = useCallback((video: Video) => {
-    addToBottomOfQueue(video, "move");
-  }, [addToBottomOfQueue]);
-
-
   const historyCards: JSX.Element[] = useMemo(() => {
     type SortedHistory = { [key: string]: HistoryVideo[] }
 
@@ -37,6 +29,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     }, {} as SortedHistory);
 
     const jsx: JSX.Element[] = [];
+
     Object.entries(sortedHistory).forEach(([date, videos]) => {
       const dateText = videoPlayedAtToString(date);
       jsx.push(
@@ -50,8 +43,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           {videos.map(vid => (
             <VideoCard
               key={`${vid.videoId}${vid.playedAt}`}
-              addToBottomOfQueue={() => handleMoveTop(vid)}
-              addToTopOfQueue={() => handleMoveTop(vid)}
+              addToBottomOfQueue={() => addToBottomOfQueue(vid, "add")}
+              addToTopOfQueue={() => addToTopOfQueue(vid, "add")}
+              as="li"
               isMobile={isMobile}
               playVideo={playVideo}
               video={vid}
@@ -62,7 +56,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     });
 
     return jsx;
-  }, [history, isMobile, playVideo, handleMoveTop]);
+  }, [history, isMobile, playVideo, addToBottomOfQueue, addToTopOfQueue]);
 
 
   const queueDurationSum = useMemo(() => {
@@ -90,8 +84,12 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
         bg="rgba(255, 255, 255, 0.8)"
         borderRadius={10}
         boxShadow="lg"
-        height="100%"
+        h={{
+          base: "100%",
+          lg: "calc(100dvh - 80px)"
+        }}
         maxWidth={isMobile ? "300px" : "400px"}
+        overflow="clip"
         width="100%"
         {...props}
       >
@@ -100,9 +98,9 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           defaultIndex={0}
           display="flex"
           flexDirection="column"
+          isLazy={history.length > 50 || queue.length > 50 ? true : false}
           variant="soft-rounded"
           width="100%"
-          isLazy
           onChange={useCallback((index: number) => setTabIndex(index), [])}
         >
           <TabList
@@ -129,19 +127,30 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
               null
             }
           </TabList>
-          <TabPanels height="100%" overflowY="auto">
+          <TabPanels
+            height="100%"
+            overflowY={{
+              base: "visible",
+              lg: "auto"
+            }}
+          >
             <TabPanel height="100%" p="10px 10px 10px 0px">
               {queue.length === 0 ?
                 <Placeholder icon={HiRectangleStack} pl="10px" title="Queued videos will appear here" /> :
                 <Flex
+                  as="ol"
                   flex={1}
                   flexDirection="column"
                   gap="10px"
-                  pb="10px"
                 >
                   <Text fontSize={14} opacity={0.7} px="10px">{queueDurationSum}</Text>
                   {queue.map(vid => (
-                    <Flex key={vid.videoId} alignItems="center">
+                    <Flex
+                      key={vid.videoId}
+                      _last={{ mb: "10px" }}
+                      alignItems="center"
+                      as="li"
+                    >
                       <Tooltip label="Remove item" placement="left">
                         <IconButton
                           _dark={{ color: "neutral.white" }}
@@ -149,14 +158,12 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                           color="neutral.900"
                           fontSize="18px"
                           icon={<HiXMark />}
-                          size="sm"
-                          variant="ghost"
                           onClick={() => deleteQueueItem(vid.videoId)}
                         />
                       </Tooltip>
                       <VideoCard
-                        addToBottomOfQueue={() => handleMoveBottom(vid)}
-                        addToTopOfQueue={() => handleMoveTop(vid)}
+                        addToBottomOfQueue={() => addToBottomOfQueue(vid, "move")}
+                        addToTopOfQueue={() => addToTopOfQueue(vid, "move")}
                         isMobile={isMobile}
                         playVideo={playVideo}
                         video={vid}
@@ -170,6 +177,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
               {history.length === 0 ?
                 <Placeholder icon={HiClock} title="History will appear here" /> :
                 <Flex
+                  as="ol"
                   flex={1}
                   flexDirection="column"
                   gap="10px"
@@ -232,41 +240,3 @@ _QueueHistoryTabs.displayName = "QueueHistoryTabs";
  * @returns {JSX.Element} The queue and history tabs.
  */
 export const QueueHistoryTabs = memo(_QueueHistoryTabs);
-
-
-type PlaceholderProps = FlexProps & {
-  title: string;
-  icon: IconType;
-}
-
-const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
-  return (
-    <Flex
-      alignItems="center"
-      flexDir="column"
-      gap="10px"
-      justifyContent="center"
-      {...props}
-    >
-      <Box
-        _dark={{ bg: "neutral.400" }}
-        bg="white"
-        borderRadius="90"
-        p="20px"
-      >
-        <Icon
-          as={icon}
-          fontSize="70px"
-        />
-      </Box>
-      <Text fontSize="18px" fontWeight="600" opacity={0.7}>{title}</Text>
-    </Flex>
-  )
-}
-
-
-
-/**
- * Need to add queue video variant
- * - Update how history is retrieved and set to match queue - hope that fixes bug
- */

@@ -19,7 +19,7 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...pr
       aria-label="Open search"
       colorScheme="brand"
       icon={<HiMagnifyingGlass />}
-      variant="ghost"
+      size="md"
       onClick={onOpen}
     />
   )

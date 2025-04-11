@@ -8,12 +8,17 @@ import { VERSION_NUM } from "constants/index";
 import { SearchBarButton } from "./SearchBarButton";
 import { NewUpdateModal } from "./NewUpdateModal";
 import { SearchModal } from "./SearchModal";
-import { SettingsModal } from "./SettingsModal";
+import { SettingsModal } from "./SettingsModal/index";
+
+
+
+/** In pixels. */
+export const HEADER_HEIGHT = 60;
 
 
 
 const _Header: FC<FlexProps> = (props) => {
-  const { currentVideo, isPlaying, isPlayerLoading, queue, resumeCurrentVideo, pauseCurrentVideo, playVideo, isConnected, playerVolume, updatePlayerVolume, updateCurrentVideoTime, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
+  const { currentVideo, isPlaying, isPlayerLoading, queue, pauseResumeCurrentVideo, playVideo, logs, isConnected, playerVolume, updatePlayerVolume, updatePlayerTimestamp, addToBottomOfQueue, addToTopOfQueue, playNextQueueItem } = usePlayer();
   const showingCurrentVideo = !!currentVideo && !isPlayerLoading;
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
@@ -118,136 +123,133 @@ const _Header: FC<FlexProps> = (props) => {
 
   return (
     <>
-      <header>
-        <Flex
-          alignItems="center"
-          background={headerBg}
-          boxShadow="base"
-          gap="5px"
-          justify="center"
-          px="20px"
-          width="100%"
-          {...props}
-        >
-          {isMobile ?
-            <>
-              <SearchBarButton flex={1} isMobile onOpen={onOpenSearch} />
-              <VideoControls
-                disableBackButton={!showingCurrentVideo}
-                disablePlayButton={!showingCurrentVideo}
-                disableQueueButton={!queue.length}
-                flex={1}
-                isPlaying={isPlaying}
-                pauseCurrentVideo={pauseCurrentVideo}
-                playNextQueueItem={playNextQueueItem}
-                resumeCurrentVideo={resumeCurrentVideo}
-                updateCurrentVideoTime={updateCurrentVideoTime}
-              />
-              <IconButton
-                aria-label="Open settings"
-                colorScheme="brand"
-                icon={<HiCog6Tooth opacity={0.9} />}
-                variant="ghost"
-                onClick={onOpenSettings}
-              />
-            </> :
+      <Flex
+        alignItems="center"
+        as="header"
+        background={headerBg}
+        boxShadow="base"
+        gap="5px"
+        h={`${HEADER_HEIGHT}px`}
+        justify="center"
+        px="20px"
+        w="100%"
+        {...props}
+      >
+        {isMobile ?
+          <>
+            <SearchBarButton flex={1} isMobile onOpen={onOpenSearch} />
+            <VideoControls
+              disableBackButton={!showingCurrentVideo}
+              disablePlayButton={!showingCurrentVideo}
+              disableQueueButton={!queue.length}
+              flex={1}
+              isPlaying={isPlaying}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
+              playNextQueueItem={playNextQueueItem}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
+            />
+            <IconButton
+              aria-label="Open settings"
+              colorScheme="brand"
+              icon={<HiCog6Tooth opacity={0.9} />}
+              size="md"
+              onClick={onOpenSettings}
+            />
+          </> :
 
-            // Default view
-            <>
-              <VideoControls
-                disableBackButton={!showingCurrentVideo}
-                disablePlayButton={!showingCurrentVideo}
-                disableQueueButton={!queue.length}
-                flex={1}
-                isPlaying={isPlaying}
-                pauseCurrentVideo={pauseCurrentVideo}
-                playNextQueueItem={playNextQueueItem}
-                resumeCurrentVideo={resumeCurrentVideo}
-                updateCurrentVideoTime={updateCurrentVideoTime}
-              />
-              <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
-              <Flex
-                alignItems="center"
-                flex={1}
-                gap="5px"
-                justifyContent="center"
-              >
-                <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
-                  <Flex
-                    alignItems="center"
-                    // cursor={!showingCurrentVideo ? "not-allowed" : undefined}
-                    gap="5px"
-                    width="155px"
+          // Default view
+          <>
+            <VideoControls
+              disableBackButton={!showingCurrentVideo}
+              disablePlayButton={!showingCurrentVideo}
+              disableQueueButton={!queue.length}
+              flex={1}
+              isPlaying={isPlaying}
+              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
+              playNextQueueItem={playNextQueueItem}
+              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
+              updateCurrentVideoTime={updatePlayerTimestamp}
+            />
+            <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
+            <Flex
+              alignItems="center"
+              flex={1}
+              gap="5px"
+              justifyContent="center"
+            >
+              <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
+                <Flex
+                  alignItems="center"
+                  // cursor={!showingCurrentVideo ? "not-allowed" : undefined}
+                  gap="5px"
+                  width="155px"
+                >
+                  <IconButton
+                    aria-label="No volume"
+                    colorScheme="neutral"
+                    icon={<HiSpeakerXMark />}
+                    isDisabled={!showingCurrentVideo}
+                    onClick={onClickToggleMute}
+                  />
+                  <Slider
+                    aria-label="Volume control"
+                    colorScheme="brand"
+                    focusThumbOnChange={false}
+                    isDisabled={!showingCurrentVideo}
+                    max={100}
+                    min={0}
+                    step={5}
+                    value={localVolume}
+                    variant="horizontal"
+                    onChange={val => onChangeVolumeHandler(val)}
+                    onChangeEnd={val => onChangeEndVolumeHandler(val)}
+                    onMouseEnter={() => setShowVolumeTooltip(true)}
+                    onMouseLeave={() => setShowVolumeTooltip(false)}
                   >
-                    <IconButton
-                      aria-label="No volume"
-                      colorScheme="neutral"
-                      icon={<HiSpeakerXMark />}
-                      isDisabled={!showingCurrentVideo}
-                      size="sm"
-                      variant="ghost"
-                      onClick={onClickToggleMute}
-                    />
-                    <Slider
-                      aria-label="Volume control"
-                      colorScheme="brand"
-                      focusThumbOnChange={false}
-                      isDisabled={!showingCurrentVideo}
-                      max={100}
-                      min={0}
-                      step={5}
-                      value={localVolume}
-                      variant="horizontal"
-                      onChange={val => onChangeVolumeHandler(val)}
-                      onChangeEnd={val => onChangeEndVolumeHandler(val)}
-                      onMouseEnter={() => setShowVolumeTooltip(true)}
-                      onMouseLeave={() => setShowVolumeTooltip(false)}
-                    >
-                      <SliderTrack>
-                        <SliderFilledTrack />
-                      </SliderTrack>
-                      <Tooltip isOpen={showVolumeTooltip} label={`${localVolume}%`}>
-                        <SliderThumb />
-                      </Tooltip>
-                    </Slider>
-                    <IconButton
-                      aria-label="Max volume"
-                      colorScheme="neutral"
-                      icon={<HiSpeakerWave />}
-                      isDisabled={!showingCurrentVideo}
-                      size="sm"
-                      variant="ghost"
-                      onClick={onClickMaxVolume}
-                    />
-                  </Flex>
-                </Tooltip>
-              </Flex>
-              {isLargerThan800 ?
-                <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
-                  <span>
-                    <Icon
-                      aria-label={`${isConnected ? "Connected" : "Offline"}`}
-                      as={HiChartBar}
-                      color={isConnected ? "green" : "orange"}
-                      mt="7px"
-                    />
-                  </span>
-                </Tooltip> :
-                null
-              }
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <Tooltip isOpen={showVolumeTooltip} label={`${localVolume}%`}>
+                      <SliderThumb />
+                    </Tooltip>
+                  </Slider>
+                  <IconButton
+                    aria-label="Max volume"
+                    colorScheme="neutral"
+                    icon={<HiSpeakerWave />}
+                    isDisabled={!showingCurrentVideo}
+                    onClick={onClickMaxVolume}
+                  />
+                </Flex>
+              </Tooltip>
+            </Flex>
+            {isLargerThan800 ?
+              <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
+                <span>
+                  <Icon
+                    aria-label={`${isConnected ? "Connected" : "Offline"}`}
+                    as={HiChartBar}
+                    color={isConnected ? "green" : "orange"}
+                    mt="7px"
+                  />
+                </span>
+              </Tooltip> :
+              null
+            }
 
-              <IconButton
-                aria-label="Open settings"
-                icon={<HiCog6Tooth opacity={0.9} />}
-                variant="ghost"
-                onClick={onOpenSettings}
-              />
-            </>
-          }
-        </Flex>
-      </header>
+            <IconButton
+              aria-label="Open settings"
+              icon={<HiCog6Tooth opacity={0.9} />}
+              size="md"
+              onClick={onOpenSettings}
+            />
+          </>
+        }
+      </Flex>
 
       <SettingsModal
+        entryLogs={logs}
         finalFocusRef={finalFocusRef}
         isBgAnimated={isBgAnimated}
         isConnected={isConnected}

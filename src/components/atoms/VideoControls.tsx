@@ -34,21 +34,21 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableBackButton, disablePlay
           aria-label="rewind"
           icon={<HiBackward />}
           isDisabled={disableBackButton}
-          variant="ghost"
+          size="md"
           onClick={_updateCurrentVideoTime}
         />
         <IconButton
           aria-label="play/pause"
           icon={playPauseIcon}
           isDisabled={disablePlayButton}
-          variant="ghost"
+          size="md"
           onClick={onPressPlayPause}
         />
         <IconButton
           aria-label="forward"
           icon={<HiForward />}
           isDisabled={disableQueueButton}
-          variant="ghost"
+          size="md"
           onClick={playNextQueueItem}
         />
       </Flex>
