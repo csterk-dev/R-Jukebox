@@ -32,6 +32,6 @@ export const v1_4ReleaseNotes: ReleaseNotes = [
     title: "Introducing player logs!",
     versionNum: "1.4.0",
     notes: v1_3_0,
-    date: "31/03/2025"
+    date: "11/04/2025"
   }
 ];
