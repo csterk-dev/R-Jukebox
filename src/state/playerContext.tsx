@@ -100,7 +100,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   /** Pauses/resumes the current video. */
   const pauseResumeCurrentVideo = useCallback((action: "resume" | "pause") => {
     if (!currentVideo || !socketInstance.id) return;
-        
+
     const req: PlayPauseRequest = {
       clientId: socketInstance.id,
       isPlaying: action === "pause" ? false : true
@@ -116,7 +116,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
 
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, req, resCallback );
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, req, resCallback);
 
   }, [currentVideo, socketInstance, toast]);
 
@@ -169,14 +169,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
     socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, req, resCallback);
-    
+
   }, [socketInstance, toast]);
 
 
   /** Adds the provided video to the end of the queue. */
   const addToBottomOfQueue = useCallback((video: Video, action: "add" | "move") => {
     if (!socketInstance.id) return;
-    
+
     const req: VideoRequest = {
       clientId: socketInstance.id,
       video
@@ -198,7 +198,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, req, resCallback);
-    
+
   }, [socketInstance, toast]);
 
 
@@ -247,7 +247,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const deleteQueueItem = useCallback((videoId: Video["videoId"]) => {
     if (!socketInstance.id) return;
 
-    const req: RemoveQueueItemRequest = { 
+    const req: RemoveQueueItemRequest = {
       clientId: socketInstance.id,
       videoId
     }
@@ -328,6 +328,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
           console.log("current video synced");
           setCurrentVideo(incomingVideo);
           const vidTitle = replaceHtmlEntities(incomingVideo?.title);
+
           if (vidTitle) {
             document.title = vidTitle;
           } else {
@@ -396,7 +397,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
-        document.title = "Loading..."
+        const currVidTitle = replaceHtmlEntities(currentVideo?.title);
+        if (loading) document.title = "Loading...";
+        else if (currVidTitle) document.title = currVidTitle;
+        else document.title = APP_TITLE
       });
 
 
