@@ -16,20 +16,21 @@ const horizontal = definePartsStyle({
 
 const videoProgress = definePartsStyle({
   container: defineStyle({
-    h: "16px"
+    h: "6px",
+    w: "98%"
   }),
   track: defineStyle({
     bgColor: "#989090",
-    h: "12px",
-    borderBottomStartRadius: 10,
-    borderBottomEndRadius: 10
+    h: "6px",
+    borderStartRadius: 0,
+    borderEndRadius: 0
   }),
   thumb: defineStyle({
     bgColor: "#DA1413",
     boxSize: "12px"
   }),
   filledTrack: defineStyle({
-    h: "12px",
+    h: "8px",
     bgColor: "#DA1413"
   })
 });
@@ -37,10 +38,11 @@ const videoProgress = definePartsStyle({
 const vertical = definePartsStyle({
   track: defineStyle({
     borderRadius: 10,
-    w: "50px"
-  }),
-  thumb: defineStyle({
-    boxSize: "54px"
+    w: "50px",
+    transition: "all linear 0.1s",
+    _active: {
+      w: "55px"
+    }
   })
 });
 

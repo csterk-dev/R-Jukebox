@@ -1,4 +1,4 @@
-import { Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from "@chakra-ui/react";
+import { Flex, Slider, SliderFilledTrack, SliderTrack, Text } from "@chakra-ui/react";
 import { FC } from "react";
 
 type VolumeScreenProps = {
@@ -38,7 +38,6 @@ export const VolumeScreen: FC<VolumeScreenProps> = ({ isVolumeDisabled, volumeLe
           <SliderTrack>
             <SliderFilledTrack />
           </SliderTrack>
-          <SliderThumb />
         </Slider>
       </Flex>
     </Flex>

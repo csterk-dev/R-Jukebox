@@ -136,7 +136,12 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           >
             <TabPanel height="100%" p="10px 10px 10px 0px">
               {queue.length === 0 ?
-                <Placeholder icon={HiRectangleStack} pl="10px" title="Queued videos will appear here" /> :
+                <Placeholder
+                  icon={HiRectangleStack}
+                  mb={5}
+                  pl="10px"
+                  title="Queued videos will appear here"
+                /> :
                 <Flex
                   as="ol"
                   flex={1}
@@ -175,7 +180,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
             </TabPanel>
             <TabPanel height="100%" p="10px">
               {history.length === 0 ?
-                <Placeholder icon={HiClock} title="History will appear here" /> :
+                <Placeholder icon={HiClock} mb={5} title="History will appear here" /> :
                 <Flex
                   as="ol"
                   flex={1}

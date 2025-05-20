@@ -36,7 +36,7 @@ export const ReleaseNotesScreen: FC = () => {
   return (
     <Flex flexDirection="column" h="448px">
       <Text
-        as="h1" 
+        as="h1"
         fontSize={18}
         fontWeight="semibold"
         px="20px"
@@ -55,7 +55,13 @@ export const ReleaseNotesScreen: FC = () => {
       >
         <Accordion width="100%" allowToggle>
           {RELEASE_NOTES.map(({ title, notes }) => (
-            <Box key={title} pb="10px" width="100%">
+            <Box
+              key={title}
+              as="ul"
+              listStyleType="none"
+              pb="10px"
+              width="100%"
+            >
               <Text
                 as="h2"
                 fontSize="14px"
@@ -66,7 +72,7 @@ export const ReleaseNotesScreen: FC = () => {
                 {title}
               </Text>
               {notes.map((release) => (
-                <AccordionItem key={release.versionNum}>
+                <AccordionItem key={release.versionNum} as="li">
                   <h3>
                     <HStack
                       _hover={{ bgColor: "transparent" }}

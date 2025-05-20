@@ -6,10 +6,12 @@ import { IconType } from "react-icons";
 type PlaceholderProps = FlexProps & {
   title: string;
   icon: IconType;
+  iconBg?: string;
+  iconBgDark?: string;
 }
 
 /** A placeholder element that renders an icon and heading info text */
-export const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
+export const Placeholder: FC<PlaceholderProps> = ({ title, icon, iconBg, iconBgDark, ...props }) => {
   return (
     <Flex
       alignItems="center"
@@ -19,8 +21,8 @@ export const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => 
       {...props}
     >
       <Box
-        _dark={{ bg: "neutral.400" }}
-        bg="white"
+        _dark={{ bg: iconBgDark ?? "neutral.400" }}
+        bg={iconBg ?? "white"}
         borderRadius="90"
         p="20px"
       >

@@ -75,7 +75,9 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
         {/* Date Group Title */}
         <Text
           as="h2" fontSize="14px"
-          opacity={0.7} textTransform="uppercase">
+          opacity={0.7}
+          textTransform="uppercase"
+        >
           {date}
         </Text>
 
@@ -85,8 +87,12 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
             <AccordionItem key={entry.id}>
               <h3>
                 <Flex
-                  _hover={{ bgColor: "transparent" }} alignItems="center" as={AccordionButton}
-                  gap={2} px={0}>
+                  _hover={{ bgColor: "transparent" }}
+                  alignItems="center"
+                  as={AccordionButton}
+                  gap={2}
+                  px={0}
+                >
                   <Icon
                     as={entry.type === "error" ? HiExclamationTriangle : HiInformationCircle}
                     color={entry.type === "error" ? "red.500" : "brand.500"}
@@ -211,8 +217,12 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
         overflowY="auto" pb="10px" px="20px">
         {!entryLogs.length ? (
           <Placeholder
-            alignSelf="center" icon={HiCodeBracket} mb="20px"
-            title="Log entries will appear here" />
+            alignSelf="center"
+            icon={HiCodeBracket}
+            iconBg="neutral.50"
+            mb="20px"
+            title="Log entries will appear here"
+          />
         ) : (
           !logElements.length ?
             <Text>
