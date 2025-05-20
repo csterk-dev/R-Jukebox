@@ -395,7 +395,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
       // Sync loading state
-      socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
+      socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => { //  requires testing
         setIsPlayerLoading(loading);
         const currVidTitle = replaceHtmlEntities(currentVideo?.title);
         if (loading) document.title = "Loading...";
