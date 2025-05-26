@@ -1,5 +1,5 @@
 
-const v1_3_0: ReleaseNote[] = [
+const v1_4_0: ReleaseNote[] = [
   {
     details: "Added player information and error logs.",
     kind: "newFeature"
@@ -26,12 +26,29 @@ const v1_3_0: ReleaseNote[] = [
   }
 ];
 
+const v1_4_1: ReleaseNote[] = [
+  {
+    details: "Updated the play video handlers to improve loading feedback to the end user.",
+    kind: "improvement"
+  },
+  {
+    details: "Updated the server's routing functionality.",
+    kind: "improvement"
+  }
+];
+
 
 export const v1_4ReleaseNotes: ReleaseNotes = [
   {
+    title: "Release 1.4.1",
+    versionNum: "1.4.1",
+    notes: v1_4_1,
+    date: "26/05/2025"
+  },
+  {
     title: "Introducing player logs!",
     versionNum: "1.4.0",
-    notes: v1_3_0,
+    notes: v1_4_0,
     date: "11/04/2025"
   }
 ];
