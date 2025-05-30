@@ -3,6 +3,7 @@ import { APP_TITLE, PLAYER_VOLUME_DEFAULT, SOCKET_EVENT_KEYS } from "../constant
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
 import { replaceHtmlEntities, truncateString } from "utils/misc";
+import { usePrevious } from "@usesoftwareau/react-utils";
 
 const queueToastProps = {
   status: "success" as UseToastOptions["status"],
@@ -84,6 +85,7 @@ const PlayerContext = createContext<PlayerContextType>(defaultPlayerContextVal);
 export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const { isConnected, socketInstance } = useWebSockets();
+  const previousIsConnected = usePrevious(isConnected);
 
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
@@ -100,7 +102,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   /** Pauses/resumes the current video. */
   const pauseResumeCurrentVideo = useCallback((action: "resume" | "pause") => {
     if (!currentVideo || !socketInstance.id) return;
-        
+
     const req: PlayPauseRequest = {
       clientId: socketInstance.id,
       isPlaying: action === "pause" ? false : true
@@ -116,7 +118,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
 
-    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, req, resCallback );
+    socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, req, resCallback);
 
   }, [currentVideo, socketInstance, toast]);
 
@@ -169,14 +171,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
     socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, req, resCallback);
-    
+
   }, [socketInstance, toast]);
 
 
   /** Adds the provided video to the end of the queue. */
   const addToBottomOfQueue = useCallback((video: Video, action: "add" | "move") => {
     if (!socketInstance.id) return;
-    
+
     const req: VideoRequest = {
       clientId: socketInstance.id,
       video
@@ -198,7 +200,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, req, resCallback);
-    
+
   }, [socketInstance, toast]);
 
 
@@ -247,7 +249,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const deleteQueueItem = useCallback((videoId: Video["videoId"]) => {
     if (!socketInstance.id) return;
 
-    const req: RemoveQueueItemRequest = { 
+    const req: RemoveQueueItemRequest = {
       clientId: socketInstance.id,
       videoId
     }
@@ -317,7 +319,8 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
   /**
-   * Automiatically sync the various states from the server if the socketInstance is connected.
+   * Automiatically sync the various states from the server when the socket connects/reconnects.
+   * This is achieved by including the variable `previousIsConnected` in the dependancy array to retrigger the `isConnected` check.
    */
   useEffect(() => {
     if (isConnected) {
@@ -325,9 +328,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync current video state
       socketInstance.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
-          console.log("current video synced");
+          console.info("current video synced");
           setCurrentVideo(incomingVideo);
           const vidTitle = replaceHtmlEntities(incomingVideo?.title);
+
           if (vidTitle) {
             document.title = vidTitle;
           } else {
@@ -340,7 +344,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync current video time
       socketInstance.on(SOCKET_EVENT_KEYS.currentVideoTime, (incomingCurrentVideoTime: number) => {
         if (currentVideoTime !== incomingCurrentVideoTime) {
-          console.log("Time synced");
+          console.info("Time synced");
           setCurrentVideoTime(incomingCurrentVideoTime);
         }
       });
@@ -374,21 +378,21 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
       // Sync history
       socketInstance.on(SOCKET_EVENT_KEYS.history, (incomingHistory: HistoryVideo[]) => {
-        console.log("history synced");
+        console.info("history synced");
         setHistory(incomingHistory);
       });
 
 
       // Sync queue
       socketInstance.on(SOCKET_EVENT_KEYS.queue, (incomingQueue: Video[]) => {
-        console.log("queue synced");
+        console.info("queue synced");
         setQueue(incomingQueue);
       });
 
 
       // Sync logs
       socketInstance.on(SOCKET_EVENT_KEYS.logs, (incomingLogs: EntryLog[]) => {
-        console.log("logs synced");
+        console.info("logs synced");
         setLogs(incomingLogs);
       });
 
@@ -396,14 +400,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync loading state
       socketInstance.on(SOCKET_EVENT_KEYS.isLoading, (loading: boolean) => {
         setIsPlayerLoading(loading);
-        document.title = "Loading..."
+        if (loading) document.title = "Loading...";
       });
 
 
       // Sync playing state
       socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         if (isPlaying !== incomingIsPlaying) {
-          console.log("isPlaying synced");
+          console.info("isPlaying synced");
           setIsPlaying(incomingIsPlaying);
         }
       });
@@ -412,7 +416,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync player volume state
       socketInstance.on(SOCKET_EVENT_KEYS.playerVolume, (incomingVolume: number) => {
         if (incomingVolume !== volume) {
-          console.log("volume synced");
+          console.info("volume synced");
           setVolume(incomingVolume);
         }
       });
@@ -430,7 +434,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
       socketInstance.off(SOCKET_EVENT_KEYS.logs);
     }
-  }, [currentVideo?.videoId, isPlaying, isConnected, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
+  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -464,5 +468,5 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-/** Allows access to the current player context values and functions. */
+/** An easy hook to allow access to the current player context, values, and its functions. */
 export const usePlayer = (): PlayerContextType => useContext(PlayerContext);
