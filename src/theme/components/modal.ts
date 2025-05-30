@@ -6,7 +6,7 @@ const { definePartsStyle, defineMultiStyleConfig } =
 
 const baseStyle = definePartsStyle({
   dialog: {
-    bgColor: "neutral.white",
+    bgColor: "base.white",
     _dark: {
       bgColor: "neutral.700"
     }
@@ -42,7 +42,7 @@ const search = definePartsStyle({
   },
   body: {
     ...baseStyle.body,
-    bgColor: "neutral.white",
+    bgColor: "base.white",
     _dark: {
       bgColor: "neutral.700"
     }

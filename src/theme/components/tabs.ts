@@ -15,7 +15,7 @@ const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpe
 const baseStyle = definePartsStyle({
   tab: {
     _selected: {
-      // bgColor: "neutral.white",
+      // bgColor: "base.white",
       
       // color: "neutral.800"
     }
