@@ -25,19 +25,18 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...pr
   )
   return (
     <Box
-      _dark={{ bg: "neutral.700" }}
       as="button"
-      bg="white"
+      bg="surface.foreground"
       borderRadius={8}
       boxShadow="base"
       height="40px"
-      px="10px"
+      px={2}
       onClick={onOpen}
       {...props}
     >
       <HStack gap={4}>
         <Icon aria-label="Open search" as={HiMagnifyingGlass} />
-        <Text opacity={0.7}>Search</Text>
+        <Text color="text.body.subtle">Search</Text>
         <Spacer />
         <Kbd userSelect="none">⌘ K</Kbd>
       </HStack>

@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Stack, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { Notes } from "components/atoms/Notes";
 import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
@@ -10,24 +10,24 @@ import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
 
 const RELEASE_NOTES = [
   {
-    title: "V1.4 - Player Logs",
-    notes: v1_4ReleaseNotes
+    title: "Player Logs",
+    releases: v1_4ReleaseNotes
   },
   {
-    title: "V1.3 - Auto Complete",
-    notes: v1_3ReleaseNotes
+    title: "Auto Complete",
+    releases: v1_3ReleaseNotes
   },
   {
-    title: "V1.2 - Queue",
-    notes: v1_2ReleaseNotes
+    title: "Queue",
+    releases: v1_2ReleaseNotes
   },
   {
-    title: "V1.1 - History",
-    notes: v1_1ReleaseNotes
+    title: "History",
+    releases: v1_1ReleaseNotes
   },
   {
-    title: "V1.0 - Launch",
-    notes: v1_0ReleaseNotes
+    title: "Launch",
+    releases: v1_0ReleaseNotes
   }
 ];
 
@@ -37,60 +37,63 @@ export const ReleaseNotesScreen: FC = () => {
     <Flex flexDirection="column" h="448px">
       <Text
         as="h1"
-        fontSize={18}
-        fontWeight="semibold"
-        px="20px"
-        py="10px"
+        px={5}
+        py={2}
+        textStyle="heading/section"
       >
         Release Notes
       </Text>
 
       <VStack
-        align="flex-start"
-        fontSize="16px"
-        gap="10px"
+        layerStyle="themed-scroll"
         overflowY="auto"
-        pb="10px"
-        px="20px"
+        p="0px 10px 10px 20px"
       >
-        <Accordion width="100%" allowToggle>
-          {RELEASE_NOTES.map(({ title, notes }) => (
-            <Box
+        <Accordion
+          as={Stack}
+          width="100%"
+          allowToggle
+        >
+          {RELEASE_NOTES.map(({ title, releases }) => (
+            <Stack
               key={title}
               as="ul"
+              gap={0}
               listStyleType="none"
-              pb="10px"
+              mt={2.5}
               width="100%"
             >
-              <Text
-                as="h2"
-                fontSize="14px"
-                mt="10px"
-                opacity={0.7}
-                textTransform="uppercase"
-              >
+              <Text as="h2" textStyle="heading/sub-section">
                 {title}
               </Text>
-              {notes.map((release) => (
-                <AccordionItem key={release.versionNum} as="li">
+              {releases.map((notes) => (
+                <AccordionItem key={notes.versionNum} _first={{ borderTopWidth: 0 }} as="li">
                   <h3>
-                    <HStack
+                    <Flex
                       _hover={{ bgColor: "transparent" }}
+                      alignItems="center"
                       as={AccordionButton}
+                      justifyContent="space-between"
                       px={0}
                     >
-                      <Box as="span" flex={1} textAlign="left">
-                        {release.versionNum}
-                      </Box>
-                      <AccordionIcon />
-                    </HStack>
+                      <Text textAlign="start">
+                        {`${notes.date}`}
+                      </Text>
+
+                      <Flex align="center" gap={2}>
+                        <Text textAlign="end">
+                          {`v ${notes.versionNum}`}
+                        </Text>
+                        <AccordionIcon />
+                      </Flex>
+                    </Flex>
                   </h3>
                   <AccordionPanel pb={4} px={0}>
-                    <Notes date={release.date} notes={release.notes} />
+                    <Notes notes={notes.notes} />
                   </AccordionPanel>
                 </AccordionItem>
               ))}
-            </Box>
+            </Stack>
           ))}
         </Accordion>
       </VStack>

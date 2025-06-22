@@ -67,7 +67,7 @@ const text: SemanticToken = {
   },
   "body.subtle": {
     _light: "neutral.300",
-    _dark: "neutral.200"
+    _dark: "neutral.100"
   },
   "on-light": {
     _light: "neutral.700",
@@ -82,12 +82,12 @@ const text: SemanticToken = {
     _dark: "neutral.700"
   },
   heading: {
-    _light: "brand.900",
-    _dark: "brand.100"
+    _light: "neutral.700",
+    _dark: "base.white"
   },
   "heading-subtle": {
     _light: "neutral.300",
-    _dark: "neutral.200"
+    _dark: "neutral.100"
   },
   accent: {
     _light: "brand.500",

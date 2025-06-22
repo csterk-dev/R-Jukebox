@@ -192,8 +192,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 <Icon aria-label="search icon" as={HiMagnifyingGlass} opacity={0.7} />
               </InputLeftElement>
               <Input
-                _dark={{ bg: "neutral.700" }}
-                bg="white"
+                bg="surface.foreground"
                 borderRadius="6px"
                 boxShadow="md"
                 className="searchInput"
@@ -201,7 +200,6 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 height="40px"
                 id="searchInput"
                 placeholder="Search Youtube"
-                px="10px"
                 ref={inputRef}
                 type="text"
                 value={searchVal}
@@ -215,7 +213,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 onClick={useCallback(() => setShowSuggestions(true), [])}
                 onKeyDown={handleKeyDown}
               />
-              <InputRightElement mr="10px">
+              <InputRightElement mr={3}>
                 <Button
                   colorScheme="brand"
                   size="sm"
@@ -229,8 +227,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           </form>
           {loading ?
             <Progress
-              _dark={{ bg: "neutral.700" }}
-              bg="white"
+              bg="surface.foreground"
               borderBottomLeftRadius="6px"
               borderBottomRightRadius="6px"
               colorScheme="brand"
@@ -245,8 +242,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
           {searchVal && showSuggestions && suggestions.length ? (
             <Stack
-              _dark={{ bg: "neutral.700" }}
-              bg="white"
+              bg="surface.foreground"
               borderRadius="md"
               boxShadow="md"
               overflow="hidden"
@@ -266,8 +262,8 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                   }}
                   bg={index === selectedSuggestionIndex ? "brand.100" : undefined}
                   cursor="pointer"
-                  px="10px"
-                  py="4px"
+                  px={2}
+                  py={1}
                   onClick={() => handleSuggestionClick(suggestion)}
                 >
                   {suggestion}
@@ -279,18 +275,13 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
         {videos.length > 0 || error ?
           <ModalBody
-            alignItems="center"
             borderRadius={5}
-            display="flex"
-            flexDir="column"
-            gap="10px"
             id="search_modal_body"
-            mt="10px"
+            layerStyle="themed-scroll"
             overflowY="auto"
-            px="10px"
             ref={modalBodyRef}
           >
-            <Text mb="0px">{error ? error : `Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>
+            <Text pb={1} textStyle="body/sub-text">{error ? error : `Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>
             {videos.map(video => {
               if (!video) return;
               return (

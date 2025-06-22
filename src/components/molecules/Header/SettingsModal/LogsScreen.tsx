@@ -1,8 +1,8 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, HStack, Icon, IconButton, Menu, MenuButton, MenuItemOption, MenuList, MenuOptionGroup, Tag, TagCloseButton, TagLabel, Text, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, HStack, Icon, IconButton, Menu, MenuButton, MenuItemOption, MenuList, MenuOptionGroup, Stack, Tag, TagCloseButton, TagLabel, Text, VStack } from "@chakra-ui/react";
 import { FC, useCallback, useMemo, useState } from "react";
 import { Placeholder } from "components/atoms/Placeholder";
 import dayjs, { ManipulateType } from "dayjs";
-import { HiCalendarDays, HiCodeBracket, HiExclamationTriangle, HiFunnel, HiInformationCircle, HiOutlineArrowTopRightOnSquare } from "react-icons/hi2";
+import { HiCalendarDays, HiCodeBracket, HiFunnel, HiOutlineArrowTopRightOnSquare } from "react-icons/hi2";
 
 type LogsScreenProps = {
   entryLogs: EntryLog[];
@@ -54,13 +54,14 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
   const clearFilter = useCallback(() => setTypeFilter("none"), []);
 
   const groupedLogs = useMemo(() => {
-    const parsedLogs = entryLogs
-      .filter(entry => typeFilter === "none" ? true : entry.type === typeFilter)
-      .filter(entry => dayjs(entry.dateTime).isAfter(filterByDateObj));
+    const parsedLogs =
+      entryLogs
+        .filter(entry => typeFilter === "none" ? true : entry.type === typeFilter)
+        .filter(entry => dayjs(entry.dateTime).isAfter(filterByDateObj));
 
 
     return parsedLogs.reduce<Record<string, EntryLog[]>>((acc, log) => {
-      const dateKey = dayjs(log.dateTime).format("DD/MM/YYYY");
+      const dateKey = dayjs(log.dateTime).format("ddd DD/MM/YYYY");
 
       acc[dateKey] = acc[dateKey] ? [...acc[dateKey], log] : [log];
 
@@ -71,95 +72,95 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
 
   const logElements: JSX.Element[] = useMemo(() => {
     return Object.entries(groupedLogs).map(([date, logs]) => (
-      <VStack key={date} align="flex-start" w="100%">
-        {/* Date Group Title */}
-        <Text
-          as="h2" fontSize="14px"
-          opacity={0.7}
-          textTransform="uppercase"
-        >
+      <Stack
+        key={date}
+        as="ul"
+        gap={0}
+        listStyleType="none"
+        mt={2.5}
+        width="100%"
+      >
+        <Text as="h2" textStyle="heading/sub-section">
           {date}
         </Text>
-
-        {/* Accordion for Logs */}
-        <Accordion width="100%" allowToggle>
-          {logs.map(entry => (
-            <AccordionItem key={entry.id}>
-              <h3>
-                <Flex
-                  _hover={{ bgColor: "transparent" }}
-                  alignItems="center"
-                  as={AccordionButton}
-                  gap={2}
-                  px={0}
-                >
-                  <Icon
-                    as={entry.type === "error" ? HiExclamationTriangle : HiInformationCircle}
-                    color={entry.type === "error" ? "red.500" : "brand.500"}
-                    my="2px"
-                  />
-                  <Text as="span" textAlign="start" w="100%">
-                    {dayjs(entry.dateTime).format("HH:mm:ss")}
-                  </Text>
+        {logs.map(entry => (
+          <AccordionItem key={entry.id} _first={{ borderTopWidth: 0 }}>
+            <h3>
+              <Flex
+                _hover={{ bgColor: "transparent" }}
+                alignItems="center"
+                as={AccordionButton}
+                justifyContent="space-between"
+                px={0}
+              >
+                <Text textAlign="start">
+                  {dayjs(entry.dateTime).format("hh:mm:ss a")}
+                </Text>
+                <Flex align="center" gap={2}>
+                  <Tag colorScheme={entry.type == "error" ? "red" : "brand"}>{entry.type}</Tag>
                   <AccordionIcon />
                 </Flex>
-              </h3>
+              </Flex>
+            </h3>
 
-              <AccordionPanel p={0}>
-                <Flex
-                  align="center" as="h4" fontSize={16}
-                  fontWeight={600} gap={2}>
-                  Type
+            <AccordionPanel p={0}>
+              <Stack>
+                <Flex flexDir="column">
+                  <Text as="h4" textStyle="body/label">
+                    Log Type
+                  </Text>
+                  <Text>{entry.type}</Text>
                 </Flex>
-                <Text mb="10px">{entry.type}</Text>
 
-                <Flex
-                  align="center" as="h4" fontSize={16}
-                  fontWeight={600} gap={2}>
-                  Occurred at:
+                <Flex flexDir="column">
+                  <Text as="h4" textStyle="body/label">
+                    Occurred at:
+                  </Text>
+                  <Text>{dayjs(entry.dateTime).format("ddd DD/MM/YYYY - HH:mm:ss")}</Text>
                 </Flex>
-                <Text mb="10px">{dayjs(entry.dateTime).format("ddd DD/MM/YYYY - HH:mm:ss")}</Text>
 
-                <Flex
-                  align="center" as="h4" fontSize={16}
-                  fontWeight={600} gap={2}>
-                  Calling function:
+                <Flex flexDir="column">
+                  <Text as="h4" textStyle="body/label">
+                    Calling function:
+                  </Text>
+                  <Text as="pre" fontSize="sm">{entry.callingFunction}</Text>
                 </Flex>
-                <Text mb="10px">{entry.callingFunction}</Text>
 
-                <Text as="h4" fontSize={16} fontWeight={600}>
-                  Stack trace:
-                </Text>
-                <Text
-                  alignItems="center"
-                  as="button"
-                  color="brand.500"
-                  display="flex"
-                  gap={2}
-                  mb="10px"
-                  variant="link"
-                  onClick={() => openEntryLogStackTrace(entry)}
-                >
-                  Click here to view
-                  <Icon as={HiOutlineArrowTopRightOnSquare} />
-                </Text>
-              </AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </VStack>
+                <Flex flexDir="column">
+                  <Text as="h4" textStyle="body/label">
+                    Stack trace:
+                  </Text>
+                  <Text
+                    alignItems="center"
+                    as="button"
+                    color="brand.500"
+                    display="flex"
+                    gap={2}
+                    variant="link"
+                    onClick={() => openEntryLogStackTrace(entry)}
+                  >
+                    Click here to view
+                    <Icon as={HiOutlineArrowTopRightOnSquare} />
+                  </Text>
+
+                </Flex>
+
+              </Stack>
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Stack>
     ))
   }, [groupedLogs]);
 
 
   return (
     <Flex flexDirection="column" h="448px">
-      <Flex align="center" px="10px" py="10px">
+      <Flex align="center" px={2}>
         <Text
           as="h1"
-          fontSize={18}
-          fontWeight="semibold"
-          pl="10px"
+          pl={2}
+          textStyle="heading/section"
         >
           Player Logs
         </Text>
@@ -213,14 +214,17 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
       </Flex>
 
       <VStack
-        align="flex-start" fontSize="16px" gap="10px"
-        overflowY="auto" pb="10px" px="20px">
+        layerStyle="themed-scroll"
+        overflowY="auto"
+        pb={2}
+        px={5}
+      >
         {!entryLogs.length ? (
           <Placeholder
             alignSelf="center"
             icon={HiCodeBracket}
             iconBg="neutral.50"
-            mb="20px"
+            mb={5}
             title="Log entries will appear here"
           />
         ) : (
@@ -228,7 +232,14 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
             <Text>
               {`No ${typeFilter} logs in the last ${+dateFilter.split("_")[0]} ${dateFilter.split("_")[1]}`}
             </Text> :
-            logElements
+            <Accordion
+              as="li"
+              listStyleType="none"
+              width="100%"
+              allowToggle
+            >
+              {logElements}
+            </Accordion>
         )}
       </VStack>
     </Flex>

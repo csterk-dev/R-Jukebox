@@ -6,27 +6,24 @@ const { definePartsStyle, defineMultiStyleConfig } =
 
 const baseStyle = definePartsStyle({
   dialog: {
-    bgColor: "base.white",
-    _dark: {
-      bgColor: "neutral.700"
-    }
+    bgColor: "surface.foreground"
   },
   header: {
-    fontSize: "16px",
-    fontWeight: "600",
+    fontSize: "md",
     px: "0px",
-    py: "0px",
-    textTransform: "uppercase"
+    py: "0px"
   },
   body: {
-    px: "20px",
-    py: "10px"
+    px: 5,
+    bgColor: "surface.foreground",
+    py: 2
   },
   footer: {
     flexDirection: "column",
-    gap: "10px",
-    px: "20px",
-    py: "10px"
+    gap: 2,
+    px: 5,
+    pt: 0,
+    pb: 2
   }
 })
 
@@ -37,18 +34,16 @@ const search = definePartsStyle({
       bgColor: "transparent"
     }
   },
-  header: {
-    ...baseStyle.header
-  },
   body: {
     ...baseStyle.body,
-    bgColor: "base.white",
-    _dark: {
-      bgColor: "neutral.700"
-    }
-  },
-  footer: {
-    ...baseStyle.footer
+    alignItems: "center",
+    borderRadius: 5,
+    display: "flex",
+    flexDir: "column",
+    gap: 2,
+    mt: 2,
+    pl: 2,
+    pr: 1
   }
 })
 

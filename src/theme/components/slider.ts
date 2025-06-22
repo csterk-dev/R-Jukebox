@@ -17,13 +17,15 @@ const horizontal = definePartsStyle({
 const videoProgress = definePartsStyle({
   container: defineStyle({
     h: "6px",
-    w: "98%"
+    w: "100%"
   }),
   track: defineStyle({
     bgColor: "#989090",
     h: "6px",
     borderStartRadius: 0,
-    borderEndRadius: 0
+    borderEndRadius: 0,
+    borderBottomStartRadius: 10,
+    borderBottomEndRadius: 10
   }),
   thumb: defineStyle({
     bgColor: "#DA1413",

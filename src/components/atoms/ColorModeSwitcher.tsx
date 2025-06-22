@@ -1,39 +1,18 @@
-import { HStack, Icon, IconButton, StackProps, Text, Tooltip, useColorMode, useColorModeValue } from "@chakra-ui/react"
+import { HStack, Icon, StackProps, Text, useColorMode, useColorModeValue } from "@chakra-ui/react"
 import { FC, memo } from "react"
 import { HiMoon, HiSun } from "react-icons/hi2"
 
-type ColorModeSwitcherProps = StackProps & {
-  /**Disables the tooltip when `isIconButtonOnly` is true. */
-  disableTooltip?: boolean;
-  /** Renders a pressabe icon and text instead. */
-  isIconButtonOnly?: boolean;
-}
+type ColorModeSwitcherProps = StackProps & {}
 
 
-const _ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ disableTooltip, isIconButtonOnly, ...props }) => {
+const _ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ ...props }) => {
   const { toggleColorMode } = useColorMode()
   const text = useColorModeValue("dark", "light")
   const SwitchIcon = useColorModeValue(HiMoon, HiSun);
 
-
-  if (isIconButtonOnly) {
-    return (
-      <Tooltip isDisabled={disableTooltip} label={`Switch to ${text} mode`}>
-        <IconButton
-          aria-label={`Switch to ${text} mode`}
-          icon={<SwitchIcon />}
-          size="md"
-          variant="ghost"
-          onClick={toggleColorMode}
-        />
-      </Tooltip>
-    );
-  }
-
   return (
     <HStack
       as="button"
-      gap="10px"
       height="35px"
       width="100%"
       onClick={toggleColorMode}

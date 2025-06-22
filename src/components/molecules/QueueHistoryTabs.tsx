@@ -1,4 +1,4 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, FlexProps, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, FlexProps, IconButton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { Placeholder } from "components/atoms/Placeholder";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
@@ -33,13 +33,8 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
     Object.entries(sortedHistory).forEach(([date, videos]) => {
       const dateText = videoPlayedAtToString(date);
       jsx.push(
-        <Flex
-          key={dateText}
-          flexDirection="column"
-          gap="10px"
-          width="100%"
-        >
-          <Text fontSize={14}>{dateText}</Text>
+        <Stack key={dateText} width="100%">
+          <Text textStyle="body/label">{dateText}</Text>
           {videos.map(vid => (
             <VideoCard
               key={`${vid.videoId}${vid.playedAt}`}
@@ -51,7 +46,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
               video={vid}
             />
           ))}
-        </Flex>
+        </Stack>
       )
     });
 
@@ -106,10 +101,10 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           <TabList
             _dark={{ bg: "neutral.900" }}
             alignItems="center"
-            bg="neutral.white"
+            bg="base.white"
             boxShadow="base"
             justifyContent="space-between"
-            p="10px"
+            p={2}
           >
             <Flex>
               <Tab color="current">Queue</Tab>
@@ -129,36 +124,32 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
           </TabList>
           <TabPanels
             height="100%"
+            layerStyle="themed-scroll"
             overflowY={{
               base: "visible",
               lg: "auto"
             }}
           >
-            <TabPanel height="100%" p="10px 10px 10px 0px">
+            <TabPanel height="100%" p="8px 8px 8px 0px">
               {queue.length === 0 ?
                 <Placeholder
                   icon={HiRectangleStack}
                   mb={5}
-                  pl="10px"
+                  pl={2}
                   title="Queued videos will appear here"
                 /> :
-                <Flex
-                  as="ol"
-                  flex={1}
-                  flexDirection="column"
-                  gap="10px"
-                >
-                  <Text fontSize={14} opacity={0.7} px="10px">{queueDurationSum}</Text>
+                <Stack as="ol" flex={1}>
+                  <Text px="10px" textStyle="body/label">{queueDurationSum}</Text>
                   {queue.map(vid => (
                     <Flex
                       key={vid.videoId}
-                      _last={{ mb: "10px" }}
+                      _last={{ mb: 2 }}
                       alignItems="center"
                       as="li"
                     >
                       <Tooltip label="Remove item" placement="left">
                         <IconButton
-                          _dark={{ color: "neutral.white" }}
+                          _dark={{ color: "base.white" }}
                           aria-label="More options"
                           color="neutral.900"
                           fontSize="18px"
@@ -175,21 +166,19 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
                       />
                     </Flex>
                   ))}
-                </Flex>
+                </Stack>
               }
             </TabPanel>
-            <TabPanel height="100%" p="10px">
+            <TabPanel height="100%" p={2}>
               {history.length === 0 ?
                 <Placeholder icon={HiClock} mb={5} title="History will appear here" /> :
-                <Flex
+                <Stack
                   as="ol"
                   flex={1}
-                  flexDirection="column"
-                  gap="10px"
-                  pb="10px"
+                  pb={2}
                 >
                   {historyCards}
-                </Flex>
+                </Stack>
               }
             </TabPanel>
           </TabPanels>
@@ -204,14 +193,14 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader p="10px 20px 0px">
-              Clear queue?
+            <AlertDialogHeader p="8px 20px 0px">
+              <h1>Clear queue?</h1>
             </AlertDialogHeader>
             <AlertDialogBody>
               Are you sure that you want to clear all videos in the queue?
             </AlertDialogBody>
 
-            <AlertDialogFooter px="10px" width="100%">
+            <AlertDialogFooter width="100%">
               <Button
                 size="sm"
                 variant="destructive"

@@ -14,8 +14,7 @@ type VideoCardProps = FlexProps & {
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBottomOfQueue, addToTopOfQueue, ...props }) => {
-  const foreground = useColorModeValue("neutral.white", "neutral.900");
-  const moreActionsIconColor = useColorModeValue("neutral.900", "neutral.white");
+  const moreActionsIconColor = useColorModeValue("neutral.900", "base.white");
 
   const videoDuration = useMemo(() => videoDurationToString(ISO8601ToSeconds(video.duration)), [video?.duration]);
   const videoPublishedAt = useMemo(() => videoPublishedDateToString(video.publishedAt), [video.publishedAt]);
@@ -40,8 +39,9 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
 
   return (
     <Flex
+      _dark={{ bg: "neutral.900" }}
       _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
-      bgColor={foreground}
+      bg="base.white"
       borderRadius="5px"
       boxShadow="base"
       flexDir="row"
@@ -127,29 +127,29 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
         flexDir="column"
         fontSize="12"
         justifyContent="space-between"
-        px="10px" 
+        px={2.5}
         py="5px"
         onClick={onClickPlay}
       >
         <Text
-          as="h4"
-          fontWeight="600"
+          as="h1"
+          fontWeight="semibold"
           noOfLines={2}
           textOverflow="ellipsis"
         >
           {videoTitle}
         </Text>
-        <Text noOfLines={1} textOverflow="ellipsis">
+        <Text color="text.body.subtle" noOfLines={1} textOverflow="ellipsis">
           {video.channelTitle}
         </Text>
-        <HStack fontWeight="400">
+        <HStack fontWeight="thin">
           {/* <Text>
             Unknown Views
           </Text>
           <Text>
             •
           </Text> */}
-          <Text>
+          <Text color="text.body.subtle">
             {videoPublishedAt}
           </Text>
         </HStack>

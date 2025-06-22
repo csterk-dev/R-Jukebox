@@ -4,7 +4,7 @@ import { SERVER_URL } from "../constants";
 
 
 const YOUTUBE_API_URL = `${SERVER_URL}/youtube`;
-const PLAYER_API_URL = `${SERVER_URL}/player`;
+
 /** A YT undocumented API for auto suggest search queries */
 const GOOGLE_AUTO_COMPLETE_URL = "https://clients1.google.com/complete/search";
 
@@ -16,39 +16,6 @@ const YOUTUBE_CLIENT = axios.create({
   responseType: "json"
 });
 
-
-const PLAYER_CLIENT = axios.create({
-  baseURL: PLAYER_API_URL,
-  headers: {
-    "content-type": "application/json"
-  },
-  responseType: "json"
-});
-
-
-export const PlayerAPI = {
-  /**
-   * Dispatches a request to the API to play the provided videoId.
-   * 
-   * @param videoId Youtube video ID.
-   * 
-   * @remarks Will check if the videoId is already playing and attempt to pause.
-   * Otherwise will open a new tab and close any previous youtube tabs in the browser.
-   */
-  async playVideo(videoId: string) {
-    return await PLAYER_CLIENT.post("/play", { videoId });
-  },
-
-  /**
-   * Dispatches a request to the API to pause the provided videoId.
-   * 
-   * @param videoId Youtube video ID.
-   * 
-   */
-  async pauseVideo(videoId: string) {
-    return await PLAYER_CLIENT.post("/pause", { videoId });
-  }
-}
 
 export const YoutubeAPI = {
   /**

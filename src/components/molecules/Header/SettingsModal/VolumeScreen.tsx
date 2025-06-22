@@ -10,15 +10,15 @@ type VolumeScreenProps = {
 
 export const VolumeScreen: FC<VolumeScreenProps> = ({ isVolumeDisabled, volumeLevel, onChangeEndVolumeHandler, onChangeVolumeHandler }) => {
   return (
-    <Flex py="10px">
+    <Flex py={2}>
       <Flex
         alignItems="center"
         flex={1}
         flexDirection="column"
-        gap="10px"
+        gap={2}
         height="300px"
-        pb="10px"
-        px="20px"
+        pb={2}
+        px={5}
       >
         <Text>{`${volumeLevel}%`}</Text>
         <Slider

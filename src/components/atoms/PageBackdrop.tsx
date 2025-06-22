@@ -1,7 +1,7 @@
 import { Flex, FlexProps, Square } from "@chakra-ui/react";
 import { FC, memo } from "react";
 import { motion, Variants } from "framer-motion";
-import { christmasThemedBgColors, colors, halloweenThemedBgColors, purpleThemedBgColors } from "theme/colors";
+import { christmasPalette, halloweenPalette, jukeboxPalette } from "theme/definitions";
 
 
 type PageBackdropProps = FlexProps & {
@@ -9,7 +9,7 @@ type PageBackdropProps = FlexProps & {
 }
 
 const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
-  applyColorPalette(themeSeason === "halloween" ? halloweenThemedBgColors : themeSeason === "christmas" ? christmasThemedBgColors : purpleThemedBgColors);
+  applyColorPalette(themeSeason === "halloween" ? halloweenPalette : themeSeason === "christmas" ? christmasPalette : jukeboxPalette);
 
 
   return (
@@ -153,12 +153,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: colors.neutral[300]
+      backgroundColor: ""
     },
     animate: {
       x: [0, 200, 0],
       y: [0, -150, 0],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, 360, 0],
       opacity: [0.7, 0.6, 0.8],
       transition: {
@@ -172,12 +172,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: colors.neutral[300]
+      backgroundColor: ""
     },
     animate: {
       x: [0, -100, 0, 100],
       y: [0, 200, -150, 100],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, -270, 0],
       opacity: [0.8, 0.6, 0.9],
       transition: {
@@ -191,12 +191,12 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: -200,
       y: -200,
-      backgroundColor: colors.neutral[300]
+      backgroundColor: ""
     },
     animate: {
       x: [-200, -400, -700, -300, -200],
       y: [-200, 0, 200, 100, 0, -200],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, -180, 0],
       opacity: [0.6, 0.9, 0.65, 0.8],
       transition: {
@@ -210,13 +210,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: colors.neutral[300],
+      backgroundColor: "",
       rotate: 0
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -450, 0],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, -180, 0],
       opacity: [0.5, 0.7, 0.6, 0.65],
       transition: {
@@ -230,13 +230,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: colors.neutral[300],
+      backgroundColor: "",
       rotate: 0
     },
     animate: {
       x: [0, -500, 0],
       y: [0, 150, 0],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, 360, 0],
       opacity: [0.75, 0.65, 0.8],
       transition: {
@@ -250,13 +250,13 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
     initial: {
       x: 0,
       y: 0,
-      backgroundColor: colors.neutral[300],
+      backgroundColor: "",
       rotate: 0
     },
     animate: {
       x: [0, -100, 0],
       y: [0, -100, 0],
-      backgroundColor: [colors.neutral[500]],
+      backgroundColor: [""],
       rotate: [0, 90, 0],
       opacity: [0.3, 0.7],
       transition: {
