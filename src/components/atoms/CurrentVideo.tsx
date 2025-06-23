@@ -242,7 +242,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               skeletonHeight="14px"
               speed={SKELETON_SPEED}
             >
-              <Text textStyle="heading/sub-section">
+              <Text fontSize="sm" textTransform="uppercase">
                 {currentVideo ? "Current Song" : "No song selected"}
               </Text>
             </SkeletonText>
