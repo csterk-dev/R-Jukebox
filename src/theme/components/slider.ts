@@ -13,33 +13,49 @@ const horizontal = definePartsStyle({
   })
 });
 
+const videoProgressTransitionMs = 50;
 
 const videoProgress = definePartsStyle({
   container: defineStyle({
-    h: "6px",
+    _groupHover: {
+      h: "6px"
+    },
+    h: "4px",
     w: "100%"
   }),
   track: defineStyle({
+    _groupHover: {
+      h: "6px"
+    },
     bgColor: "#989090",
-    h: "6px",
+    h: "4px",
     borderStartRadius: 0,
     borderEndRadius: 0,
     borderBottomStartRadius: 10,
+    transition: `height ${videoProgressTransitionMs}ms linear`,
     borderBottomEndRadius: 10
   }),
   thumb: defineStyle({
+    _hover: {
+      boxSize: "18px"
+    },
+    transition: `box-sizing ${videoProgressTransitionMs}ms linear`,
     bgColor: "#DA1413",
-    boxSize: "12px"
+    boxSize: "14px"
   }),
   filledTrack: defineStyle({
-    h: "8px",
+    _groupHover: {
+      h: "6px"
+    },
+    transition: `height ${videoProgressTransitionMs}ms linear`,
+    h: "4px",
     bgColor: "#DA1413"
   })
 });
 
 const vertical = definePartsStyle({
   track: defineStyle({
-    borderRadius: 10,
+    borderRadius: "lg",
     w: "50px",
     transition: "all linear 0.1s",
     _active: {

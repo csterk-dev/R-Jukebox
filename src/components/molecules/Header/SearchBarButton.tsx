@@ -27,7 +27,7 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...pr
     <Box
       as="button"
       bg="surface.foreground"
-      borderRadius={8}
+      borderRadius="lg"
       boxShadow="base"
       height="40px"
       px={2}

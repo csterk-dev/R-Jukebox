@@ -42,7 +42,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
       _dark={{ bg: "neutral.900" }}
       _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
       bg="base.white"
-      borderRadius="5px"
+      borderRadius="sm"
       boxShadow="base"
       flexDir="row"
       height="94px"
@@ -53,7 +53,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
       {...props}
     >
       <Flex
-        borderRadius="5px 0px 0px 5px"
+        borderLeftRadius="sm"
         filter="auto"
         height="94px"
         position="relative"
@@ -106,11 +106,12 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
         <Tag
           alignItems="center"
           bgColor={isLive ? "red.500" : "rgba(0,0,0, 0.6)"}
-          borderRadius={2}
+          borderRadius="xs"
           bottom="2px"
           color="white"
           fontSize="14"
           fontWeight="600"
+          lineHeight="short"
           position="absolute"
           px="4px"
           right="2px"
@@ -122,7 +123,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
       </Flex>
 
       <Flex
-        borderRadius="0px 5px 5px 0px"
+        borderEndRadius="sm"
         flex={1}
         flexDir="column"
         fontSize="12"
@@ -142,7 +143,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
         <Text color="text.body.subtle" noOfLines={1} textOverflow="ellipsis">
           {video.channelTitle}
         </Text>
-        <HStack fontWeight="thin">
+        <HStack>
           {/* <Text>
             Unknown Views
           </Text>

@@ -193,7 +193,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               </InputLeftElement>
               <Input
                 bg="surface.foreground"
-                borderRadius="6px"
+                borderRadius="lg"
                 boxShadow="md"
                 className="searchInput"
                 enterKeyHint="search"
@@ -243,8 +243,8 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           {searchVal && showSuggestions && suggestions.length ? (
             <Stack
               bg="surface.foreground"
-              borderRadius="md"
-              boxShadow="md"
+              borderRadius="lg"
+              boxShadow="lg"
               overflow="hidden"
               position="absolute"
               spacing={0}
@@ -275,7 +275,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
         {videos.length > 0 || error ?
           <ModalBody
-            borderRadius={5}
+            borderRadius="lg"
             id="search_modal_body"
             layerStyle="themed-scroll"
             overflowY="auto"

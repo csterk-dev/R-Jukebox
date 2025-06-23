@@ -10,7 +10,7 @@ const disabledStyles = {
 
 // Base style
 const baseStyle = defineStyle({
-  borderRadius: 5,
+  borderRadius: "md",
   textTransform: "uppercase",
   pt: "2px"
 });

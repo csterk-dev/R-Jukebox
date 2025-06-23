@@ -37,6 +37,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ finalFocusRef, isBgAnima
       isOpen={isOpen}
       scrollBehavior="inside"
       size="xs"
+      variant="settings"
       onClose={onCloseSettings}
     >
       <ModalOverlay />

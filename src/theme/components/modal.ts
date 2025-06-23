@@ -10,6 +10,30 @@ const baseStyle = definePartsStyle({
   },
   header: {
     fontSize: "md",
+    py: 2,
+    px: 4
+  },
+  body: {
+    bgColor: "surface.foreground",
+    py: 2,
+    flexDirection: "column",
+    px: 4
+  },
+  footer: {
+    flexDirection: "column",
+    pt: 2,
+    pb: 3,
+    gap: 2,
+    px: 4
+  }
+});
+
+const settings = definePartsStyle({
+  dialog: {
+    bgColor: "surface.foreground"
+  },
+  header: {
+    fontSize: "md",
     px: "0px",
     py: "0px"
   },
@@ -25,7 +49,7 @@ const baseStyle = definePartsStyle({
     pt: 0,
     pb: 2
   }
-})
+});
 
 const search = definePartsStyle({
   dialog: {
@@ -35,9 +59,10 @@ const search = definePartsStyle({
     }
   },
   body: {
-    ...baseStyle.body,
+    bgColor: "surface.foreground",
+    py: 2,
     alignItems: "center",
-    borderRadius: 5,
+    borderRadius: "sm",
     display: "flex",
     flexDir: "column",
     gap: 2,
@@ -50,6 +75,7 @@ const search = definePartsStyle({
 export const modalStyles = defineMultiStyleConfig({
   baseStyle,
   variants: {
+    settings,
     search
   }
 })

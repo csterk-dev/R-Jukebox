@@ -4,7 +4,6 @@ import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoPublishedDateToString } from "utils/misc";
 import { motion, Variants } from "framer-motion";
-import { useWebHover } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 import { FaYoutube } from "react-icons/fa6";
 import dayjs from "dayjs";
@@ -67,7 +66,6 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
     }
   }, [currentVideoTime, localProgressSeconds]);
 
-  const [progressBarHoverRef, progressBarHover] = useWebHover();
 
   return (
     <Flex as="article" justifyContent="center" {...props}>
@@ -77,7 +75,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         <Flex
           alignItems="center"
           bg={showingCurrentVideo ? "neutral.900" : "surface.solid"}
-          borderRadius={10}
+          borderBottomRadius="base"
+          borderTopRadius="lg"
           height="calc(100vw / 3)"
           justifyContent="center"
           minHeight={isMobile ? "300px" : "400px"}
@@ -87,7 +86,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         >
           <Box
             alignItems="center"
-            borderRadius={10}
+            borderRadius="lg"
             display="flex"
             h="100%"
             justifyContent="center"
@@ -97,7 +96,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           >
             <Box
               bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : "surface.solid"}
-              borderRadius={5}
+              borderRadius="lg"
               filter={`blur(${currentVideo ? "10px" : "0px"})`}
               height="100%"
               position="absolute"
@@ -119,7 +118,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 >
                   <Image
                     aria-label="Video thumbnail"
-                    borderRadius={10}
+                    borderRadius="lg"
                     pointerEvents="none"
                     src={currentVideo.thumbnails.high.url}
                     userSelect="none"
@@ -142,7 +141,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
                     <VStack gap={4} zIndex={1}>
                       <Icon as={HiSignalSlash} boxSize="80px" />
-                      <Text fontSize="3xl" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
+                      <Text fontSize="2xl" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
                     </VStack>
                   </motion.div>
                   <HStack
@@ -161,7 +160,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               <Text
                 _dark={{ bg: "neutral.500" }}
                 bg="neutral.50"
-                borderRadius={4}
+                borderRadius="sm"
                 bottom={5}
                 pb="2px"
                 position="absolute"
@@ -177,11 +176,11 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           </Box>
           {showingCurrentVideo ?
             <Box
-              bottom="2px"
-              height="12px"
+              // bg="yellow"
+              bottom="5.5px"
+              height="5px"
+              left={0}
               position="absolute"
-              ref={progressBarHoverRef}
-              right={0}
               width="100%"
               zIndex={10}
             >
@@ -191,6 +190,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 isDisabled={!currentVideo}
                 max={videoDurationSeconds}
                 min={0}
+                role="group"
                 value={isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds}
                 variant="videoProgress"
                 onChange={val => onChangeLocalProgressHandler(val)}
@@ -200,7 +200,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                   <SliderFilledTrack />
                 </SliderTrack>
                 <Tooltip isOpen={isSlidingLocal} label={`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} placement="top">
-                  <SliderThumb boxSize={progressBarHover ? isMobile ? "18px" : "14px" : isMobile ? "14px" : "10px"} />
+                  <SliderThumb />
                 </Tooltip>
               </Slider>
             </Box> :
@@ -212,7 +212,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         <Flex
           as="section"
           bgColor="surface.foreground-transparent"
-          borderRadius={10}
+          borderRadius="lg"
           boxShadow="lg"
           flexDir="column"
           gap="10px"
@@ -273,7 +273,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             >
               <Text
                 as="h1"
-                fontSize="2xl"
+                fontSize="xl"
                 fontWeight="600"
                 noOfLines={3}
                 textOverflow="ellipsis"
@@ -292,9 +292,9 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
           >
             <Flex
               alignItems="flex-start"
+              color="text.body.subtle"
               flexDir={isMobile ? "column" : "row"}
               fontSize="lg"
-              fontWeight="light"
               gap={2}
               width="100%"
             >

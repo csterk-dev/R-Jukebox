@@ -1,4 +1,4 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, FlexProps, IconButton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Divider, Flex, FlexProps, IconButton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { Placeholder } from "components/atoms/Placeholder";
 import { VideoCard } from "components/atoms/VideoCard";
 import { FC, memo, useCallback, useMemo, useRef, useState } from "react"
@@ -77,7 +77,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
         _dark={{ bg: "rgba(13, 15, 24, 0.75)" }}
         as="aside"
         bg="rgba(255, 255, 255, 0.8)"
-        borderRadius={10}
+        borderRadius="lg"
         boxShadow="lg"
         h={{
           base: "100%",
@@ -193,14 +193,17 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ ...props }) => {
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader p="8px 20px 0px">
+            <AlertDialogHeader>
               <h1>Clear queue?</h1>
             </AlertDialogHeader>
+
             <AlertDialogBody>
               Are you sure that you want to clear all videos in the queue?
+
+              <Divider mt={2} />
             </AlertDialogBody>
 
-            <AlertDialogFooter width="100%">
+            <AlertDialogFooter>
               <Button
                 size="sm"
                 variant="destructive"

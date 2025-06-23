@@ -10,7 +10,7 @@ const themeSeason = getThemeSeason(dayjs());
 
 const baseStyle = definePartsStyle({
   container: {
-    borderRadius: 5
+    borderRadius: "sm"
   }
 })
 
