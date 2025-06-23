@@ -1,6 +1,6 @@
 import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools"
-import { alertStyles, buttonStyles, menuStyles, modalStyles, sliderStyles, tabStyles, tooltipStyles } from "./components";
+import { alertStyles, buttonStyles, menuStyles, modalStyles, sliderStyles, tooltipStyles } from "./components";
 
 
 // Supports weights 200-800
@@ -47,7 +47,6 @@ const theme = extendTheme({
     Button: buttonStyles,
     Modal: modalStyles,
     Menu: menuStyles,
-    Tabs: tabStyles,
     Slider: sliderStyles,
     Tooltip: tooltipStyles
   },
