@@ -31,7 +31,7 @@ export const Placeholder: FC<PlaceholderProps> = ({ title, icon, iconBg, iconBgD
           fontSize="70px"
         />
       </Box>
-      <Text color="text.body.subtle" textAlign="center">{title}</Text>
+      <Text color="text.body" textAlign="center">{title}</Text>
     </Flex>
   )
 }
