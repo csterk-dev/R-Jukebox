@@ -18,9 +18,9 @@ export const App = () => {
                 base: "column",
                 lg: "row"
               }}
-              gap="10px"
+              gap={2}
               justifyContent="space-between"
-              py="10px"
+              py={2.5}
             >
               <CurrentVideo
                 flex={{

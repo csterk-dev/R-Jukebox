@@ -1,10 +1,9 @@
-import { Box, Flex, FlexProps, HStack, Icon, Image, Link, SkeletonText, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, Image, Link, SkeletonText, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Stack, Tag, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { usePlayer } from "state/playerContext";
 import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoPublishedDateToString } from "utils/misc";
 import { motion, Variants } from "framer-motion";
-import { useWebHover } from "@usesoftwareau/react-utils";
 import { useAppState } from "state/appContext";
 import { FaYoutube } from "react-icons/fa6";
 import dayjs from "dayjs";
@@ -17,7 +16,6 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
 
   const [showPublishedAtAsDate, setShowPublishedAtAsDate] = useState(false);
-  const [showProgressTooltip, setShowProgressTooltip] = useState(false);
   const [isSlidingLocal, setIsSlidingLocal] = useState(false);
   const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
   const [optimisticTimeSeconds, setOptimisticTimeSeconds] = useState(currentVideoTime || 0);
@@ -28,10 +26,6 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
   const videoDurationString = useMemo(() => secondsToString(videoDurationSeconds), [videoDurationSeconds]);
   const videoPublishedAt = useMemo(() => videoPublishedDateToString(currentVideo?.publishedAt), [currentVideo?.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(currentVideo?.title), [currentVideo?.title]);
-
-  const foreground = useColorModeValue("rgba(255, 255, 255, 0.9)", "rgba(13, 15, 24, 0.75)");
-  const videoContainer = useColorModeValue("neutral.white", "bg.videoContainer");
-  const durationBg = useColorModeValue("white", "neutral.500");
 
   const togglePublishedAtDate = useCallback(() => setShowPublishedAtAsDate(prev => !prev), []);
 
@@ -72,115 +66,123 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
     }
   }, [currentVideoTime, localProgressSeconds]);
 
-  const [progressBarHoverRef, progressBarHover] = useWebHover();
 
   return (
     <Flex as="article" justifyContent="center" {...props}>
-      <Flex flexDir="column" gap="10px">
+      <Stack>
 
         {/* Video thumbnail preview */}
         <Flex
           alignItems="center"
-          bg={showingCurrentVideo ? "rgba(13, 15, 24, 1)" : videoContainer}
-          borderRadius={10}
+          bg={showingCurrentVideo ? "neutral.900" : "surface.solid"}
+          borderBottomRadius="base"
+          borderTopRadius="lg"
           height="calc(100vw / 3)"
           justifyContent="center"
           minHeight={isMobile ? "300px" : "400px"}
           minWidth={isMobile ? "300px" : "400px"}
-          overflow="hidden"
           position="relative"
           width="calc(100vw / 3)"
         >
           <Box
-            bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : videoContainer}
-            borderRadius={5}
-            filter={`blur(${currentVideo ? "10px" : "0px"})`}
-            height="100%"
-            position="absolute"
-            width="100%"
-          />
-
-          {isPlayerLoading ?
-            <Spinner /> :
-
-            currentVideo ?
-              <Flex
-                as="a"
-                href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}` : undefined}
-                justifyContent="center"
-                position="relative"
-                target="_blank"
-                width="75%"
-                zIndex={1}
-              >
-                <Image
-                  aria-label="Video thumbnail"
-                  borderRadius={10}
-                  pointerEvents="none"
-                  src={currentVideo.thumbnails.high.url}
-                  userSelect="none"
-                  width="100%"
-                />
-                <Icon
-                  aria-label="Open in youtube"
-                  as={FaYoutube}
-                  bottom={0}
-                  boxSize="8%"
-                  color="neutral.50"
-                  position="absolute"
-                  right={0}
-                  role="button"
-                />
-              </Flex> :
-
-              // Placeholder
-              <VStack px={isMobile ? "20px" : undefined} zIndex={1}>
-                <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
-                  <VStack zIndex={1}>
-                    <Icon as={HiSignalSlash} boxSize="80px" />
-                    <Text fontSize="22" mt="10px" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
-                  </VStack>
-                </motion.div>
-                <HStack
-                  alignItems="flex-start"
-                  ml={isMobile ? "12px" : undefined}
-                  mt="10px"
-                  opacity={0.8}
-                  px={isMobile ? "20px" : undefined}
-                >
-                  <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
-                  <Text mb="5px">Use the search bar to find the music you love!</Text>
-                </HStack>
-              </VStack>
-          }
-
-          {showingCurrentVideo ?
-            <Text
-              bgColor={durationBg}
-              borderRadius={4}
-              bottom="20px"
-              pb="2px"
+            alignItems="center"
+            borderRadius="lg"
+            display="flex"
+            h="100%"
+            justifyContent="center"
+            overflow="hidden"
+            position="relative"
+            w="100%"
+          >
+            <Box
+              bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : "surface.solid"}
+              borderRadius="lg"
+              filter={`blur(${currentVideo ? "10px" : "0px"})`}
+              height="100%"
               position="absolute"
-              px="8px"
-              right="10px"
-              textAlign="center"
-            >
-              {`${videoTimeString} / ${videoDurationString}`}
-            </Text> :
-            null
-          }
+              width="100%"
+            />
 
+            {isPlayerLoading ?
+              <Spinner /> :
+
+              currentVideo ?
+                <Flex
+                  as="a"
+                  href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}` : undefined}
+                  justifyContent="center"
+                  position="relative"
+                  target="_blank"
+                  width="75%"
+                  zIndex={1}
+                >
+                  <Image
+                    aria-label="Video thumbnail"
+                    borderRadius="lg"
+                    pointerEvents="none"
+                    src={currentVideo.thumbnails.high.url}
+                    userSelect="none"
+                    width="100%"
+                  />
+                  <Icon
+                    aria-label="Open in youtube"
+                    as={FaYoutube}
+                    bottom={0}
+                    boxSize="8%"
+                    color="neutral.50"
+                    position="absolute"
+                    right={0}
+                    role="button"
+                  />
+                </Flex> :
+
+                // Placeholder
+                <VStack gap={5} px={isMobile ? 5 : undefined} zIndex={1}>
+                  <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
+                    <VStack gap={4} zIndex={1}>
+                      <Icon as={HiSignalSlash} boxSize="80px" />
+                      <Text fontSize="2xl" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
+                    </VStack>
+                  </motion.div>
+                  <HStack
+                    alignItems="flex-start"
+                    ml={isMobile ? "12px" : undefined}
+                    opacity={0.8}
+                    px={isMobile ? "20px" : undefined}
+                  >
+                    <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
+                    <Text>Use the search bar to find the music you love!</Text>
+                  </HStack>
+                </VStack>
+            }
+
+            {showingCurrentVideo ?
+              <Text
+                _dark={{ bg: "neutral.500" }}
+                bg="neutral.50"
+                borderRadius="sm"
+                bottom={5}
+                pb="2px"
+                position="absolute"
+                px={2}
+                right={2.5}
+                textAlign="center"
+              >
+                {`${videoTimeString} / ${videoDurationString}`}
+              </Text> :
+              null
+            }
+
+          </Box>
           {showingCurrentVideo ?
             <Box
-              bottom="2px"
-              height="12px"
+              // bg="yellow"
+              bottom="5.5px"
+              height="5px"
+              left={0}
               position="absolute"
-              ref={progressBarHoverRef}
-              right={0}
               width="100%"
               zIndex={10}
-              onMouseEnter={() => setShowProgressTooltip(true)}
-              onMouseLeave={() => setShowProgressTooltip(false)}
             >
               <Slider
                 aria-label="Volume control"
@@ -188,6 +190,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 isDisabled={!currentVideo}
                 max={videoDurationSeconds}
                 min={0}
+                role="group"
                 value={isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds}
                 variant="videoProgress"
                 onChange={val => onChangeLocalProgressHandler(val)}
@@ -196,8 +199,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
                 <SliderTrack>
                   <SliderFilledTrack />
                 </SliderTrack>
-                <Tooltip isOpen={showProgressTooltip} label={`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} placement="top">
-                  <SliderThumb boxSize={progressBarHover ? "18px" : "12px"} />
+                <Tooltip isOpen={isSlidingLocal} label={`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} placement="top">
+                  <SliderThumb />
                 </Tooltip>
               </Slider>
             </Box> :
@@ -208,8 +211,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
         {/* Current song info */}
         <Flex
           as="section"
-          bgColor={foreground}
-          borderRadius={10}
+          bgColor="surface.foreground-transparent"
+          borderRadius="lg"
           boxShadow="lg"
           flexDir="column"
           gap="10px"
@@ -229,7 +232,9 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               right={-3}
               top={-5}
               transform="rotate(20deg)"
-            /> : null}
+            /> :
+            null
+          }
           <Flex alignItems="center" justifyContent="space-between">
             <SkeletonText
               isLoaded={!isPlayerLoading}
@@ -237,7 +242,7 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               skeletonHeight="14px"
               speed={SKELETON_SPEED}
             >
-              <Text fontSize="14" fontWeight="500" textTransform="uppercase">
+              <Text fontSize="sm" textTransform="uppercase">
                 {currentVideo ? "Current Song" : "No song selected"}
               </Text>
             </SkeletonText>
@@ -267,8 +272,8 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
               speed={SKELETON_SPEED}
             >
               <Text
-                as="h2"
-                fontSize="20"
+                as="h1"
+                fontSize="xl"
                 fontWeight="600"
                 noOfLines={3}
                 textOverflow="ellipsis"
@@ -285,33 +290,25 @@ const _CurrentVideo: FC<FlexProps> = ({ ...props }) => {
             speed={SKELETON_SPEED}
             width={isPlayerLoading ? "65%" : "100%"}
           >
-            {isMobile ?
-              <VStack
-                alignItems="flex-start"
-                fontSize="18"
-                fontWeight="400"
-                width="100%"
-              >
-                <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-                  {showingCurrentVideo ? currentVideo.channelTitle : null}
-                </Link>
-                <Text role="button" onClick={togglePublishedAtDate}>
-                  {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
-                </Text>
-              </VStack> :
-              <HStack fontSize="18" fontWeight="400" width="100%">
-                <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-                  {showingCurrentVideo ? currentVideo.channelTitle : null}
-                </Link>
-                {showingCurrentVideo ? <Text>•</Text> : null}
-                <Text role="button" onClick={togglePublishedAtDate}>
-                  {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
-                </Text>
-              </HStack>
-            }
+            <Flex
+              alignItems="flex-start"
+              color="text.body.subtle"
+              flexDir={isMobile ? "column" : "row"}
+              fontSize="lg"
+              gap={2}
+              width="100%"
+            >
+              <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
+                {showingCurrentVideo ? currentVideo.channelTitle : null}
+              </Link>
+              {showingCurrentVideo && !isMobile ? <Text>•</Text> : null}
+              <Text role="button" onClick={togglePublishedAtDate}>
+                {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
+              </Text>
+            </Flex>
           </SkeletonText>
         </Flex>
-      </Flex>
+      </Stack>
     </Flex>
   )
 }

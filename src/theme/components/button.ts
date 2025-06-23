@@ -5,12 +5,12 @@ import { defineStyle, defineStyleConfig } from "@chakra-ui/react";
 const disabledStyles = {
   backgroundColor: "neutral.400",
   borderColor: "neutal.400",
-  color: "neutral.white"
+  color: "base.white"
 };
 
 // Base style
 const baseStyle = defineStyle({
-  borderRadius: 5,
+  borderRadius: "md",
   textTransform: "uppercase",
   pt: "2px"
 });
@@ -29,7 +29,7 @@ export const buttonStyles = defineStyleConfig({
       color: "white",
       _hover: {
         bg: "red.500",
-        color: "neutral.white",
+        color: "base.white",
         _disabled: {
           ...disabledStyles
         }
@@ -49,11 +49,11 @@ export const buttonStyles = defineStyleConfig({
     // Custom 'destructive' variant:
     destructive: {
       _dark: {
-        color: "neutral.white",
+        color: "base.white",
         bg: "#8F252B"
       },
       bg: "red.600",
-      color: "neutral.white",
+      color: "base.white",
       _hover: {
         _disabled: {
           ...disabledStyles
@@ -62,7 +62,7 @@ export const buttonStyles = defineStyleConfig({
           bg: "red.600"
         },
         bg: "#C75650",
-        color: "neutral.white"
+        color: "base.white"
       }
     }
   },

@@ -1,4 +1,4 @@
-import { Box, Flex, FlexProps, Heading, Icon } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, Icon, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { IconType } from "react-icons";
 
@@ -6,30 +6,32 @@ import { IconType } from "react-icons";
 type PlaceholderProps = FlexProps & {
   title: string;
   icon: IconType;
+  iconBg?: string;
+  iconBgDark?: string;
 }
 
 /** A placeholder element that renders an icon and heading info text */
-export const Placeholder: FC<PlaceholderProps> = ({ title, icon, ...props }) => {
+export const Placeholder: FC<PlaceholderProps> = ({ title, icon, iconBg, iconBgDark, ...props }) => {
   return (
     <Flex
       alignItems="center"
       flexDir="column"
-      gap="10px"
+      gap={5}
       justifyContent="center"
       {...props}
     >
       <Box
-        _dark={{ bg: "neutral.400" }}
-        bg="white"
-        borderRadius="90"
-        p="20px"
+        _dark={{ bg: iconBgDark ?? "neutral.400" }}
+        bg={iconBg ?? "white"}
+        borderRadius="full"
+        p={5}
       >
         <Icon
           as={icon}
           fontSize="70px"
         />
       </Box>
-      <Heading fontSize="18px" opacity={0.7} textAlign="center">{title}</Heading>
+      <Text color="text.body" textAlign="center">{title}</Text>
     </Flex>
   )
 }

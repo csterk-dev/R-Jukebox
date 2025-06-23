@@ -1,5 +1,5 @@
 import { Box, BoxProps, useColorMode } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { PageBackdrop } from "components/atoms/PageBackdrop";
 import { useAppState } from "state/appContext";
 import { Header } from "components/molecules/Header";
@@ -13,7 +13,12 @@ import { Header } from "components/molecules/Header";
 export const PageContainer: FC<BoxProps> = ({ children, ...props }) => {
   const { isBgAnimated, themeSeason } = useAppState();
   const { colorMode } = useColorMode();
-
+  const staticBg = useMemo(() => {
+    return colorMode === "dark" ?
+      themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
+      themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
+  }, [colorMode, themeSeason]);
+  
   return (
     <Box
       height="100dvh"
@@ -48,10 +53,7 @@ export const PageContainer: FC<BoxProps> = ({ children, ...props }) => {
       {isBgAnimated ?
         <PageBackdrop themeSeason={themeSeason} /> :
         <Box
-          bg={colorMode === "dark" ?
-            themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
-            themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
-          }
+          bg={staticBg}
           height="100%"
           overflow="hidden"
           width="100%"
