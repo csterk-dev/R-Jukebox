@@ -1,9 +1,9 @@
-import { Flex, FlexProps, IconButton } from "@chakra-ui/react"
+import { HStack, IconButton, StackProps } from "@chakra-ui/react"
 import { FC, memo, useCallback, useMemo } from "react"
 import { HiBackward, HiForward, HiPause, HiPlay } from "react-icons/hi2";
 
 
-type VideoControlsProps = FlexProps & {
+type VideoControlsProps = StackProps & {
   disableBackButton: boolean,
   disablePlayButton: boolean,
   disableQueueButton: boolean,
@@ -28,31 +28,29 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableBackButton, disablePlay
   const _updateCurrentVideoTime = useCallback(() => updateCurrentVideoTime(0), [updateCurrentVideoTime]);
 
   return (
-    <Flex justifyContent="center" {...props}>
-      <Flex alignItems="center" gap="5px">
-        <IconButton
-          aria-label="rewind"
-          icon={<HiBackward />}
-          isDisabled={disableBackButton}
-          size="md"
-          onClick={_updateCurrentVideoTime}
-        />
-        <IconButton
-          aria-label="play/pause"
-          icon={playPauseIcon}
-          isDisabled={disablePlayButton}
-          size="md"
-          onClick={onPressPlayPause}
-        />
-        <IconButton
-          aria-label="forward"
-          icon={<HiForward />}
-          isDisabled={disableQueueButton}
-          size="md"
-          onClick={playNextQueueItem}
-        />
-      </Flex>
-    </Flex>
+    <HStack justifyContent="center" {...props}>
+      <IconButton
+        aria-label="rewind"
+        icon={<HiBackward />}
+        isDisabled={disableBackButton}
+        size="md"
+        onClick={_updateCurrentVideoTime}
+      />
+      <IconButton
+        aria-label="play/pause"
+        icon={playPauseIcon}
+        isDisabled={disablePlayButton}
+        size="md"
+        onClick={onPressPlayPause}
+      />
+      <IconButton
+        aria-label="forward"
+        icon={<HiForward />}
+        isDisabled={disableQueueButton}
+        size="md"
+        onClick={playNextQueueItem}
+      />
+    </HStack>
   );
 }
 _VideoControls.displayName = "VideoControls";

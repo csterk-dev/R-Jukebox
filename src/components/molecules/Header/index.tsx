@@ -1,4 +1,4 @@
-import { Flex, FlexProps, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Tooltip, useColorModeValue, useDisclosure, useMediaQuery } from "@chakra-ui/react";
+import { Flex, FlexProps, HStack, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Tooltip, useColorModeValue, useDisclosure, useMediaQuery } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiCog6Tooth, HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { VideoControls } from "components/atoms/VideoControls";
@@ -128,10 +128,10 @@ const _Header: FC<FlexProps> = (props) => {
         as="header"
         background={headerBg}
         boxShadow="base"
-        gap="5px"
+        gap={2}
         h={`${HEADER_HEIGHT}px`}
         justify="center"
-        px="20px"
+        px={5}
         w="100%"
         {...props}
       >
@@ -171,20 +171,12 @@ const _Header: FC<FlexProps> = (props) => {
               resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
               updateCurrentVideoTime={updatePlayerTimestamp}
             />
+
             <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
-            <Flex
-              alignItems="center"
-              flex={1}
-              gap="5px"
-              justifyContent="center"
-            >
+            
+            <HStack flex={1} justifyContent="center">
               <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
-                <Flex
-                  alignItems="center"
-                  // cursor={!showingCurrentVideo ? "not-allowed" : undefined}
-                  gap="5px"
-                  width="155px"
-                >
+                <HStack width="155px">
                   <IconButton
                     aria-label="No volume"
                     colorScheme="neutral"
@@ -221,9 +213,10 @@ const _Header: FC<FlexProps> = (props) => {
                     isDisabled={!showingCurrentVideo}
                     onClick={onClickMaxVolume}
                   />
-                </Flex>
+                </HStack>
               </Tooltip>
-            </Flex>
+            </HStack>
+            
             {isLargerThan800 ?
               <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
                 <span>

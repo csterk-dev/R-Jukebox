@@ -6,29 +6,50 @@ const { definePartsStyle, defineMultiStyleConfig } =
 
 const baseStyle = definePartsStyle({
   dialog: {
-    bgColor: "neutral.white",
-    _dark: {
-      bgColor: "neutral.700"
-    }
+    bgColor: "surface.foreground"
   },
   header: {
-    fontSize: "16px",
-    fontWeight: "600",
-    px: "0px",
-    py: "0px",
-    textTransform: "uppercase"
+    fontSize: "md",
+    py: 2,
+    px: 4
   },
   body: {
-    px: "20px",
-    py: "10px"
+    bgColor: "surface.foreground",
+    py: 2,
+    flexDirection: "column",
+    px: 4
   },
   footer: {
     flexDirection: "column",
-    gap: "10px",
-    px: "20px",
-    py: "10px"
+    pt: 2,
+    pb: 3,
+    gap: 2,
+    px: 4
   }
-})
+});
+
+const settings = definePartsStyle({
+  dialog: {
+    bgColor: "surface.foreground"
+  },
+  header: {
+    fontSize: "md",
+    px: "0px",
+    py: "0px"
+  },
+  body: {
+    px: 5,
+    bgColor: "surface.foreground",
+    py: 2
+  },
+  footer: {
+    flexDirection: "column",
+    gap: 2,
+    px: 5,
+    pt: 0,
+    pb: 2
+  }
+});
 
 const search = definePartsStyle({
   dialog: {
@@ -37,24 +58,24 @@ const search = definePartsStyle({
       bgColor: "transparent"
     }
   },
-  header: {
-    ...baseStyle.header
-  },
   body: {
-    ...baseStyle.body,
-    bgColor: "neutral.white",
-    _dark: {
-      bgColor: "neutral.700"
-    }
-  },
-  footer: {
-    ...baseStyle.footer
+    bgColor: "surface.foreground",
+    py: 2,
+    alignItems: "center",
+    borderRadius: "sm",
+    display: "flex",
+    flexDir: "column",
+    gap: 2,
+    mt: 2,
+    pl: 2,
+    pr: 1
   }
 })
 
 export const modalStyles = defineMultiStyleConfig({
   baseStyle,
   variants: {
+    settings,
     search
   }
 })

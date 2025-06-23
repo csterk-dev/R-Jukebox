@@ -1,16 +1,15 @@
-import { Box, Flex, Icon, List, ListItem, ListProps, Text } from "@chakra-ui/react";
+import { Box, Flex, Icon, List, ListItem, ListProps } from "@chakra-ui/react";
 import { FC } from "react";
 import { HiBugAnt, HiStar, HiWrenchScrewdriver } from "react-icons/hi2";
 
 
-type NotesProps = ListProps & { notes: ReleaseNote[]; date?: string }
-export const Notes: FC<NotesProps> = ({ notes, date, ...props }) => {
+type NotesProps = ListProps & { notes: ReleaseNote[]; }
+export const Notes: FC<NotesProps> = ({ notes, ...props }) => {
   return (
-    <List spacing="10px" {...props}>
-      <Text fontSize="14" mt="-10px" opacity={0.7}>{date}</Text>
+    <List spacing={2} {...props}>
       {notes.map(note => (
         <ListItem key={note.details}>
-          <Flex gap="10px">
+          <Flex gap={2}>
             <Box mt="2px">
               <Icon
                 aria-roledescription="Bullet point"

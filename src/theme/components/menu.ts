@@ -8,16 +8,19 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const baseStyle = definePartsStyle({
   list: {
     p: 0,
-    borderRadius: "5px",
+    borderRadius: "sm",
     border: "none",
     bg: "white",
     _dark: {
       bg: "neutral.700"
     }
   },
+  groupTitle: {
+    pt: 1
+  },
   item: {
     bg: "transparent",
-    borderRadius: "5px",
+    borderRadius: "sm",
     _hover: {
       bg: "neutral.50",
       _dark: {
@@ -50,6 +53,7 @@ const logFilters = definePartsStyle({
     }
   },
   groupTitle: {
+    pt: 1,
     mx: 0,
     pl: 2,
     textAlign: "left"

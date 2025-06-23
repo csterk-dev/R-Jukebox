@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, ModalContent, ModalOverlay, ModalProps, Text } from "@chakra-ui/react";
+import { Button, Divider, Modal, ModalContent, ModalOverlay, ModalProps, Stack, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
 import { Notes } from "components/atoms/Notes";
@@ -7,6 +7,7 @@ import { Notes } from "components/atoms/Notes";
 
 type NewUpdateModalProps = Omit<ModalProps, "children"> & { isMobile: boolean }
 export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) => {
+  const newNote = v1_4ReleaseNotes[0];
 
   return (
     <Modal
@@ -19,27 +20,29 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
     >
       <ModalOverlay />
       <ModalContent
-        _dark={{ bg: "neutral.700" }}
-        bg="white"
         boxShadow={0}
+        layerStyle="themed-scroll"
         overflowY="auto"
         userSelect="none"
       >
-        <Flex flexDirection="column" p="10px 20px 20px">
-          <Text as="h1" fontSize="32" fontWeight={600}>{`${v1_4ReleaseNotes[0].title}`}</Text>
+        <Stack p="8px 20px 20px">
+          <Text as="h1" fontSize="32" fontWeight="semibold">{`${newNote.title}`}</Text>
+
           <Text
             as="h2"
+            color="text.heading-subtle"
             fontSize="24"
-            fontWeight={500}
-            opacity={0.7}
+            fontWeight="semibold"
           >
             What's new?
           </Text>
-          <Notes date={v1_4ReleaseNotes[0].date} mt="10px" notes={v1_4ReleaseNotes[0].notes} />
+          <Divider />
+          <Text textStyle="body/label">{newNote.date}</Text>
+          <Notes notes={newNote.notes} />
 
           <Button
             colorScheme="brand"
-            mt="30px"
+            mt={4}
             pb="2px"
             size="md"
             variant="solid"
@@ -47,7 +50,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
           >
             Lets go!
           </Button>
-        </Flex>
+        </Stack>
       </ModalContent>
     </Modal>
   );

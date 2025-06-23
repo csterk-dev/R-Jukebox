@@ -37,8 +37,25 @@ const v1_4_1: ReleaseNote[] = [
   }
 ];
 
+const v1_4_2: ReleaseNote[] = [
+  {
+    details: "Update Jukebox's theme",
+    kind: "improvement"
+  },
+  {
+    details: "Unify component styles",
+    kind: "improvement"
+  }
+];
+
 
 export const v1_4ReleaseNotes: ReleaseNotes = [
+  {
+    title: "Release 1.4.2",
+    versionNum: "1.4.2",
+    notes: v1_4_2,
+    date: "24/06/2025"
+  },
   {
     title: "Release 1.4.1",
     versionNum: "1.4.1",
