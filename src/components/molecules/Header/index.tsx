@@ -173,15 +173,16 @@ const _Header: FC<FlexProps> = (props) => {
             />
 
             <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
-            
+
             <HStack flex={1} justifyContent="center">
               <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
-                <HStack width="155px">
+                <HStack width="170px">
                   <IconButton
                     aria-label="No volume"
                     colorScheme="neutral"
                     icon={<HiSpeakerXMark />}
                     isDisabled={!showingCurrentVideo}
+                    size="md"
                     onClick={onClickToggleMute}
                   />
                   <Slider
@@ -211,12 +212,13 @@ const _Header: FC<FlexProps> = (props) => {
                     colorScheme="neutral"
                     icon={<HiSpeakerWave />}
                     isDisabled={!showingCurrentVideo}
+                    size="md"
                     onClick={onClickMaxVolume}
                   />
                 </HStack>
               </Tooltip>
             </HStack>
-            
+
             {isLargerThan800 ?
               <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
                 <span>
