@@ -1,4 +1,4 @@
-import { Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
 import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiEllipsisVertical, HiQueueList, HiSignal } from "react-icons/hi2";
@@ -39,9 +39,8 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
 
   return (
     <Flex
-      _dark={{ bg: "neutral.900" }}
       _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
-      bg="base.white"
+      bg="surface.solid"
       borderRadius="sm"
       boxShadow="base"
       flexDir="row"
@@ -140,7 +139,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
         >
           {videoTitle}
         </Text>
-        <Text color="text.body.subtle" noOfLines={1} textOverflow="ellipsis">
+        <Text color="text.subtle" noOfLines={1} textOverflow="ellipsis">
           {video.channelTitle}
         </Text>
         <HStack>
@@ -150,7 +149,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
           <Text>
             •
           </Text> */}
-          <Text color="text.body.subtle">
+          <Text color="text.subtle">
             {videoPublishedAt}
           </Text>
         </HStack>
@@ -189,3 +188,69 @@ _VideoCard.displayName = "VideoCard";
  * @returns {JSX.Element} The video card.
  */
 export const VideoCard = memo(_VideoCard);
+
+
+
+export const VidoeCardSkeleton: FC<FlexProps> = (props) => (
+  <Flex
+    bg="surface.solid"
+    borderRadius="sm"
+    boxShadow="base"
+    flexDir="row"
+    height="94px"
+    width="100%"
+    {...props}
+  >
+    <Flex
+      bg="surface.foreground"
+      borderLeftRadius="sm"
+      filter="auto"
+      height="94px"
+      position="relative"
+      width="168px"
+    />
+
+    <Flex
+      borderEndRadius="sm"
+      flex={1}
+      flexDir="column"
+      justifyContent="space-between"
+      px={2.5}
+      py="5px"
+    >
+      <Box
+        bg="surface.foreground"
+        borderRadius="lg"
+        h="12px"
+        w="180px"
+      />
+      <Box
+        bg="surface.foreground"
+        borderRadius="lg"
+        h="8px"
+        w="100px"
+      />
+      <Box
+        bg="surface.foreground"
+        borderRadius="lg"
+        h="8px"
+        w="130px"
+      />
+    </Flex>
+    
+    <Flex
+      borderEndRadius="sm"
+      flex={1}
+      flexDir="column"
+      px={2.5}
+      py="5px"
+    >
+      <Box
+        bg="surface.foreground"
+        borderRadius="lg"
+        h="12px"
+        w="12px"
+      />
+    </Flex>
+  </Flex>
+)
