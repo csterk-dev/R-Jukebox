@@ -1,3 +1,5 @@
+import PackageJson from "../../package.json";
+
 /** 
  * Socket Event Keys.
  * @description An object containing the all possible connection events and their event key. 
@@ -44,7 +46,7 @@ export const SOCKET_EVENT_KEYS = {
   setPlayerVolume: "set-player-vol"
 };
 
-export const VERSION_NUM = "1.4.2";
+export const VERSION_NUM = PackageJson.version;
 
 /** In milliseconds. */
 export const TooltipOpenDelay = 500;

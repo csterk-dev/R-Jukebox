@@ -1,6 +1,6 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
+  "name": "r-jukebox",
+  "version": "1.4.3",
   "private": true,
   "proxy": "http://localhost:3000",
   "dependencies": {
