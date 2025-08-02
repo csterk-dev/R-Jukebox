@@ -253,4 +253,5 @@ export const VidoeCardSkeleton: FC<FlexProps> = (props) => (
       />
     </Flex>
   </Flex>
-)
+);
+VidoeCardSkeleton.displayName = "VidoeCardSkeleton";
