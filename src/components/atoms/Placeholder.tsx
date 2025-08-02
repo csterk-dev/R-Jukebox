@@ -6,12 +6,12 @@ import { IconType } from "react-icons";
 type PlaceholderProps = FlexProps & {
   title: string;
   icon: IconType;
-  iconBg?: string;
-  iconBgDark?: string;
+  iconBgOverride?: string;
+  iconBgDarkOverride?: string;
 }
 
 /** A placeholder element that renders an icon and heading info text */
-export const Placeholder: FC<PlaceholderProps> = ({ title, icon, iconBg, iconBgDark, ...props }) => {
+export const Placeholder: FC<PlaceholderProps> = ({ title, icon, iconBgOverride: iconBg, iconBgDarkOverride: iconBgDark, ...props }) => {
   return (
     <Flex
       alignItems="center"
