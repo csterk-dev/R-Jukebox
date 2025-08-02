@@ -4,6 +4,7 @@ import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffec
 import { useWebSockets } from "utils/hooks";
 import { replaceHtmlEntities, truncateString } from "utils/misc";
 import { usePrevious } from "@usesoftwareau/react-utils";
+import { usePaginatedListHistory } from "./swr";
 
 const queueToastProps = {
   status: "success" as UseToastOptions["status"],
@@ -40,7 +41,6 @@ interface PlayerContextType {
   currentVideoTime: number | undefined;
   deleteQueueItem: (videoId: Video["videoId"]) => void;
   error: string | undefined;
-  history: HistoryVideo[];
   isConnected: boolean;
   isPlaying: boolean;
   isPlayerLoading: boolean;
@@ -62,7 +62,6 @@ const defaultPlayerContextVal: PlayerContextType = {
   currentVideoTime: undefined,
   deleteQueueItem: () => void 0,
   error: undefined,
-  history: [],
   isConnected: false,
   isPlaying: false,
   isPlayerLoading: false,
@@ -86,6 +85,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const { isConnected, socketInstance } = useWebSockets();
   const previousIsConnected = usePrevious(isConnected);
+  const { mutate: updateHistory } = usePaginatedListHistory();
 
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
@@ -94,7 +94,6 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
   const [error, setError] = useState<PlayerContextType["error"]>();
   const [volume, setVolume] = useState<PlayerContextType["playerVolume"]>(PLAYER_VOLUME_DEFAULT);
-  const [history, setHistory] = useState<PlayerContextType["history"]>([]);
   const [queue, setQueue] = useState<PlayerContextType["queue"]>([]);
   const [logs, setLogs] = useState<PlayerContextType["logs"]>([]);
 
@@ -330,6 +329,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
           console.info("current video synced");
           setCurrentVideo(incomingVideo);
+          updateHistory();
           const vidTitle = replaceHtmlEntities(incomingVideo?.title);
 
           if (vidTitle) {
@@ -376,13 +376,6 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // });
 
 
-      // Sync history
-      socketInstance.on(SOCKET_EVENT_KEYS.history, (incomingHistory: HistoryVideo[]) => {
-        console.info("history synced");
-        setHistory(incomingHistory);
-      });
-
-
       // Sync queue
       socketInstance.on(SOCKET_EVENT_KEYS.queue, (incomingQueue: Video[]) => {
         console.info("queue synced");
@@ -427,14 +420,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.currentVideo);
       socketInstance.off(SOCKET_EVENT_KEYS.currentVideoTime);
       socketInstance.off(SOCKET_EVENT_KEYS.error);
-      socketInstance.off(SOCKET_EVENT_KEYS.history);
       socketInstance.off(SOCKET_EVENT_KEYS.queue);
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
       socketInstance.off(SOCKET_EVENT_KEYS.logs);
     }
-  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime]);
+  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime, updateHistory]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -444,7 +436,6 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       currentVideoTime,
       deleteQueueItem,
       error,
-      history,
       isConnected,
       isPlaying,
       isPlayerLoading,
@@ -459,7 +450,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       updatePlayerVolume,
       updatePlayerTimestamp
     }
-  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, history, isConnected, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, playVideo, logs, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
+  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, isConnected, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, playVideo, logs, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
 
   return (
     <PlayerContext.Provider value={playerContext}>
