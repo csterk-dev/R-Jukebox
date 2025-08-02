@@ -1,6 +1,6 @@
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Stack, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
-import { Notes } from "components/atoms/Notes";
+import { ReleaseNotesList } from "components/atoms/ReleaseNotesList";
 import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
 import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
 import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
@@ -89,7 +89,7 @@ export const ReleaseNotesScreen: FC = () => {
                     </Flex>
                   </h3>
                   <AccordionPanel pb={4} px={0}>
-                    <Notes notes={notes.notes} />
+                    <ReleaseNotesList notes={notes.notes} />
                   </AccordionPanel>
                 </AccordionItem>
               ))}

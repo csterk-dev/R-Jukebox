@@ -223,7 +223,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
           <Placeholder
             alignSelf="center"
             icon={HiCodeBracket}
-            iconBg="neutral.50"
+            iconBgOverride="neutral.50"
             mb={5}
             title="Log entries will appear here"
           />
