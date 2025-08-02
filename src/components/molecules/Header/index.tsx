@@ -1,12 +1,10 @@
 import { Flex, FlexProps, HStack, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Tooltip, useColorModeValue, useDisclosure, useMediaQuery } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiCog6Tooth, HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
-import { VideoControls } from "components/atoms/VideoControls";
+import { VideoControls } from "./VideoControls";
 import { usePlayer } from "state/playerContext";
 import { useAppState } from "state/appContext";
-import { VERSION_NUM } from "constants/index";
 import { SearchBarButton } from "./SearchBarButton";
-import { NewUpdateModal } from "./NewUpdateModal";
 import { SearchModal } from "./SearchModal";
 import { SettingsModal } from "./SettingsModal/index";
 
@@ -33,18 +31,10 @@ const _Header: FC<FlexProps> = (props) => {
    */
   const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
   const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
-  const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+
 
   /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
   const finalFocusRef = useRef(null);
-
-
-  useEffect(() => {
-    const currentVersion = localStorage.getItem("current_version");
-    if (!currentVersion || currentVersion !== VERSION_NUM) onOpenNewUpdate();
-    localStorage.setItem("current_version", VERSION_NUM);
-
-  }, [onOpenNewUpdate]);
 
 
   /*
@@ -121,6 +111,17 @@ const _Header: FC<FlexProps> = (props) => {
   }, [prevPlayerVolume, playerVolume]);
 
 
+  /** Handles the toggling of the player playback. */
+  const onPressPlayPause = useCallback(() => {
+    if (!showingCurrentVideo) return;
+    if (isPlaying) pauseResumeCurrentVideo("pause");
+    else pauseResumeCurrentVideo("resume");
+  }, [showingCurrentVideo, isPlaying, pauseResumeCurrentVideo]);
+
+
+  const onPressRewindToStart = useCallback(() => updatePlayerTimestamp(0), [updatePlayerTimestamp]);
+
+
   return (
     <>
       <Flex
@@ -139,15 +140,14 @@ const _Header: FC<FlexProps> = (props) => {
           <>
             <SearchBarButton flex={1} isMobile onOpen={onOpenSearch} />
             <VideoControls
-              disableBackButton={!showingCurrentVideo}
               disablePlayButton={!showingCurrentVideo}
               disableQueueButton={!queue.length}
+              disableRewindButton={!showingCurrentVideo}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
-              playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
-              updateCurrentVideoTime={updatePlayerTimestamp}
+              onPressPlayNextQueueItem={playNextQueueItem}
+              onPressPlayPause={onPressPlayPause}
+              onPressRewindToStart={onPressRewindToStart}
             />
             <IconButton
               aria-label="Open settings"
@@ -161,15 +161,14 @@ const _Header: FC<FlexProps> = (props) => {
           // Default view
           <>
             <VideoControls
-              disableBackButton={!showingCurrentVideo}
               disablePlayButton={!showingCurrentVideo}
               disableQueueButton={!queue.length}
+              disableRewindButton={!showingCurrentVideo}
               flex={1}
               isPlaying={isPlaying}
-              pauseCurrentVideo={() => pauseResumeCurrentVideo("pause")}
-              playNextQueueItem={playNextQueueItem}
-              resumeCurrentVideo={() => pauseResumeCurrentVideo("resume")}
-              updateCurrentVideoTime={updatePlayerTimestamp}
+              onPressPlayNextQueueItem={playNextQueueItem}
+              onPressPlayPause={onPressPlayPause}
+              onPressRewindToStart={onPressRewindToStart}
             />
 
             <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
@@ -267,8 +266,6 @@ const _Header: FC<FlexProps> = (props) => {
         isOpen={isSearchOpen}
         onClose={onCloseSearch}
       />
-
-      <NewUpdateModal isMobile={isMobile} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
     </>
   )
 }
