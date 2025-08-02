@@ -421,7 +421,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
                     <Input
                       enterKeyHint="done"
                       focusBorderColor="brand.500"
-                      placeholder="Search by video title or channel name"
+                      placeholder="Search by video title or channel"
                       value={historySearchInputVal}
                       variant="outline"
                       onChange={useCallback((e: ChangeEvent<HTMLInputElement>) => setHistorySearchInputVal(e.target.value), [setHistorySearchInputVal])}
