@@ -1,19 +1,30 @@
-/* eslint-disable no-inline-comments */
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react";
 
-// Disabled style
-const disabledStyles = {
-  backgroundColor: "neutral.400",
-  borderColor: "neutal.400",
-  color: "base.white"
-};
 
-// Base style
 const baseStyle = defineStyle({
   borderRadius: "md",
   textTransform: "uppercase",
   pt: "2px"
 });
+
+
+const brandStyle = defineStyle({
+  bg: "surface.brand",
+  color: "text.on-dark",
+  _hover: {
+    bg: "surface.brand.hover"
+  }
+});
+
+
+const destructiveStyle = defineStyle({
+  bg: "red.600",
+  color: "base.white",
+  _hover: {
+    bg: "red.700"
+  }
+});
+
 
 /**
  * Button Style Config:
@@ -23,48 +34,10 @@ export const buttonStyles = defineStyleConfig({
   baseStyle,
   variants: {
     ghost: {},
-    // Brand style
-    brand: {
-      bg: "neutral.500",
-      color: "white",
-      _hover: {
-        bg: "red.500",
-        color: "base.white",
-        _disabled: {
-          ...disabledStyles
-        }
-      }
-    },
-    // Apply custom disabled style to outline variant
-    outline: {
-      _hover: {
-        _disabled: {
-          ...disabledStyles
-        }
-      }
-    },
-    solid: {
-      textTransform: "uppercase"
-    },
-    // Custom 'destructive' variant:
-    destructive: {
-      _dark: {
-        color: "base.white",
-        bg: "#8F252B"
-      },
-      bg: "red.600",
-      color: "base.white",
-      _hover: {
-        _disabled: {
-          ...disabledStyles
-        },
-        _dark: {
-          bg: "red.600"
-        },
-        bg: "#C75650",
-        color: "base.white"
-      }
-    }
+    brand: brandStyle,
+    outline: {},
+    solid: {},
+    destructive: destructiveStyle
   },
   defaultProps: {
     colorScheme: "neutral",

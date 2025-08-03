@@ -36,7 +36,7 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...pr
     >
       <HStack gap={4}>
         <Icon aria-label="Open search" as={HiMagnifyingGlass} />
-        <Text color="text.body.subtle">Search</Text>
+        <Text color="text.subtle">Search</Text>
         <Spacer />
         <Kbd userSelect="none">⌘ K</Kbd>
       </HStack>

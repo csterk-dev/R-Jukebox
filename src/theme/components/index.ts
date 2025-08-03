@@ -1,4 +1,5 @@
 export * from "./button";
+export * from "./formControl";
 export * from "./modal";
 export * from "./tooltip";
 export * from "./menu";

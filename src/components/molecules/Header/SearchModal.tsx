@@ -55,7 +55,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, [hideSuggestions, searchVal]);
 
 
-  const onFormSubmit = useCallback((e: FormEvent<HTMLInputElement>) => {
+  const onFormSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isMobile) inputRef.current?.blur();
     handleSubmit();
@@ -185,7 +185,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           <form
             id="search"
             style={{ width: "100%" }}
-            onSubmit={useCallback((e: any) => onFormSubmit(e), [onFormSubmit])}
+            onSubmit={useCallback((e: FormEvent<HTMLFormElement>) => onFormSubmit(e), [onFormSubmit])}
           >
             <InputGroup as="search">
               <InputLeftElement pointerEvents="none">

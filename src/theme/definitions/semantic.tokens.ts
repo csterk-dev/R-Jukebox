@@ -15,31 +15,31 @@ type SemanticToken = {
 const icon: SemanticToken = {
   info: {
     _light: "brand.300",
-    _dark: "brand.300"
+    default: "brand.300"
   },
   bug: {
     _light: "red.300",
-    _dark: "red.300"
+    default: "red.300"
   },
   improvement: {
     _light: "yellow.500",
-    _dark: "yellow.500"
+    default: "yellow.500"
   },
   body: {
     _light: "neutral.700",
-    _dark: "base.white"
+    default: "base.white"
   },
   "on-light": {
     _light: "neutral.700",
-    _dark: "neutral.700"
+    default: "neutral.700"
   },
   "on-dark": {
     _light: "neutral.50",
-    _dark: "neutral.50"
+    default: "neutral.50"
   },
   inverted: {
     _light: "base.white",
-    _dark: "neutral.700"
+    default: "neutral.700"
   }
 }
 
@@ -47,15 +47,21 @@ const icon: SemanticToken = {
 const surface: SemanticToken = {
   solid: {
     _light: "base.white",
-    _dark: "neutral.900"
+    default: "neutral.900"
   },
   foreground: {
     _light: "base.white",
-    _dark: "neutral.700"
+    default: "neutral.700"
   },
   "foreground-transparent": {
     _light: "rgba(255, 255, 255, 0.8)",
-    _dark: "rgba(13, 15, 24, 0.75)"
+    default: "rgba(13, 15, 24, 0.75)"
+  },
+  brand: {
+    default: "brand.500"
+  },
+  "brand.hover": {
+    default: "brand.600"
   }
 }
 
@@ -63,47 +69,47 @@ const surface: SemanticToken = {
 const text: SemanticToken = {
   body: {
     _light: "neutral.700",
-    _dark: "base.white"
+    default: "base.white"
   },
-  "body.subtle": {
+  subtle: {
     _light: "neutral.300",
-    _dark: "neutral.100"
+    default: "neutral.100"
   },
   "on-light": {
     _light: "neutral.700",
-    _dark: "neutral.700"
+    default: "neutral.700"
   },
   "on-dark": {
     _light: "neutral.50",
-    _dark: "neutral.50"
+    default: "neutral.50"
   },
   inverted: {
     _light: "base.white",
-    _dark: "neutral.700"
+    default: "neutral.700"
   },
   heading: {
     _light: "neutral.700",
-    _dark: "base.white"
+    default: "base.white"
   },
   "heading-subtle": {
     _light: "neutral.300",
-    _dark: "neutral.100"
+    default: "neutral.100"
   },
   accent: {
     _light: "brand.500",
-    _dark: "brand.300"
+    default: "brand.300"
   },
   focus: {
     _light: "brand.600",
-    _dark: "brand.600"
+    default: "brand.600"
   },
   error: {
     _light: "red.500",
-    _dark: "red.300"
+    default: "red.300"
   },
   warning: {
     _light: "yellow.700",
-    _dark: "yellow.500"
+    default: "yellow.500"
   }
 };
 

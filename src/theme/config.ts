@@ -1,10 +1,6 @@
 import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools"
-import { alertStyles, buttonStyles, menuStyles, modalStyles, sliderStyles, tooltipStyles } from "./components";
-
-
-// Supports weights 200-800
-import "@fontsource-variable/assistant";
+import { alertStyles, buttonStyles, formControlStyles, menuStyles, modalStyles, sliderStyles, tooltipStyles } from "./components";
 import { getThemeSeason } from "utils/misc";
 import dayjs from "dayjs";
 import { bgColors, colors, layerStyles, semanticTokens, textStyles } from "./definitions";
@@ -45,6 +41,7 @@ const theme = extendTheme({
   components: {
     Alert: alertStyles,
     Button: buttonStyles,
+    Form: formControlStyles,
     Modal: modalStyles,
     Menu: menuStyles,
     Slider: sliderStyles,
