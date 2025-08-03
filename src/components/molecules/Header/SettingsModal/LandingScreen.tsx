@@ -48,7 +48,7 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
           color={isConnected ? "green" : "orange"}
           mt="3px"
         />
-        <Text color="text.body.subtle">{`${isConnected ? "Connected" : "Offline"}`}</Text>
+        <Text color="text.subtle">{`${isConnected ? "Connected" : "Offline"}`}</Text>
       </HStack>
       <Divider />
 

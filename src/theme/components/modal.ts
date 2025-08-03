@@ -14,12 +14,14 @@ const baseStyle = definePartsStyle({
     px: 4
   },
   body: {
+    display: "flex",
     bgColor: "surface.foreground",
     py: 2,
     flexDirection: "column",
     px: 4
   },
   footer: {
+    display: "flex",
     flexDirection: "column",
     pt: 2,
     pb: 3,

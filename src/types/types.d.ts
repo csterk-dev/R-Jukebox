@@ -106,3 +106,11 @@ type EntryLog = {
   /** Stack trace or error message. */
   stackTrace: string | null;
 }
+
+
+/** Generic Select Option type for react-select options. */
+type SelectOption<T extends string | number | null = string> =
+  {
+    label: string;
+    value: T
+  }

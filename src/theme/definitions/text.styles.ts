@@ -24,11 +24,16 @@ export const textStyles: Record<string, TextProps> = {
     fontWeight: "normal"
   },
   "body/sub-text": {
-    color: "text.body.subtle",
+    color: "text.subtle",
     fontSize: "md"
   },
   "body/label": {
-    color: "text.body.subtle",
+    color: "text.subtle",
     fontSize: "sm"
+  },
+  "form/label": {
+    color: "text.subtle",
+    fontSize: "sm",
+    textTransform: "uppercase"
   }
 }

@@ -1,12 +1,13 @@
 import { Button, Divider, Modal, ModalContent, ModalOverlay, ModalProps, Stack, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
-import { Notes } from "components/atoms/Notes";
+import { ReleaseNotesList } from "components/atoms/ReleaseNotesList";
 
 
+type NewUpdateModalProps = Omit<ModalProps, "children">;
 
-type NewUpdateModalProps = Omit<ModalProps, "children"> & { isMobile: boolean }
-export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMobile }) => {
+/** A simple modal that displays the most recent release's patch & feature notes. */
+export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
   const newNote = v1_4ReleaseNotes[0];
 
   return (
@@ -15,7 +16,10 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
       closeOnOverlayClick={false}
       isOpen={isOpen}
       scrollBehavior="inside"
-      size={isMobile ? "sm" : "md"}
+      size={{
+        base: "sm",
+        lg: "md"
+      }}
       onClose={onClose}
     >
       <ModalOverlay />
@@ -38,7 +42,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, isMob
           </Text>
           <Divider />
           <Text textStyle="body/label">{newNote.date}</Text>
-          <Notes notes={newNote.notes} />
+          <ReleaseNotesList notes={newNote.notes} />
 
           <Button
             colorScheme="brand"

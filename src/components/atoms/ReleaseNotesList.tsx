@@ -4,7 +4,11 @@ import { HiBugAnt, HiStar, HiWrenchScrewdriver } from "react-icons/hi2";
 
 
 type NotesProps = ListProps & { notes: ReleaseNote[]; }
-export const Notes: FC<NotesProps> = ({ notes, ...props }) => {
+
+/**
+ * Renders a html list of release notes.
+ */
+export const ReleaseNotesList: FC<NotesProps> = ({ notes, ...props }) => {
   return (
     <List spacing={2} {...props}>
       {notes.map(note => (
@@ -24,4 +28,4 @@ export const Notes: FC<NotesProps> = ({ notes, ...props }) => {
     </List>
   );
 }
-Notes.displayName = "Notes";
+ReleaseNotesList.displayName = "ReleaseNotesList";
