@@ -2,7 +2,7 @@ import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { APP_TITLE, PLAYER_VOLUME_DEFAULT, SOCKET_EVENT_KEYS } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useWebSockets } from "utils/hooks";
-import { replaceHtmlEntities, truncateString } from "utils/misc";
+import { getDebuggingStateFromStorage, replaceHtmlEntities, truncateString } from "utils/misc";
 import { usePrevious } from "@usesoftwareau/react-utils";
 import { usePaginatedListHistory } from "./swr";
 
@@ -19,14 +19,6 @@ const errorToastProps = {
   duration: 10000,
   isClosable: true
 };
-
-// const infoToastProps = {
-//   status: "info" as UseToastOptions["status"],
-//   variant: "info",
-//   duration: 6000,
-//   isClosable: false
-// };
-
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
 const toastIds = {
@@ -86,6 +78,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const { isConnected, socketInstance } = useWebSockets();
   const previousIsConnected = usePrevious(isConnected);
   const { mutate: updateHistory } = usePaginatedListHistory();
+  const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
 
 
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
@@ -327,7 +320,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync current video state
       socketInstance.on(SOCKET_EVENT_KEYS.currentVideo, (incomingVideo: Video | undefined) => {
         if (currentVideo?.videoId !== incomingVideo?.videoId) {
-          console.info("current video synced");
+          showDevDebugging && console.info("PlayerContext: currentVideo synced");
           setCurrentVideo(incomingVideo);
           updateHistory();
           const vidTitle = replaceHtmlEntities(incomingVideo?.title);
@@ -344,7 +337,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync current video time
       socketInstance.on(SOCKET_EVENT_KEYS.currentVideoTime, (incomingCurrentVideoTime: number) => {
         if (currentVideoTime !== incomingCurrentVideoTime) {
-          console.info("Time synced");
+          showDevDebugging && console.info("PlayerContext: currentVideoTime synced");
           setCurrentVideoTime(incomingCurrentVideoTime);
         }
       });
@@ -378,14 +371,14 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
       // Sync queue
       socketInstance.on(SOCKET_EVENT_KEYS.queue, (incomingQueue: Video[]) => {
-        console.info("queue synced");
+        showDevDebugging && console.info("PlayerContext: queue synced");
         setQueue(incomingQueue);
       });
 
 
       // Sync logs
       socketInstance.on(SOCKET_EVENT_KEYS.logs, (incomingLogs: EntryLog[]) => {
-        console.info("logs synced");
+        showDevDebugging && console.info("PlayerContext: logs synced");
         setLogs(incomingLogs);
       });
 
@@ -400,7 +393,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync playing state
       socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         if (isPlaying !== incomingIsPlaying) {
-          console.info("isPlaying synced");
+          showDevDebugging && console.info("PlayerContext: isPlaying synced");
           setIsPlaying(incomingIsPlaying);
         }
       });
@@ -409,7 +402,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync player volume state
       socketInstance.on(SOCKET_EVENT_KEYS.playerVolume, (incomingVolume: number) => {
         if (incomingVolume !== volume) {
-          console.info("volume synced");
+          showDevDebugging && console.info("PlayerContext: volume synced");
           setVolume(incomingVolume);
         }
       });
@@ -426,7 +419,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
       socketInstance.off(SOCKET_EVENT_KEYS.logs);
     }
-  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime, updateHistory]);
+  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime, updateHistory, showDevDebugging]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
