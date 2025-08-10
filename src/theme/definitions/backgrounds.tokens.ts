@@ -25,7 +25,7 @@ export const jukeboxPalette = {
   },
   circleVariants3: {
     initial: "#DF4FA7",
-    animate: ["#DF4FA7", "#A5279D", "#6C21CC"]
+    animate: ["#DF4FA7", "#A5279D", "#6C21CC", "#353FEB"]
   },
   squareVariants1: {
     initial: "#4E34DE",
@@ -36,8 +36,8 @@ export const jukeboxPalette = {
     animate: ["#B901B1", "#CC2B5E", "#0018FB", "#AD43A2", "#353FEB"]
   },
   squareVariants3: {
-    initial: "#F8A9B4",
-    animate: ["#F8A9B4", "#FF9CA1", "#CE29A2", "#CE0088"]
+    initial: "#CE0088",
+    animate: ["#CE0088", "#FF9CA1", "#CE29A2", "#F8A9B4"]
   }
 };
 

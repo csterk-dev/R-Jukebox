@@ -5,19 +5,25 @@ import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
 import { PageContainer } from "components/templates/PageContainer";
 import { PlayerProvider } from "state/playerContext";
 import { AppProvider } from "state/appContext";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VERSION_NUM } from "./constants";
 import "@fontsource-variable/assistant";
 import { NewUpdateModal } from "components/molecules/Header/NewUpdateModal";
+import { getDebuggingStateFromStorage } from "utils/misc";
+import { DevScrollStateOverlay } from "components/atoms/DevScrollStateOverlay";
 
 
 export const App = () => {
+  const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
+
   const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+
+  /** Open the update modal if the user has previously used jukebox. */
   useEffect(() => {
     const currentVersion = localStorage.getItem("current_version");
-    if (!currentVersion || currentVersion !== VERSION_NUM) onOpenNewUpdate();
-    localStorage.setItem("current_version", VERSION_NUM);
+    if (currentVersion && currentVersion !== VERSION_NUM) onOpenNewUpdate();
 
+    localStorage.setItem("current_version", VERSION_NUM);
   }, [onOpenNewUpdate]);
 
 
@@ -40,10 +46,12 @@ export const App = () => {
     const handleScroll = () => {
       if (container) {
         const { scrollTop, scrollHeight, clientHeight } = container;
-        const threshold = 0;
 
-        setIsAtBottomOfPage(scrollTop + clientHeight >= scrollHeight - threshold);
-        setIsAtTopOfPage(scrollTop === 0);
+        /** Additional threshold for detection redundancy. */
+        const threshold = 5;
+
+        setIsAtBottomOfPage(Math.abs(scrollHeight - clientHeight - scrollTop) <= threshold);
+        setIsAtTopOfPage(scrollTop <= 0);
 
         /**
          * Get the bottom edge of the CurrentVideo component relative to the scrollable container's top to
@@ -76,7 +84,7 @@ export const App = () => {
   }, [isAtTopOfPage, isLandscape]);
 
   const showScrollToTopButton = !isAtTopOfPage && isScrolledPastCurrentVideo;
-  
+
 
   return (
     <ChakraProvider theme={theme}>
@@ -115,15 +123,18 @@ export const App = () => {
                   lg: "flex-start"
                 }}
               >
-                <QueueHistoryTabs
-                  isAtBottomOfPage={isAtBottomOfPage}
-                  isAtTopOfPage={isAtTopOfPage}
-                  isLandscape={isLandscape}
-                  setIsAtTopOfPage={setIsAtTopOfPage}
-                  setIsNearBottomOfPage={setIsAtBottomOfPage}
-                />
+                <QueueHistoryTabs isAtBottomOfPage={isAtBottomOfPage} isLandscape={isLandscape} setIsAtBottomOfPage={setIsAtBottomOfPage} />
               </Flex>
             </Flex>
+
+            <DevScrollStateOverlay
+              display={showDevDebugging ? "flex" : "none"}
+              isAtBottomOfPage={isAtBottomOfPage}
+              isAtTopOfPage={isAtTopOfPage}
+              isLandscape={isLandscape}
+              isScrolledPastCurrentVideo={isScrolledPastCurrentVideo}
+              showScrollToTopButton={showScrollToTopButton}
+            />
           </PageContainer>
 
           <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />

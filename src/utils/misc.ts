@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { LOCAL_STORAGE_KEY_DEV_DEBUGGING } from "../constants";
 dayjs.extend(customParseFormat);
 
 
@@ -193,7 +194,16 @@ export function getThemeSeason(date: Dayjs): ThemeSeason {
   return "none";
 }
 
+
 /** Truncates the string to the provided length and adds elipsis. */
 export function truncateString(str: string, n: number) {
   return (str.length > n) ? `${str.slice(0, n - 1)}...` : str;
+}
+
+
+/** Returns `true` if development debugging is enabled. */
+export function getDebuggingStateFromStorage() {
+  const storedVal = localStorage.getItem(LOCAL_STORAGE_KEY_DEV_DEBUGGING);
+  const parsed = storedVal ? Boolean(JSON.parse(storedVal)) : false;
+  return parsed
 }
