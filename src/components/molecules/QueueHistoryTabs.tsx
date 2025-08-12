@@ -1,6 +1,6 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Circle, Divider, Flex, FlexProps, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Select, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Circle, Divider, Flex, FlexProps, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Select, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure, usePrevious } from "@chakra-ui/react";
 import { Placeholder } from "components/atoms/Placeholder";
-import { VideoCard, VidoeCardSkeleton } from "components/atoms/VideoCard";
+import { VideoCard } from "components/atoms/VideoCard";
 import { ChangeEvent, Dispatch, FC, FormEvent, memo, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HiClock, HiFaceFrown, HiRectangleStack, HiXMark } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
@@ -25,18 +25,15 @@ const HISTORY_SORT_OPTIONS: SelectOption<HistorySortTypes>[] = [
 type QueueHistoryProps = FlexProps & {
   /** Indicates when at bottom of the page. */
   isAtBottomOfPage: boolean;
-  /** Indicates when at the top of the page. */
-  isAtTopOfPage: boolean;
-  /** Callback for the global top state. */
-  setIsAtTopOfPage: Dispatch<SetStateAction<boolean>>;
   /** Callback for the global bottom state. */
-  setIsNearBottomOfPage: Dispatch<SetStateAction<boolean>>;
+  setIsAtBottomOfPage: Dispatch<SetStateAction<boolean>>;
   /** Value determined by viewport media query. */
   isLandscape: boolean;
 };
 
-const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfPage, setIsNearBottomOfPage, isAtBottomOfPage, isLandscape, ...props }) => {
+const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNearBottomOfPage, isAtBottomOfPage, isLandscape, ...props }) => {
   const { queue, playVideo, addToBottomOfQueue, addToTopOfQueue, clearQueue, deleteQueueItem } = usePlayer();
+  const { showDevDebugging } = useAppState();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { isOpen: isClearConfOpen, onOpen: onOpenClearConf, onClose: onCloseClearConf } = useDisclosure();
   const { isOpen: isHistoryOptionsOpen, onOpen: onOpenHistoryOptions, onClose: onCloseHistoryOptions } = useDisclosure();
@@ -48,6 +45,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
   const finalFocusRef = useRef(null);
   const { isMobile } = useAppState();
   const hasHistoryTabFocused = tabIndex === 1;
+  const previouslyFocusedQueue = usePrevious(!hasHistoryTabFocused);
 
   const {
     data: historyPages,
@@ -61,7 +59,6 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
     loadMore,
     hasMore
   } = usePaginatedListHistory();
-
 
   /** Returns a single array of all history items for rendering. */
   const allHistoryVideos: HistoryVideo[] = useMemo(() => {
@@ -81,12 +78,13 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
 
         if (container) {
           const { scrollTop, scrollHeight, clientHeight } = container;
-          const threshold = 0;
+          const threshold = 5;
 
-          const isNearBottomOfHistoryPanel = (scrollTop + clientHeight) >= scrollHeight - threshold;
+          const isNearBottomOfHistoryPanel = Math.abs(scrollHeight - clientHeight - scrollTop) <= threshold
 
           // If near bottom, not currently loading/validating, and there might be more data
-          if (hasHistoryTabFocused && isNearBottomOfHistoryPanel && !isValidating && hasMore) {
+          if (hasHistoryTabFocused && isNearBottomOfHistoryPanel && !isValidating && !error && hasMore) {
+            showDevDebugging && console.info("QueueHistoryTabs: loading more items triggered from local scroll.");
             loadMore();
           }
         }
@@ -103,23 +101,23 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
         }
       };
     }
-  }, [isValidating, hasMore, hasHistoryTabFocused, isLandscape, loadMore]);
+  }, [isValidating, hasMore, hasHistoryTabFocused, isLandscape, loadMore, error, showDevDebugging]);
 
 
   /**
    * Handle history infinite pagination when in portrait mode (scrolling is done by the page root page container), 
-   * Additionally update the layout state when media query resizing occurs.
    */
   useEffect(() => {
-    if (isLandscape) {
-      setIsNearBottomOfPage(false);
-      setIsAtTopOfPage(true);
-    }
-    if (!isLandscape && !isAtTopOfPage && isAtBottomOfPage && !isValidating && hasMore && hasHistoryTabFocused) {
-      loadMore();
-      setIsNearBottomOfPage(false);
-    }
-  }, [hasHistoryTabFocused, hasMore, isAtBottomOfPage, isAtTopOfPage, isLandscape, isValidating, loadMore, setIsAtTopOfPage, setIsNearBottomOfPage]);
+    // Timeout is required here to prevent the loadMore triggering a re-render before the boolean states can update to stop additional loadMore calls.
+    setTimeout(() => {
+      if (!isLandscape && isAtBottomOfPage && !isValidating && !error && hasMore && hasHistoryTabFocused && !previouslyFocusedQueue) {
+        showDevDebugging && console.info("QueueHistoryTabs: loading more items triggered from root scroll.");
+
+        setIsNearBottomOfPage(false);
+        loadMore();
+      }
+    }, 200);
+  }, [error, hasHistoryTabFocused, hasMore, isAtBottomOfPage, isLandscape, isValidating, loadMore, previouslyFocusedQueue, setIsNearBottomOfPage, showDevDebugging]);
 
 
   /** When focused, scrolls to the top of the history panel. */
@@ -133,7 +131,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
     }
   }, [isLandscape]);
 
-  
+
   /** Returns an array of grouped history videos by date. */
   const historyCards: JSX.Element[] = useMemo(() => {
     if (!allHistoryVideos.length) return [];
@@ -210,7 +208,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
     e.preventDefault();
 
     if (historySearchInputVal) setSearchTerm(historySearchInputVal);
-    else setSearchTerm(null);
+    else setSearchTerm(undefined);
 
     setSort(historySortInputVal);
 
@@ -252,7 +250,15 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
           >
             <Flex>
               <Tab color="text.body">Queue</Tab>
-              <Tab color="text.body" onClick={onClickScrollToTop}>History</Tab>
+              <Tab
+                color="text.body"
+                onClick={useCallback(() => {
+                  setIsNearBottomOfPage(false);
+                  onClickScrollToTop();
+                }, [onClickScrollToTop, setIsNearBottomOfPage])}
+              >
+                History
+              </Tab>
             </Flex>
             {tabIndex === 0 ?
               <Button isDisabled={queue.length === 0} onClick={onOpenClearConf}>
@@ -318,27 +324,36 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
                 </Stack>
               }
             </TabPanel>
-            <TabPanel height="100%" p={2} ref={historyPanelRef}>
+
+            <TabPanel
+              height="100%"
+              pl={2}
+              pr={1}
+              py={2}
+              ref={historyPanelRef}
+            >
               {!allHistoryVideos.length && !isLoading && !isValidating ? (
                 <Placeholder icon={hasHistoryOptionsEnabled ? HiFaceFrown : HiClock} mb={5} title={hasHistoryOptionsEnabled ? "No history videos match those options" : "History will appear here"} />
               ) : (
-                <Stack
-                  as="ol"
-                  flex={1}
-                  pb={2}
-                >
+                <Stack as="ol" flex={1} pb={1}>
                   {historyCards}
-                  {isValidating ? (<VidoeCardSkeleton />) : null}
-                  {error ? (
-                    <Text color="text.error" p={2} textAlign="center">
-                      Error loading history. Please try again
-                    </Text>
-                  ) : null}
-                  {!hasMore && allHistoryVideos.length > 0 && !isValidating && (
-                    <Text color="text.subtle" p={2} textAlign="center">
-                      {searchTerm ? "No more videos to display" : "You've reached the end of the history"}
-                    </Text>
-                  )}
+
+                  {error ?
+                    <Text color="text.error" textAlign="center">
+                      Error loading history.
+                    </Text> :
+
+                    isValidating ?
+                      <Box mx="auto" pt={1}>
+                        <Spinner size="sm" />
+                      </Box> :
+
+                      !hasMore ?
+                        <Text color="text.subtle" textAlign="center">
+                          {searchTerm ? "No more videos to display" : "You've reached the end of the history"}
+                        </Text> :
+                        null
+                  }
                 </Stack>
               )}
             </TabPanel>
@@ -406,7 +421,6 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtTopOfPage, isAtTopOfP
                 <FormControl>
                   <FormLabel color="text.subtle">Sort by</FormLabel>
                   <Select
-                    defaultValue={historySortInputVal}
                     focusBorderColor="brand.500"
                     value={historySortInputVal}
                     variant="outline"

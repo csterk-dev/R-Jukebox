@@ -6,9 +6,14 @@ import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
 import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
 import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
 import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
+import { v1_5ReleaseNotes } from "constants/releaseNotes/v1_5_x";
 
 
 const RELEASE_NOTES = [
+  {
+    title: "Infinite Scroll",
+    releases: v1_5ReleaseNotes
+  },
   {
     title: "Player Logs",
     releases: v1_4ReleaseNotes

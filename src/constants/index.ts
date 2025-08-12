@@ -73,3 +73,5 @@ export const APP_TITLE = "R Jukebox";
 export const NUM_OF_SEARCH_RESULTS = 40;
 
 export const MAX_NUM_OF_SUGGESTIONS = 10;
+
+export const LOCAL_STORAGE_KEY_DEV_DEBUGGING = "dev_debugging";

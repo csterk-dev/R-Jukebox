@@ -107,6 +107,10 @@ const text: SemanticToken = {
     _light: "red.500",
     default: "red.300"
   },
+  success: {
+    _light: "green.500",
+    default: "green.300"
+  },
   warning: {
     _light: "yellow.700",
     default: "yellow.500"

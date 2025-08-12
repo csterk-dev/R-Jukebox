@@ -66,6 +66,10 @@ const v1_4_3: ReleaseNote[] = [
     kind: "improvement"
   },
   {
+    details: "Update debugging tools.",
+    kind: "improvement"
+  },
+  {
     details: "Fix an issue where text styles were incorrectly referenced.",
     kind: "bugFix"
   }
