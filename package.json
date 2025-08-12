@@ -9,9 +9,6 @@
     "@emotion/styled": "^11.14.0",
     "@fontsource-variable/assistant": "^5.0.17",
     "@pingtou/axios-jsonp": "^0.0.1",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.0.1",
-    "@testing-library/user-event": "^14.1.0",
     "@usesoftwareau/react-utils": "^1.0.8",
     "axios": "^1.8.2",
     "dayjs": "^1.11.10",
@@ -21,13 +18,11 @@
     "react-icons": "^5.0.1",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.7.5",
-    "swr": "^2.3.4",
-    "web-vitals": "^2.1.4"
+    "swr": "^2.3.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "theme": "chakra-cli tokens src/theme/config.ts",
     "theme:watch": "chakra-cli tokens src/theme/config.ts --watch"
@@ -45,8 +40,8 @@
     ]
   },
   "devDependencies": {
-    "@chakra-ui/cli": "2.5.4",
     "@babel/plugin-transform-private-property-in-object": "^7.24.6",
+    "@chakra-ui/cli": "2.5.4",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
