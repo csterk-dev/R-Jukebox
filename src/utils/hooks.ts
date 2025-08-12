@@ -1,59 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getGoogleAutoCompleteSuggestions, YoutubeAPI } from "./api";
+import { getGoogleAutoCompleteSuggestions } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
 import { SOCKET_EVENT_KEYS } from "../constants";
-
-/**
- * Custom hooks that returns a momoized list of videos that match the search query.
- * @param query The search query.
- * @param maxResults Total number of results returned per page. Default `20`,
- * @returns {Object} A momized object containing the videos, error and loading states.
- */
-const useYoutubeSearch = (query: string, maxResults?: number) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-  const [videos, setVideos] = useState<Video[]>([]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    // Prevent empty string searches
-    if (!query) return;
-
-    /*
-     * Get list of videos and their content details.
-     */
-    setLoading(true);
-    YoutubeAPI.searchVideos(query, maxResults)
-      .then((results: AxiosResponse<Video[]>) => {
-        if (isMounted) {
-          setVideos(results.data);
-        }
-      })
-      .catch((err: any) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [query, maxResults]);
-
-
-  return useMemo(() => (
-    {
-      error,
-      loading,
-      videos
-    }
-  ), [error, loading, videos])
-};
 
 
 /**
@@ -185,52 +134,6 @@ export function useDebounce(text: string, delay: number = 300) {
 
   return output;
 }
-
-
-/** @returns Current width and height of the window */
-function getWindowDimensions() {
-  const { innerWidth: width = 0, innerHeight: height = 0 } = typeof window !== "undefined" ? window : {};
-  return {
-    width,
-    height
-  };
-}
-
-/**
- * Custom React Hook to track and provide the dimensions of the browser's window.
- *
- * @returns {{width: number, height: number}} An object containing the current width and height of the browser's window.
- * @example
- * ```tsx
- * const windowDimensions = useWindowDimensions();
- * 
- * // Resize the window to see the values change
- * useEffect(() => console.log(windowDimensions.height, windowDimensions.width), [windowDimensions]);
- * ```
- */
-function useWindowDimensions() {
-  // Set the initial window dimensions
-  const [windowDimensions, setWindowDimensions] = useState<{ height: number; width: number; }>({
-    height: 0,
-    width: 0
-  });
-
-
-
-  // Attach event listener for window resize and clean up on component unmount
-  useEffect(() => {
-    // set this after initial render
-    setWindowDimensions(getWindowDimensions());
-    const handleResize = () => setWindowDimensions(getWindowDimensions());
-    /** Function to update window dimensions when the window is resized. */
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Return the current window dimensions
-  return windowDimensions;
-}
-
 
 
 /**

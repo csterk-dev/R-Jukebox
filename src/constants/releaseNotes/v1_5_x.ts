@@ -29,7 +29,7 @@ const v1_5_0: ReleaseNote[] = [
 
 export const v1_5ReleaseNotes: ReleaseNotes = [
   {
-    title: "History infinite scroll is here!",
+    title: "Infinite scroll is here!",
     versionNum: "1.5.0",
     notes: v1_5_0,
     date: "11/08/2025"
