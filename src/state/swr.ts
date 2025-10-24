@@ -1,5 +1,5 @@
 import useSWRInfinite, { SWRInfiniteKeyedMutator, SWRInfiniteResponse } from "swr/infinite";
-import { GetHistoryQueryParams, HistoryAPI, HistorySortTypes } from "../utils/api";
+import { GetHistoryQueryParams, GetSearchQueryParams, HistoryAPI, HistorySortTypes, YoutubeAPI } from "../utils/api";
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import { getDebuggingStateFromStorage } from "../utils/misc";
 
@@ -62,7 +62,6 @@ export function _usePaginatedListHistory(baseParams?: Omit<GetHistoryQueryParams
     async (keyParts) => {
       // The fetcher function receives the key parts (the array returned by getKey)
       const [, fetchParams] = keyParts;
-      console.log("inside useSWRInfinite")
       return await HistoryAPI.getHistory(fetchParams as GetHistoryQueryParams);
     },
     {
@@ -82,8 +81,7 @@ export function _usePaginatedListHistory(baseParams?: Omit<GetHistoryQueryParams
 
 
 
-// Define the return type for the combined hook
-export interface UsePaginatedListHistoryResult extends SWRInfiniteResponse<HistoryVideo[], any> {
+export interface UsePaginatedHistoryReturn extends SWRInfiniteResponse<HistoryVideo[], any> {
   searchTerm: string | undefined;
   setSearchTerm: React.Dispatch<React.SetStateAction<string | undefined>>;
   sort: HistorySortTypes;
@@ -104,46 +102,42 @@ export interface UsePaginatedListHistoryResult extends SWRInfiniteResponse<Histo
  * @param initialSort The default sort order to use.
  * @returns An object containing the history data, loading states, and all related state setters and controls.
  */
-export function usePaginatedListHistory(initialSort: HistorySortTypes = "PLAYED_AT_DATE_DESCENDING"): UsePaginatedListHistoryResult {
+export function usePaginatedHistory(initialSort: HistorySortTypes = "PLAYED_AT_DATE_DESCENDING"): UsePaginatedHistoryReturn {
   const [sort, setSort] = useState<HistorySortTypes>(initialSort);
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
-  
+
   const queryParams = useMemo(() => ({
     sort,
     searchTerm,
     step: DEFAULT_SWR_PAGE_SIZE
   }), [sort, searchTerm]);
 
-  
+
   /**
    * Gets the query key used to calculate pagination
    */
-  const getKey = useCallback((pageIndex: number, previousPageData: HistoryVideo[]): ([string, GetHistoryQueryParams] | null) => {
-    // Stop fetching if the previous page was empty (end of results)
+  const getKey = useCallback((pageIndex: number, previousPageData: HistoryVideo[]): (GetHistoryQueryParams | null) => {
+    // Stop fetching if the previous page was empty (end of results)    
     if (previousPageData && !previousPageData.length && pageIndex > 0) {
       return null;
-    }
-    // Return a new key only if the query parameters or page index change.
-    return [
-      "history",
-      {
-        ...queryParams,
-        page: pageIndex
-      }
-    ];
+    }    
+    
+    return {
+      ...queryParams,
+      page: pageIndex
+    };
   }, [queryParams]);
 
 
   const res = useSWRInfinite<HistoryVideo[]>(
     getKey,
-    async (keyParts) => {
-      const [, fetchParams] = keyParts;
-      showDevDebugging && console.log("usePaginatedListHistory params:", fetchParams);
+    async (fetchParams) => {
+      showDevDebugging && console.info("usePaginatedHistory params:", fetchParams);
       return await HistoryAPI.getHistory(fetchParams as GetHistoryQueryParams);
     },
     {
       // Start by fetching the first page
-      initialSize: 1, 
+      initialSize: 1,
       revalidateFirstPage: false
     }
   );
@@ -171,184 +165,98 @@ export function usePaginatedListHistory(initialSort: HistorySortTypes = "PLAYED_
   };
 }
 
-// /**
-//  * Fetches a single page of History Videos.
-//  * 
-//  * @param query Any query params to pass to the API.
-//  * @returns An returned History data.
-//  */
-// export function useFetchHistoryPaginated(query?: GetHistoryQueryParams): SWRInfiniteResponse<HistoryVideo[], any> {
 
-//   /**
-//    * Gets the query key used to calculate pagination
-//    */
-//   const getKey = (pageIndex: number, previousPageData: HistoryVideo[] | null, currentQuery: GetHistoryQueryParams | undefined) => {
-
-//     // If no currentQuery or we've reached the end based on previous data
-//     if (!currentQuery || (previousPageData && previousPageData.length === 0 && pageIndex > 0)) {
-//       return null;
-//     }
-
-//     return [
-//       "history",
-//       {
-//         ...currentQuery,
-//         page: pageIndex
-//       }
-//     ];
-//   };
+export interface UsePaginatedYTSearchReturn extends SWRInfiniteResponse<SearchResultPage, any> {
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  pageSize: number;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  hasMore: boolean;
+  loadMore: () => void;
+}
 
 
-//   const res = useSWRInfinite<HistoryVideo[]>(
-//     (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, query),
-//     async (keyParts) => {
-//       const [, fetchParams] = keyParts;
-//       console.log("inside useSWRInfinite")
-//       return await HistoryAPI.getHistory(fetchParams as GetHistoryQueryParams);
-//     },
-//     {
-//       initialSize: 40,
-//       revalidateFirstPage: false
-//       // Optional SWR configurations
-//       // revalidateOnFocus: false,
-//       // revalidateOnReconnect: false,
-//       // refreshInterval: 0,
-//     }
-//   );
-
-//   return res;
-// }
-
-
-// /** 
-//  * Additional properties and setters that will be injected into the SWR response object by the HOC. 
-//  */
-// export interface AdditionalListFilterEntries<SortTypes extends string> {
-//   /** Current search term, if any. */
-//   searchTerm: string | null;
-//   /** Current filter option, if any. */
-//   filter: string | null;
-//   /** Current sort, if any. */
-//   sort: SortTypes;
-//   /** Set the filter option. */
-//   setFilter: Dispatch<SetStateAction<string | null>>;
-//   /**
-//    * For useSWRInfinite, setPage directly maps to setSize.
-//    * So we will simulate a 'setPage' that changes 'size'.
-//    * Represents the current SWRInfinite 'size' (number of pages fetched)
-//    */
-//   setPage: Dispatch<SetStateAction<number>>;
-//   /** Set the search term. */
-//   setSearchTerm: Dispatch<SetStateAction<string | null>>;
-//   /** Set the sort. */
-//   setSort: Dispatch<SetStateAction<SortTypes>>;
-//   /** Indicates whether there are more results to load. */
-//   hasMore: boolean;
-//   /** Callback that increments the size (page) to load more */
-//   loadMore(): void;
-// }
+/**
+ * A single, cohesive SWR hook that manages searching youtubes API with infinite scrolling.
+ *
+ * @returns An object containing the search data, loading states, and all related state setters and controls.
+ */
+export function usePaginatedYTSearch(): UsePaginatedYTSearchReturn {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [pageSize, setPageSize] = useState(40);
 
 
 
-// type ListQueryRecord<SortTypes extends string> =
-//   & {
-//     page?: number;
-//     searchTerm?: string;
-//     filter?: string;
-//     sort?: SortTypes;
-//     step: number;
-//   };
-
-
-// /**
-//  * A HOF (Higher order function) that adds list specific functionality such as sorting or filtering to the provided useSWRInfinite hook.
-//  * 
-//  * @param useSWRCustomHook The higher-order function that wraps a custom SWRInfinite hook
-//  * @param defaultSort The initial sort type passed to the first call of the useSwr hook.
-//  * @returns The returned response from the provided useSWR hook, along with the additonal list filters (e.g. sort, filter, & search term).
-//  * 
-//  * @note Not all additional list filters may be used by the provided useSWR hook.
-//  */
-// export function withInfiniteListFilters<SortTypes extends string, Query extends ListQueryRecord<SortTypes>, Data>(useSWRCustomHook: (query?: Query) => SWRInfiniteResponse<Data[], any>, defaultSort: SortTypes) {
-//   return ((initialQuery?: ListQueryRecord<SortTypes>) => {
-
-//     const [sort, setSort] = useState<SortTypes>(defaultSort);
-//     const [searchTerm, setSearchTerm] = useState<string | undefined>(initialQuery?.searchTerm);
-//     const [filter, setFilter] = useState<string | undefined>(initialQuery?.filter);
-
-//     // Call the wrapped SWRInfinite hook
-//     // We pass the merged query including filters and the current page size (size from SWRInfinite, acting as page count)
-//     // const res = useSWRCustomHook({
-//     //   ...initialQuery,
-//     //   sort,
-//     //   searchTerm,
-//     //   filter,
-//     //   step: DEFAULT_SWR_PAGE_SIZE
-//     // } as Query);
-
+  /**
+   * Gets the query key used to calculate pagination
+   */
+  const getKey = useCallback((pageIndex: number, previousPageData: SearchResultPage | null): (GetSearchQueryParams | null) => {
+    // Don't fetch if no search term is provided
+    if (!searchTerm.length) {
+      return null;
+    }
     
-//     // ➡️ Memoize the query object so it doesn't change on every render
-//     const memoizedQuery = useMemo(() => {
-//       return {
-//         ...initialQuery,
-//         sort,
-//         searchTerm,
-//         filter,
-//         step: DEFAULT_SWR_PAGE_SIZE
-//       };
-//     }, [initialQuery, sort, searchTerm, filter]);
+    // Stop fetching if the previous page had no nextPageToken (end of results)
+    if (previousPageData && !previousPageData.nextPageToken && pageIndex > 0) {
+      return null;
+    }
 
-//     // Now, call the wrapped SWRInfinite hook with the memoized query
-//     const res = useSWRCustomHook(memoizedQuery as Query);
+    // Construct query params directly to avoid dependency issues
+    const baseQueryParams: GetSearchQueryParams = {
+      q: searchTerm,
+      type: "video",
+      pageSize
+    };
 
-//     const { data, setSize, isValidating } = res;
-//     const hasMore = useMemo(() => data ? (data[data.length - 1]?.length === DEFAULT_SWR_PAGE_SIZE) : true, [data]);
+    // For the first page, don't include pageToken
+    if (pageIndex === 0) {
+      return baseQueryParams;
+    }
 
-
-//     const loadMore = useCallback(() => {
-//       if (!isValidating && hasMore) {
-//         setSize(prevSize => prevSize + 1);
-//       }
-//     }, [hasMore, isValidating, setSize]);
-
-
-//     // Update the properties of the 'res' object with our HOC filters.
-//     Object.assign(res, {
-//       searchTerm,
-//       filter,
-//       sort,
-//       setFilter,
-//       setPage: setSize,
-//       setSearchTerm,
-//       setSort,
-//       hasMore,
-//       loadMore
-//     });
-
-//     // Cast the returned 'res' object to the correct combined type
-//     return res as ReturnType<typeof useSWRCustomHook> & AdditionalListFilterEntries<SortTypes>;
-
-//     // Only allow initial static query params
-//     // as (initialQuery?: Omit<Query, keyof ListQueryRecord<SortTypes>>) => ReturnType<typeof useSWRCustomHook> & AdditionalListFilterEntries<SortTypes>;
-//   })
-// }
+    // For subsequent pages, use the nextPageToken from the previous page
+    return {
+      ...baseQueryParams,
+      pageToken: previousPageData?.nextPageToken
+    };
+  }, [searchTerm, pageSize]);
 
 
+  const res = useSWRInfinite<SearchResultPage>(
+    getKey,
+    async (fetchParams) => {
+      showDevDebugging && console.info("usePaginatedYTSearch params:", fetchParams);
+      const response = await YoutubeAPI.searchVideos(fetchParams as GetSearchQueryParams);
+      return response.data;
+    },
+    {
+      // Start by fetching the first page
+      initialSize: 1
+    }
+  );
 
-// interface HistoryQuery extends GetHistoryQueryParams {
-//   // Can add any history-specific query fields here if needed beyond generic ListQueryRecord
-// }
+  const { data, setSize, isValidating } = res;
+
+  const hasMore = useMemo(() => {
+    if (!data || data.length === 0) return true;
+    const lastPage = data[data.length - 1];
+    return !!lastPage?.nextPageToken;
+  }, [data]);
 
 
-// /**
-//  * A specialized SWR hook for fetching paginated history items with filters.
-//  * It's built by wrapping `useFetchHistoryPaginated` with `withInfiniteListFilters`.
-//  *
-//  * @param initialQuery - Optional initial query parameters (e.g., a default searchTerm).
-//  * @returns An object containing history data (paginated), loading states,
-//  * and methods for controlling search, sort, and pagination.
-//  */
-// export const usePaginatedListHistory = withInfiniteListFilters<HistorySortTypes, HistoryQuery, HistoryVideo>(
-//   useFetchHistoryPaginated,
-//   "PLAYED_AT_DATE_DESCENDING"
-// );
+  const loadMore = useCallback(() => {
+    if (!isValidating && hasMore) {
+      setSize(prevSize => prevSize + 1);
+    }
+  }, [hasMore, isValidating, setSize]);
+
+
+  return {
+    ...res,
+    searchTerm,
+    setSearchTerm,
+    pageSize,
+    setPageSize,
+    hasMore,
+    loadMore
+  };
+}

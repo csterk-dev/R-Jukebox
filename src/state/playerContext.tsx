@@ -4,7 +4,7 @@ import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffec
 import { useWebSockets } from "utils/hooks";
 import { getDebuggingStateFromStorage, replaceHtmlEntities, truncateString } from "utils/misc";
 import { usePrevious } from "@usesoftwareau/react-utils";
-import { usePaginatedListHistory } from "./swr";
+import { usePaginatedHistory } from "./swr";
 
 const queueToastProps = {
   status: "success" as UseToastOptions["status"],
@@ -77,7 +77,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const toast = useToast();
   const { isConnected, socketInstance } = useWebSockets();
   const previousIsConnected = usePrevious(isConnected);
-  const { mutate: updateHistory } = usePaginatedListHistory();
+  const { mutate: updateHistory } = usePaginatedHistory();
   const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
 
 
