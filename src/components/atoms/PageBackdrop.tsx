@@ -10,6 +10,8 @@ type PageBackdropProps = FlexProps & {
   containerBlur?: number;
   /** Individual shape blur amount (stdDeviation) - higher = more blur */
   shapeBlur?: number;
+  /** Shows/hides the console info logs. */
+  showDevDebugging: boolean;
 }
 
 const _PageBackdrop: FC<PageBackdropProps> = ({ 
@@ -17,6 +19,7 @@ const _PageBackdrop: FC<PageBackdropProps> = ({
   style, 
   containerBlur = BG_BLUR,
   shapeBlur = SHAPE_BLUR,
+  showDevDebugging,
   ...props 
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,23 +34,53 @@ const _PageBackdrop: FC<PageBackdropProps> = ({
    * This ideally should prevent unnecessary CPU/GPU usage when the component is off-screen.
    * Supports automatic cleanup of observers on unmount.
    */
-  useEffect(() => {
+  useEffect(() => {  
+    // Intersection Observer for viewport visibility
     const observer = new IntersectionObserver(
       ([entry]) => {
         setRunAnimations(entry.isIntersecting);
+        showDevDebugging && console.info("PageBackdrop: observer intersecting:", entry.isIntersecting);
       },
       { threshold: 0.1 }
     );
 
+    // Page Visibility API for tab focus detection
+    const handleVisibilityChange = () => {
+      const isVisible = !document.hidden;
+      setRunAnimations(isVisible);
+      showDevDebugging && console.info("PageBackdrop: tab visibility changed:", isVisible);
+    };
+
+    // Window focus/blur events as fallback
+    const handleFocus = () => {
+      setRunAnimations(true);
+      showDevDebugging && console.info("PageBackdrop: window focused");
+    };
+
+    const handleBlur = () => {
+      setRunAnimations(false);
+      showDevDebugging && console.info("PageBackdrop: window blurred");
+    };
+
     if (containerRef.current) {
+      showDevDebugging && console.info("PageBackdrop: backdrop observed added")
       observer.observe(containerRef.current);
     }
 
-    return () => observer.disconnect();
-  }, []);
+    // Add event listeners
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [showDevDebugging]);
 
   applyColorPalette(themeSeason === "halloween" ? halloweenPalette : themeSeason === "christmas" ? christmasPalette : jukeboxPalette);
-
 
   return (
     <>
