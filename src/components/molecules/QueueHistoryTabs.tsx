@@ -5,7 +5,7 @@ import { ChangeEvent, Dispatch, FC, FormEvent, memo, SetStateAction, useCallback
 import { HiClock, HiFaceFrown, HiRectangleStack, HiXMark } from "react-icons/hi2";
 import { useAppState } from "state/appContext";
 import { usePlayer } from "state/playerContext";
-import { usePaginatedListHistory } from "state/swr";
+import { usePaginatedHistory } from "state/swr";
 import { HistorySortTypes } from "utils/api";
 import { ISO8601ToSeconds, secondsToString, videoPlayedAtToString } from "utils/misc";
 
@@ -58,7 +58,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
     setSearchTerm,
     loadMore,
     hasMore
-  } = usePaginatedListHistory();
+  } = usePaginatedHistory();
 
   /** Returns a single array of all history items for rendering. */
   const allHistoryVideos: HistoryVideo[] = useMemo(() => {
@@ -418,7 +418,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
               </AlertDialogHeader>
 
               <AlertDialogBody gap={4}>
-                <FormControl>
+                <FormControl as="search">
                   <FormLabel color="text.subtle">Sort by</FormLabel>
                   <Select
                     focusBorderColor="brand.500"
@@ -433,9 +433,10 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                   <FormLabel color="text.subtle">Search term</FormLabel>
                   <InputGroup>
                     <Input
-                      enterKeyHint="done"
+                      enterKeyHint="search"
                       focusBorderColor="brand.500"
                       placeholder="Search by video title or channel"
+                      type="text"      
                       value={historySearchInputVal}
                       variant="outline"
                       onChange={useCallback((e: ChangeEvent<HTMLInputElement>) => setHistorySearchInputVal(e.target.value), [setHistorySearchInputVal])}
