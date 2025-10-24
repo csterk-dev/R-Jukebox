@@ -1,10 +1,11 @@
-import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Spinner, Stack, Text } from "@chakra-ui/react";
 import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { VideoCard } from "components/atoms/VideoCard";
 import { MAX_NUM_OF_SUGGESTIONS } from "constants/index";
 import { useDebounce, useGoogleSuggestions } from "utils/hooks";
 import { usePaginatedYTSearch } from "state/swr";
+import { useAppState } from "state/appContext";
 
 
 
@@ -17,6 +18,7 @@ type SearchModalProps = Omit<ModalProps, "children"> & {
 }
 
 export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
+  const { showDevDebugging } = useAppState();
   const [searchVal, setSearchVal] = useState<string>("");
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -164,6 +166,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
 
   const flattened = useMemo(() => !data ? [] : data?.flatMap(page => page.videos), [data]);
+
   const searchResultVideos = useMemo(() => {
     return flattened.map((video, index) => {
       const cardKey = `${video.videoId}-${index}`;
@@ -173,6 +176,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           key={cardKey}
           addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
           addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
+          as="li"
           isMobile={isMobile}
           playVideo={handlePlayVideo}
           video={video}
@@ -180,6 +184,37 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
       );
     })
   }, [flattened, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, isMobile]);
+
+
+  // Handle infinite scroll loading when user scrolls to bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = modalBodyRef.current;
+      if (!container) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const threshold = 5;
+
+      const isNearBottom = Math.abs(scrollHeight - clientHeight - scrollTop) <= threshold;
+
+      // If near bottom, not currently loading/validating, and there might be more data
+      if (isNearBottom && !isValidating && !error && hasMore) {
+        showDevDebugging && console.info("SearchModal: loading more items triggered from local scroll.");
+        loadMore();
+      }
+    };
+
+    const container = modalBodyRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [isValidating, hasMore, loadMore, error, showDevDebugging]);
 
 
   return (
@@ -301,31 +336,47 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             overflowY="auto"
             ref={modalBodyRef}
           >
-            {!!error ?
-              <Text pb={1} textStyle="body/sub-text">
-                {error.message}
-              </Text> :
-              <Text pb={1} textStyle="body/sub-text">
-                {`Showing ${flattened.length} Youtube video results for `}
-                <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
-              </Text>
+            <Box
+              bg="surface.foreground"
+              pb={3}
+              position="sticky"
+              pt={2}
+              top={0}
+              w="100%"
+              zIndex="docked"
+            >
+              {!!error ?
+                <Text
+                  color="text.error"
+                  textAlign="center"
+                  textStyle="body/sub-text"
+                >
+                  An error occured while searching
+                </Text> :
+                <Text textStyle="body/sub-text">
+                  {`Showing ${flattened.length} results for `}
+                  <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
+                </Text>
+              }
+            </Box>
+
+            {searchResultVideos.length ?
+              <Stack as="ul">
+                {searchResultVideos}
+              </Stack> :
+              null
             }
 
-            {searchResultVideos}
-
-            {hasMore ? (
-              <Box>
-                <Button
-                  colorScheme="brand"
-                  isLoading={isValidating}
-                  variant="ghost"
-                  width="100%"
-                  onClick={loadMore}
-                >
-                  Load More Videos
-                </Button>
-              </Box>
-            ) : null}
+            {isValidating ?
+              <Box mx="auto" pt={2}>
+                <Spinner size="sm" />
+              </Box> :
+              !hasMore && flattened.length > 0 ?
+                <Text color="text.subtle" pt={2} textAlign="center">
+                  No more videos to display
+                </Text> :
+                null
+            }
           </ModalBody> :
           null
         }
