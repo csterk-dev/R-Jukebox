@@ -40,6 +40,14 @@ const HISTORY_CLIENT = axios.create({
 });
 
 
+export type GetSearchQueryParams = {
+  q: string;
+  type: "video";
+  regionCode?: string;
+  pageSize?: number;
+  pageToken?: string;
+};
+
 
 export const YoutubeAPI = {
   /**
@@ -50,8 +58,8 @@ export const YoutubeAPI = {
    * 
    * @remarks Quota cost = `100 credits`.
    */
-  async searchVideos(query: string, limit?: number) {
-    return await YOUTUBE_CLIENT.get(`/search?val=${query}&limit=${limit ?? 20}`);
+  async searchVideos(params: GetSearchQueryParams) {
+    return await YOUTUBE_CLIENT.get<SearchResultPage>("/search", { params });
   }
 }
 

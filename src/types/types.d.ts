@@ -1,3 +1,12 @@
+/** The returned formatted videos for the current search term. */
+declare interface SearchResultPage {
+  prevPageToken: string | undefined;
+  nextPageToken: string | undefined;
+  totalResults: number;
+  resultsPerPage: number;
+  videos: Video[];
+}
+
 
 /** Video type used as the collated data structure from the various results. */
 interface Video {
