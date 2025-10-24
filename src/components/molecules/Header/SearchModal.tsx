@@ -1,11 +1,10 @@
-import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Stack, Text } from "@chakra-ui/react";
-import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Stack, Text } from "@chakra-ui/react";
+import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { VideoCard } from "components/atoms/VideoCard";
-import { YoutubeAPI } from "utils/api";
-import { AxiosResponse } from "axios";
-import { MAX_NUM_OF_SUGGESTIONS, NUM_OF_SEARCH_RESULTS } from "constants/index";
+import { MAX_NUM_OF_SUGGESTIONS } from "constants/index";
 import { useDebounce, useGoogleSuggestions } from "utils/hooks";
+import { usePaginatedYTSearch } from "state/swr";
 
 
 
@@ -19,17 +18,27 @@ type SearchModalProps = Omit<ModalProps, "children"> & {
 
 export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
   const [searchVal, setSearchVal] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [error, setError] = useState<string>();
-
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const {
+    data,
+    error,
+    searchTerm,
+    setSearchTerm,
+    isLoading,
+    isValidating,
+    hasMore,
+    loadMore
+  } = usePaginatedYTSearch();
 
 
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedSearchInput = useDebounce(searchVal);
   const { suggestions, clearSuggestions } = useGoogleSuggestions(debouncedSearchInput, MAX_NUM_OF_SUGGESTIONS);
+
+  // Track if we should show results (when there are actual results to display, or if an error is present (we still render the error in the modal body).
+  const shouldShowResults = (!!data?.length && data.some(page => page.videos.length > 0));
 
 
   const hideSuggestions = useCallback(() => {
@@ -38,21 +47,11 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, []);
 
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     if (!searchVal) return;
     hideSuggestions();
-    try {
-      setError(undefined);
-      setLoading(true);
-
-      const res: AxiosResponse<Video[]> = await YoutubeAPI.searchVideos(searchVal, NUM_OF_SEARCH_RESULTS);
-      setVideos(res.data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [hideSuggestions, searchVal]);
+    setSearchTerm(searchVal);
+  }, [hideSuggestions, searchVal, setSearchTerm]);
 
 
   const onFormSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
@@ -148,7 +147,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   const modalBodyRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const container = modalBodyRef.current;
-    
+
     // We need to ensure that the modal body div is mounted in the dom as we conditionally show hide the element if not search results.
     if (container) {
       const handleScroll = () => {
@@ -162,6 +161,25 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
     }
 
   }, [hideSuggestions, searchVal, showSuggestions, suggestions.length]);
+
+
+  const flattened = useMemo(() => !data ? [] : data?.flatMap(page => page.videos), [data]);
+  const searchResultVideos = useMemo(() => {
+    return flattened.map((video, index) => {
+      const cardKey = `${video.videoId}-${index}`;
+      if (!video) return;
+      return (
+        <VideoCard
+          key={cardKey}
+          addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
+          addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
+          isMobile={isMobile}
+          playVideo={handlePlayVideo}
+          video={video}
+        />
+      );
+    })
+  }, [flattened, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, isMobile]);
 
 
   return (
@@ -187,14 +205,16 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             style={{ width: "100%" }}
             onSubmit={useCallback((e: FormEvent<HTMLFormElement>) => onFormSubmit(e), [onFormSubmit])}
           >
-            <InputGroup as="search">
+            <InputGroup
+              as="search"
+              bg="surface.foreground"
+              borderRadius="lg"
+              overflow="hidden"
+            >
               <InputLeftElement pointerEvents="none">
                 <Icon aria-label="search icon" as={HiMagnifyingGlass} opacity={0.7} />
               </InputLeftElement>
               <Input
-                bg="surface.foreground"
-                borderRadius="lg"
-                boxShadow="md"
                 className="searchInput"
                 enterKeyHint="search"
                 height="40px"
@@ -213,7 +233,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 onClick={useCallback(() => setShowSuggestions(true), [])}
                 onKeyDown={handleKeyDown}
               />
-              <InputRightElement mr={3}>
+              <InputRightElement bg="surface.foreground" px={3} w="auto">
                 <Button
                   colorScheme="brand"
                   size="sm"
@@ -225,7 +245,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               </InputRightElement>
             </InputGroup>
           </form>
-          {loading ?
+          {isLoading ?
             <Progress
               bg="surface.foreground"
               borderBottomLeftRadius="6px"
@@ -257,8 +277,8 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                   key={suggestion}
                   _dark={{ bg: index === selectedSuggestionIndex ? "brand.700" : undefined }}
                   _hover={{
-                    bg: "brand.200",
-                    _dark: { bg: "brand.500" }
+                    bg: index === selectedSuggestionIndex ? "brand.100" : "brand.200",
+                    _dark: { bg: index === selectedSuggestionIndex ? "brand.700" : "brand.500" }
                   }}
                   bg={index === selectedSuggestionIndex ? "brand.100" : undefined}
                   cursor="pointer"
@@ -273,7 +293,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           ) : null}
         </Flex>
 
-        {videos.length > 0 || error ?
+        {shouldShowResults || !!error ?
           <ModalBody
             borderRadius="lg"
             id="search_modal_body"
@@ -281,20 +301,31 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             overflowY="auto"
             ref={modalBodyRef}
           >
-            <Text pb={1} textStyle="body/sub-text">{error ? error : `Showing the first ${NUM_OF_SEARCH_RESULTS} Youtube video results`}</Text>
-            {videos.map(video => {
-              if (!video) return;
-              return (
-                <VideoCard
-                  key={video.videoId}
-                  addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
-                  addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
-                  isMobile={isMobile}
-                  playVideo={handlePlayVideo}
-                  video={video}
-                />
-              );
-            })}
+            {!!error ?
+              <Text pb={1} textStyle="body/sub-text">
+                {error.message}
+              </Text> :
+              <Text pb={1} textStyle="body/sub-text">
+                {`Showing ${flattened.length} Youtube video results for `}
+                <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
+              </Text>
+            }
+
+            {searchResultVideos}
+
+            {hasMore ? (
+              <Box>
+                <Button
+                  colorScheme="brand"
+                  isLoading={isValidating}
+                  variant="ghost"
+                  width="100%"
+                  onClick={loadMore}
+                >
+                  Load More Videos
+                </Button>
+              </Box>
+            ) : null}
           </ModalBody> :
           null
         }
