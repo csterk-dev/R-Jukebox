@@ -61,11 +61,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
   } = usePaginatedHistory();
 
   /** Returns a single array of all history items for rendering. */
-  const allHistoryVideos: HistoryVideo[] = useMemo(() => {
-    if (!historyPages) return [];
-    return historyPages.flat();
-  }, [historyPages]);
-
+  const allHistoryVideos: HistoryVideo[] = useMemo(() => !historyPages ? [] : historyPages.flat(), [historyPages]);
 
 
   /** 
