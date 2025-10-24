@@ -1,130 +1,217 @@
 import { Flex, FlexProps, Square } from "@chakra-ui/react";
-import { FC, memo } from "react";
+import { FC, memo, useEffect, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { christmasPalette, halloweenPalette, jukeboxPalette } from "theme/definitions";
 
 
 type PageBackdropProps = FlexProps & {
   themeSeason: "halloween" | "christmas" | "none";
+  /** Container blur amount (stdDeviation) - higher = more blur */
+  containerBlur?: number;
+  /** Individual shape blur amount (stdDeviation) - higher = more blur */
+  shapeBlur?: number;
 }
 
-const _PageBackdrop: FC<PageBackdropProps> = ({ themeSeason, ...props }) => {
+const _PageBackdrop: FC<PageBackdropProps> = ({ 
+  themeSeason, 
+  style, 
+  containerBlur = BG_BLUR,
+  shapeBlur = SHAPE_BLUR,
+  ...props 
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [runAnimations, setRunAnimations] = useState(false);
+  
+  // Create unique filter IDs to prevent caching issues
+  const shapeBlurId = `shapeBlur-${shapeBlur}`;
+  const containerBlurId = `containerBlur-${containerBlur}`;
+  
+  /**
+   * Added visibility detection - animations only run when the backdrop is visible.
+   * This ideally should prevent unnecessary CPU/GPU usage when the component is off-screen.
+   * Supports automatic cleanup of observers on unmount.
+   */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setRunAnimations(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   applyColorPalette(themeSeason === "halloween" ? halloweenPalette : themeSeason === "christmas" ? christmasPalette : jukeboxPalette);
 
 
   return (
-    <Flex
-      filter={`blur(${BG_BLUR})`}
-      height="100%"
-      overflow="hidden"
-      position="relative"
-      width="100%"
-      zIndex={1}
-      {...props}
-    >
-      {/* Top Left */}
-      <motion.div
-        animate="animate"
-        initial="initial"
+    <>
+      {/* SVG Filter Definition */}
+      <svg
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.2
+          width: 0,
+          height: 0,
+          visibility: "hidden"
         }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
       >
-        <Square size="calc(100vw / 2)" />
-      </motion.div>
+        <defs>
+          <filter
+            height="200%"
+            id={shapeBlurId}
+            width="200%"
+            x="-50%"
+            y="-50%"
+          >
+            <feGaussianBlur in="SourceGraphic" stdDeviation={shapeBlur} />
+          </filter>
+          <filter
+            height="200%"
+            id={containerBlurId}
+            width="200%"
+            x="-50%"
+            y="-50%"
+          >
+            <feGaussianBlur in="SourceGraphic" stdDeviation={containerBlur} />
+          </filter>
+        </defs>
+      </svg>
 
-
-      {/* Bottom Left Big */}
-      <motion.div
-        animate="animate"
-        initial="initial"
+      <Flex
+        filter={`url(#${containerBlurId})`}
+        height="100%"
+        overflow="hidden"
+        position="relative"
+        ref={containerRef}
         style={{
-          position: "absolute",
-          bottom: 50,
-          left: "calc(100vw / 8)",
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.3
+          contain: "layout style paint",
+          ...style
         }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+        width="100%"
+        willChange="transform, filter"
+        zIndex={1}
+        {...props}
       >
-        <Square opacity={SHAPE_OPACITY} size="calc(100vw / 3)" />
-      </motion.div>
+        {/* Top Left */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            borderRadius: 360,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.2,
+            transform: "translate3d(0px, 0px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
+        >
+          <Square size="calc(100vw / 2)" />
+        </motion.div>
 
-      {/* Top right - center center */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          right: -200,
-          borderRadius: 360,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.6
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.circleVariants3}
-      >
-        <Square size="calc(100vw / 1.5)" />
-      </motion.div>
+        {/* Bottom Left Big */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            borderRadius: 360,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.3,
+            transform: "translate3d(calc(100vw / 8), -50px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.circleVariants1}
+        >
+          <Square opacity={SHAPE_OPACITY} size="calc(100vw / 3)" />
+        </motion.div>
 
-      {/* Top Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          right: "calc(100vw / 20)",
-          bottom: 400,
-          borderRadius: 140,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.5
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants1}
-      >
-        <Square opacity={SHAPE_OPACITY} size="calc(100vw / 2.5)" />
-      </motion.div>
+        {/* Top right - center center */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            borderRadius: 360,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.6,
+            transform: "translate3d(-200px, 0px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.circleVariants3}
+        >
+          <Square size="calc(100vw / 4)" />
+        </motion.div>
 
-      {/* Bottom Right */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          top: 30,
-          right: "calc(100vw / 11)",
-          borderRadius: 140,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.7
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants3}
-      >
-        <Square size="calc(100vw / 2.5)" />
-      </motion.div>
+        {/* Top Middle */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+            borderRadius: 140,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.5,
+            transform: "translate3d(calc(-100vw / 20), -400px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.squareVariants1}
+        >
+          <Square opacity={SHAPE_OPACITY} size="calc(100vw / 3)" />
+        </motion.div>
 
-      {/* Middle */}
-      <motion.div
-        animate="animate"
-        initial="initial"
-        style={{
-          position: "absolute",
-          bottom: 10,
-          right: "calc(100vw / 8)",
-          borderRadius: 180,
-          filter: `blur(${SHAPE_BLUR})`,
-          opacity: SHAPE_OPACITY - 0.35
-        }}
-        variants={BG_ANIM_SHAPE_VARIANTS.squareVariants2}
-      >
-        <Square size="calc(100vw / 2.5)" />
-      </motion.div>
-    </Flex>
+        {/* Bottom Right */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            borderRadius: 140,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.7,
+            transform: "translate3d(calc(-100vw / 6 - 20vw), 30px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.squareVariants3}
+        >
+          <Square size="calc(100vw / 3)" />
+        </motion.div>
+
+        {/* Middle */}
+        <motion.div
+          animate={runAnimations ? "animate" : "initial"}
+          initial="initial"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            borderRadius: 180,
+            filter: `url(#${shapeBlurId})`,
+            opacity: SHAPE_OPACITY - 0.35,
+            transform: "translate3d(calc(-100vw / 2), -10px, 0px)",
+            willChange: "transform, opacity"
+          }}
+          variants={BG_ANIM_SHAPE_VARIANTS.squareVariants2}
+        >
+          <Square size="calc(100vw / 3.2)" />
+        </motion.div>
+      </Flex>
+    </>
   );
 };
 _PageBackdrop.displayName = "PageBackdrop"
@@ -139,9 +226,31 @@ export const PageBackdrop = memo(_PageBackdrop);
 
 
 
-const BG_BLUR = "50px";
-const SHAPE_BLUR = "20px";
-// const SHAPE_BLUR = "50px";
+// SVG Filter blur values (stdDeviation)
+// Higher values = more blur, lower values = less blur
+const BG_BLUR = 50;
+const SHAPE_BLUR = 20;
+
+/** Blur presets for common use cases */
+export const BLUR_PRESETS = {
+  subtle: {
+    containerBlur: 20,
+    shapeBlur: 8
+  },
+  normal: {
+    containerBlur: 50,
+    shapeBlur: 20
+  },
+  heavy: {
+    containerBlur: 80,
+    shapeBlur: 35
+  },
+  extreme: {
+    containerBlur: 120,
+    shapeBlur: 50
+  }
+} as const;
+
 /** Individual shape opacities are subtracted from this value 1 (100%). Set this to 0 if you want to hide all shapes */
 const SHAPE_OPACITY = 1;
 
@@ -164,7 +273,8 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       transition: {
         duration: 60,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   },
@@ -183,7 +293,8 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       transition: {
         duration: 120,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   },
@@ -202,7 +313,8 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       transition: {
         duration: 50,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   },
@@ -222,7 +334,8 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       transition: {
         duration: 90,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   },
@@ -242,7 +355,8 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       transition: {
         duration: 60,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   },
@@ -254,15 +368,16 @@ const BG_ANIM_SHAPE_VARIANTS: Record<string, Variants> = {
       rotate: 0
     },
     animate: {
-      x: [0, -100, 0],
-      y: [0, -100, 0],
+      x: [0, -200, 0],
+      y: [0, -5, 0],
       backgroundColor: [""],
       rotate: [0, 90, 0],
       opacity: [0.3, 0.7],
       transition: {
         duration: 45,
         repeat: Infinity,
-        repeatType: "reverse" as const
+        repeatType: "reverse" as const,
+        ease: "linear"
       }
     }
   }
