@@ -1,14 +1,14 @@
 import { Button, Divider, Modal, ModalContent, ModalOverlay, ModalProps, Stack, Text } from "@chakra-ui/react";
 import { FC } from "react";
-import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
 import { ReleaseNotesList } from "components/atoms/ReleaseNotesList";
+import { v1_5ReleaseNotes } from "constants/releaseNotes/v1_5_x";
 
 
 type NewUpdateModalProps = Omit<ModalProps, "children">;
 
 /** A simple modal that displays the most recent release's patch & feature notes. */
 export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
-  const newNote = v1_4ReleaseNotes[0];
+  const newNote = v1_5ReleaseNotes[0];
 
   return (
     <Modal
