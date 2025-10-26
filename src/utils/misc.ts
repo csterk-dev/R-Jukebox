@@ -189,8 +189,9 @@ export function videoPlayedAtToString(playedAtDate?: string, format?: string) {
 
 /** Returns the correct season for the current month of given date. */
 export function getThemeSeason(date: Dayjs): ThemeSeason {
-  if (dayjs(date).isSame("2024-10-01", "month")) return "halloween";
-  if (dayjs(date).isSame("2024-12-01", "month")) return "christmas";
+  // NB months are zero indexed
+  if (dayjs(date).month() === 9) return "halloween";
+  if (dayjs(date).month() === 11) return "christmas";
   return "none";
 }
 

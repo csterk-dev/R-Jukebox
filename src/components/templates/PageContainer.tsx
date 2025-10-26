@@ -17,7 +17,7 @@ type PageContainerProps = BoxProps & {
 export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((props, ref) => {
   const { children, showScrollToTopButton, handleScrollToTop, ...rest } = props
 
-  const { isBgAnimated, themeSeason } = useAppState();
+  const { isBgAnimated, themeSeason, showDevDebugging } = useAppState();
   const { colorMode } = useColorMode();
   const staticBg = useMemo(() => {
     return colorMode === "dark" ?
@@ -93,7 +93,7 @@ export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((pro
       </Box>
 
       {isBgAnimated ?
-        <PageBackdrop themeSeason={themeSeason} /> :
+        <PageBackdrop showDevDebugging={showDevDebugging} themeSeason={themeSeason} /> :
         <Box
           bg={staticBg}
           height="100%"
