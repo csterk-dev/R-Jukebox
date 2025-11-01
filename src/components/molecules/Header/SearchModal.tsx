@@ -408,7 +408,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
             {isValidating ?
               <Box mx="auto" pb={2}>
-                <Spinner size="sm" speed="5s" />
+                <Spinner size="sm" />
               </Box> :
               !hasMore && flattened.length > 0 ?
                 <Text color="text.subtle" pb={2} textAlign="center">
