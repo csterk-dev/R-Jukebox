@@ -141,7 +141,7 @@ const _PageBackdrop: FC<PageBackdropProps> = ({
             borderRadius: 360,
             filter: `url(#${shapeBlurId})`,
             opacity: SHAPE_OPACITY - 0.2,
-            transform: "translate3d(0px, 0px, 0px)",
+            transform: "translate3d(200px, 0px, 0px)",
             willChange: "transform, opacity"
           }}
           variants={BG_ANIM_SHAPE_VARIANTS.circleVariants2}
@@ -157,9 +157,9 @@ const _PageBackdrop: FC<PageBackdropProps> = ({
             position: "absolute",
             bottom: 0,
             left: 0,
-            borderRadius: 360,
+            borderRadius: 180,
             filter: `url(#${shapeBlurId})`,
-            opacity: SHAPE_OPACITY - 0.3,
+            opacity: SHAPE_OPACITY - 0.5,
             transform: "translate3d(calc(100vw / 8), -50px, 0px)",
             willChange: "transform, opacity"
           }}
@@ -261,28 +261,8 @@ export const PageBackdrop = memo(_PageBackdrop);
 
 // SVG Filter blur values (stdDeviation)
 // Higher values = more blur, lower values = less blur
-const BG_BLUR = 50;
-const SHAPE_BLUR = 20;
-
-/** Blur presets for common use cases */
-export const BLUR_PRESETS = {
-  subtle: {
-    containerBlur: 20,
-    shapeBlur: 8
-  },
-  normal: {
-    containerBlur: 50,
-    shapeBlur: 20
-  },
-  heavy: {
-    containerBlur: 80,
-    shapeBlur: 35
-  },
-  extreme: {
-    containerBlur: 120,
-    shapeBlur: 50
-  }
-} as const;
+const BG_BLUR = 20;
+const SHAPE_BLUR = 50;
 
 /** Individual shape opacities are subtracted from this value 1 (100%). Set this to 0 if you want to hide all shapes */
 const SHAPE_OPACITY = 1;

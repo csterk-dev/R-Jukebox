@@ -45,18 +45,26 @@ interface HistoryVideo extends Video {
 }
 
 
-type ReleaseNote = {
+type ReleaseNoteEntry = {
   details: string;
   kind: NoteType;
 }
 type NoteType = "improvement" | "bugFix" | "newFeature";
 
+type VersionNumber = `${number}.${number}.${number}`;
+
+type ReleaseNotesGroupTitles ={
+  groupTitle: string;
+  /** Associated major/minor number to group all patches under. */
+  versionNumGroup: `${number}.${number}`;
+  groupedNotes: ReleaseNotes;
+}[]
 
 type ReleaseNotes = {
   /** Title is shown within the New Update Modal. */
   title: string;
-  versionNum: string;
-  notes: ReleaseNote[];
+  versionNum: VersionNumber;
+  notes: ReleaseNoteEntry[];
   date: string;
 }[];
 

@@ -23,6 +23,8 @@ const HISTORY_SORT_OPTIONS: SelectOption<HistorySortTypes>[] = [
 
 
 type QueueHistoryProps = FlexProps & {
+  /** Callback used to scroll back to the top of the screen. */
+  handleScrollToTop(): void;
   /** Indicates when at bottom of the page. */
   isAtBottomOfPage: boolean;
   /** Callback for the global bottom state. */
@@ -31,7 +33,7 @@ type QueueHistoryProps = FlexProps & {
   isLandscape: boolean;
 };
 
-const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNearBottomOfPage, isAtBottomOfPage, isLandscape, ...props }) => {
+const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNearBottomOfPage, handleScrollToTop, isAtBottomOfPage, isLandscape, ...props }) => {
   const { queue, playVideo, addToBottomOfQueue, addToTopOfQueue, clearQueue, deleteQueueItem } = usePlayer();
   const { showDevDebugging } = useAppState();
   const [tabIndex, setTabIndex] = useState<number>(0);
@@ -128,6 +130,13 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
   }, [isLandscape]);
 
 
+  /** Plays the video and scrolls to the top of the screen when in portrait mode. */
+  const onClickPlayVideo = useCallback((video: Video) => {
+    if (!isLandscape) handleScrollToTop();
+    playVideo(video)
+  }, [handleScrollToTop, isLandscape, playVideo]);
+
+
   /** Returns an array of grouped history videos by date. */
   const historyCards: JSX.Element[] = useMemo(() => {
     if (!allHistoryVideos.length) return [];
@@ -161,7 +170,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
               addToTopOfQueue={() => addToTopOfQueue(vid, "add")}
               as="li"
               isMobile={isMobile}
-              playVideo={playVideo}
+              playVideo={onClickPlayVideo}
               video={vid}
             />
           ))}
@@ -170,7 +179,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
     });
 
     return jsx;
-  }, [allHistoryVideos, isMobile, playVideo, addToBottomOfQueue, addToTopOfQueue]);
+  }, [allHistoryVideos, isMobile, onClickPlayVideo, addToBottomOfQueue, addToTopOfQueue]);
 
 
   /** The total lenth of all queue videos, as text. */

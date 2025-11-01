@@ -1,5 +1,5 @@
 
-const v1_4_0: ReleaseNote[] = [
+export const v1_4_0: ReleaseNoteEntry[] = [
   {
     details: "Added player information and error logs.",
     kind: "newFeature"
@@ -26,7 +26,7 @@ const v1_4_0: ReleaseNote[] = [
   }
 ];
 
-const v1_4_1: ReleaseNote[] = [
+export const v1_4_1: ReleaseNoteEntry[] = [
   {
     details: "Updated the play video handlers to improve loading feedback to the end user.",
     kind: "improvement"
@@ -37,7 +37,7 @@ const v1_4_1: ReleaseNote[] = [
   }
 ];
 
-const v1_4_2: ReleaseNote[] = [
+export const v1_4_2: ReleaseNoteEntry[] = [
   {
     details: "Update Jukebox's theme.",
     kind: "improvement"
@@ -45,27 +45,5 @@ const v1_4_2: ReleaseNote[] = [
   {
     details: "Unify component styles.",
     kind: "improvement"
-  }
-];
-
-
-export const v1_4ReleaseNotes: ReleaseNotes = [
-  {
-    title: "Release 1.4.2",
-    versionNum: "1.4.2",
-    notes: v1_4_2,
-    date: "24/06/2025"
-  },
-  {
-    title: "Release 1.4.1",
-    versionNum: "1.4.1",
-    notes: v1_4_1,
-    date: "26/05/2025"
-  },
-  {
-    title: "Introducing player logs!",
-    versionNum: "1.4.0",
-    notes: v1_4_0,
-    date: "11/04/2025"
   }
 ];

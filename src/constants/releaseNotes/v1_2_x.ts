@@ -1,5 +1,5 @@
 
-const v1_2_0: ReleaseNote[] = [
+export const v1_2_0: ReleaseNoteEntry[] = [
   {
     details: "Added player queue functionality.",
     kind: "newFeature"
@@ -22,7 +22,7 @@ const v1_2_0: ReleaseNote[] = [
   }
 ];
 
-const v1_2_1: ReleaseNote[] = [
+export const v1_2_1: ReleaseNoteEntry[] = [
   {
     details: "Happy Halloween! Jukebox now has a fresh coat of paint for the spooky season.",
     kind: "newFeature"
@@ -37,7 +37,7 @@ const v1_2_1: ReleaseNote[] = [
   }
 ];
 
-const v1_2_2: ReleaseNote[] = [
+export const v1_2_2: ReleaseNoteEntry[] = [
   {
     details: "Added new toast notifications for queue interactions.",
     kind: "newFeature"
@@ -53,27 +53,5 @@ const v1_2_2: ReleaseNote[] = [
   {
     details: "Fixed accidentally auto clearing the user's input when closing the search modal.",
     kind: "bugFix"
-  }
-];
-
-
-export const v1_2ReleaseNotes: ReleaseNotes = [
-  {
-    title: "Welcome to v1.2.2!",
-    versionNum: "1.2.2",
-    notes: v1_2_2,
-    date: "2/11/2024"
-  },
-  {
-    title: "Release 1.2.1",
-    versionNum: "1.2.1",
-    notes: v1_2_1,
-    date: "1/10/2024"
-  },
-  {
-    title: "Release 1.2.0",
-    versionNum: "1.2.0",
-    notes: v1_2_0,
-    date: "12/09/2024"
   }
 ];

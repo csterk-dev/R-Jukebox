@@ -3,7 +3,7 @@ import { FC } from "react";
 import { HiBugAnt, HiStar, HiWrenchScrewdriver } from "react-icons/hi2";
 
 
-type NotesProps = ListProps & { notes: ReleaseNote[]; }
+type NotesProps = ListProps & { notes: ReleaseNoteEntry[]; }
 
 /**
  * Renders a html list of release notes.

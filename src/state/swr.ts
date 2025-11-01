@@ -3,7 +3,8 @@ import { GetHistoryQueryParams, GetSearchQueryParams, HistoryAPI, HistorySortTyp
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import { getDebuggingStateFromStorage } from "../utils/misc";
 
-const DEFAULT_SWR_PAGE_SIZE = 20;
+const DEFAULT_HISTORY_PAGE_SIZE = 20;
+const DEFAULT_SEARCH_PAGE_SIZE = 10;
 const showDevDebugging = getDebuggingStateFromStorage();
 
 
@@ -38,7 +39,7 @@ interface _UseListHistoryInfiniteResult {
  * @deprecated Kept for reference.
  */
 export function _usePaginatedListHistory(baseParams?: Omit<GetHistoryQueryParams, "page">): _UseListHistoryInfiniteResult {
-  const [step, setStep] = useState(DEFAULT_SWR_PAGE_SIZE);
+  const [step, setStep] = useState(DEFAULT_HISTORY_PAGE_SIZE);
 
 
   const getKey = (pageIndex: number, previousPageData: HistoryVideo[]): ([string, GetHistoryQueryParams] | null) => {
@@ -109,7 +110,7 @@ export function usePaginatedHistory(initialSort: HistorySortTypes = "PLAYED_AT_D
   const queryParams = useMemo(() => ({
     sort,
     searchTerm,
-    step: DEFAULT_SWR_PAGE_SIZE
+    step: DEFAULT_HISTORY_PAGE_SIZE
   }), [sort, searchTerm]);
 
 
@@ -144,7 +145,7 @@ export function usePaginatedHistory(initialSort: HistorySortTypes = "PLAYED_AT_D
 
   const { data, setSize, isValidating } = res;
 
-  const hasMore = useMemo(() => data ? (data[data.length - 1]?.length === DEFAULT_SWR_PAGE_SIZE) : true, [data]);
+  const hasMore = useMemo(() => data ? (data[data.length - 1]?.length === DEFAULT_HISTORY_PAGE_SIZE) : true, [data]);
 
 
   const loadMore = useCallback(() => {
@@ -183,7 +184,7 @@ export interface UsePaginatedYTSearchReturn extends SWRInfiniteResponse<SearchRe
  */
 export function usePaginatedYTSearch(): UsePaginatedYTSearchReturn {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [pageSize, setPageSize] = useState(40);
+  const [pageSize, setPageSize] = useState(DEFAULT_SEARCH_PAGE_SIZE);
 
 
 

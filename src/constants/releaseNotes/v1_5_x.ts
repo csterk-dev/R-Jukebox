@@ -1,5 +1,5 @@
 
-const v1_5_0: ReleaseNote[] = [
+export const v1_5_0: ReleaseNoteEntry[] = [
   {
     details: "The player's history is now paginated and supports infinite scroll.",
     kind: "newFeature"
@@ -27,7 +27,7 @@ const v1_5_0: ReleaseNote[] = [
 ];
 
 
-const v1_5_1: ReleaseNote[] = [
+export const v1_5_1: ReleaseNoteEntry[] = [
   {
     details: "Searching is now paginated and supports infinite scroll.",
     kind: "newFeature"
@@ -43,17 +43,21 @@ const v1_5_1: ReleaseNote[] = [
 ];
 
 
-export const v1_5ReleaseNotes: ReleaseNotes = [
+export const v1_5_2: ReleaseNoteEntry[] = [
   {
-    title: "Search (infinitely) better!",
-    versionNum: "1.5.1",
-    notes: v1_5_1,
-    date: "28/10/2025"
+    details: "Enhanced keyboard navigation and selection in auto-complete search suggestions.",
+    kind: "improvement"
   },
   {
-    title: "Infinite scroll is here!",
-    versionNum: "1.5.0",
-    notes: v1_5_0,
-    date: "11/08/2025"
+    details: "Reduced the number of search results per page to better align with API daily limits.",
+    kind: "improvement"
+  },
+  {
+    details: "When loading a video from history in portrait mode, the video now automatically comes into view.",
+    kind: "improvement"
+  },
+  {
+    details: "Clean-up release notes.",
+    kind: "improvement"
   }
 ];

@@ -1,20 +1,23 @@
 import { Button, Divider, Modal, ModalContent, ModalOverlay, ModalProps, Stack, Text } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { ReleaseNotesList } from "components/atoms/ReleaseNotesList";
-import { v1_5ReleaseNotes } from "constants/releaseNotes/v1_5_x";
+import { ALL_RELEASE_NOTES } from "constants/releaseNotes";
 
 
-type NewUpdateModalProps = Omit<ModalProps, "children">;
+type NewUpdateModalProps = Omit<ModalProps, "children"> & {
+  currentVersionNumber: VersionNumber;
+};
 
 /** A simple modal that displays the most recent release's patch & feature notes. */
-export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => {
-  const newNote = v1_5ReleaseNotes[0];
+export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, currentVersionNumber }) => {
+  const latestUpdateNotes = ALL_RELEASE_NOTES.find(note => note.versionNum === currentVersionNumber);
+  const showModal = useMemo(() => !!latestUpdateNotes && isOpen, [isOpen, latestUpdateNotes]);
 
   return (
     <Modal
       closeOnEsc={false}
       closeOnOverlayClick={false}
-      isOpen={isOpen}
+      isOpen={showModal}
       scrollBehavior="inside"
       size={{
         base: "sm",
@@ -30,7 +33,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => 
         userSelect="none"
       >
         <Stack p="8px 20px 20px">
-          <Text as="h1" fontSize="32" fontWeight="semibold">{`${newNote.title}`}</Text>
+          <Text as="h1" fontSize="32" fontWeight="semibold">{`${latestUpdateNotes?.title}`}</Text>
 
           <Text
             as="h2"
@@ -41,8 +44,8 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen }) => 
             What's new?
           </Text>
           <Divider />
-          <Text textStyle="body/label">{newNote.date}</Text>
-          <ReleaseNotesList notes={newNote.notes} />
+          <Text textStyle="body/label">{latestUpdateNotes?.date}</Text>
+          <ReleaseNotesList notes={latestUpdateNotes?.notes ?? []} />
 
           <Button
             colorScheme="brand"

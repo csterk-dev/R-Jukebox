@@ -123,7 +123,12 @@ export const App = () => {
                   lg: "flex-start"
                 }}
               >
-                <QueueHistoryTabs isAtBottomOfPage={isAtBottomOfPage} isLandscape={isLandscape} setIsAtBottomOfPage={setIsAtBottomOfPage} />
+                <QueueHistoryTabs 
+                  handleScrollToTop={handleRootScrollToTop}
+                  isAtBottomOfPage={isAtBottomOfPage} 
+                  isLandscape={isLandscape} 
+                  setIsAtBottomOfPage={setIsAtBottomOfPage}
+                />
               </Flex>
             </Flex>
 
@@ -137,8 +142,8 @@ export const App = () => {
             />
           </PageContainer>
 
-          <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
-
+          <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+          
         </PlayerProvider>
       </AppProvider>
     </ChakraProvider>
