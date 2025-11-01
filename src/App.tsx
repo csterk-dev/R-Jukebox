@@ -123,7 +123,12 @@ export const App = () => {
                   lg: "flex-start"
                 }}
               >
-                <QueueHistoryTabs isAtBottomOfPage={isAtBottomOfPage} isLandscape={isLandscape} setIsAtBottomOfPage={setIsAtBottomOfPage} />
+                <QueueHistoryTabs 
+                  handleScrollToTop={handleRootScrollToTop}
+                  isAtBottomOfPage={isAtBottomOfPage} 
+                  isLandscape={isLandscape} 
+                  setIsAtBottomOfPage={setIsAtBottomOfPage}
+                />
               </Flex>
             </Flex>
 

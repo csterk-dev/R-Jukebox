@@ -3,7 +3,7 @@ import { FC } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 
 type SearchBarBoxProps = BoxProps & {
-  isMobile: boolean;
+  iconOnly?: boolean;
   onOpen: () => void
 }
 
@@ -11,13 +11,12 @@ type SearchBarBoxProps = BoxProps & {
  * Renders a input like styled box.
  * @returns {JSX.Element} The search bar box.
  */
-export const SearchBarButton: FC<SearchBarBoxProps> = ({ isMobile, onOpen, ...props }) => {
+export const SearchBarButton: FC<SearchBarBoxProps> = ({ iconOnly, onOpen, ...props }) => {
 
 
-  if (isMobile) return (
+  if (iconOnly) return (
     <IconButton
       aria-label="Open search"
-      colorScheme="brand"
       icon={<HiMagnifyingGlass />}
       size="md"
       onClick={onOpen}

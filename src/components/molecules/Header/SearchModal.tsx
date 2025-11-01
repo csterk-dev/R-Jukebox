@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Spinner, Stack, Text } from "@chakra-ui/react";
 import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { HiArrowUpRight, HiMagnifyingGlass } from "react-icons/hi2";
 import { VideoCard } from "components/atoms/VideoCard";
 import { MAX_NUM_OF_SUGGESTIONS } from "constants/index";
 import { useDebounce, useGoogleSuggestions } from "utils/hooks";
@@ -22,6 +22,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   const [searchVal, setSearchVal] = useState<string>("");
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const {
     data,
@@ -74,11 +75,11 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
     if (suggestions.length > 0 && showSuggestions) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setSelectedSuggestionIndex((prevIndex) => prevIndex < suggestions.length - 1 ? prevIndex + 1 : 0);
+        setSelectedSuggestionIndex((prevIndex) => prevIndex === suggestions.length - 1 ? -1 : prevIndex < suggestions.length - 1 ? prevIndex + 1 : 0);
 
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setSelectedSuggestionIndex((prevIndex) => prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1);
+        setSelectedSuggestionIndex((prevIndex) => prevIndex === 0 ? -1 : prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1);
 
       } else if (e.key === "Escape") {
         e.preventDefault();
@@ -247,7 +248,7 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               overflow="hidden"
             >
               <InputLeftElement pointerEvents="none">
-                <Icon aria-label="search icon" as={HiMagnifyingGlass} opacity={0.7} />
+                <Icon aria-label="search icon" as={HiMagnifyingGlass} color="text.subtle" />
               </InputLeftElement>
               <Input
                 className="searchInput"
@@ -261,11 +262,13 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 variant="unstyled"
                 width="100%"
                 autoFocus
+                onBlur={useCallback(() => setInputFocused(false), [])}
                 onChange={useCallback((val: ChangeEvent<HTMLInputElement>) => {
                   setSearchVal(val?.target.value);
                   setShowSuggestions(true);
                 }, [])}
                 onClick={useCallback(() => setShowSuggestions(true), [])}
+                onFocus={useCallback(() => setInputFocused(true), [])}
                 onKeyDown={handleKeyDown}
               />
               <InputRightElement bg="surface.foreground" px={3} w="auto">
@@ -300,30 +303,71 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               bg="surface.foreground"
               borderRadius="lg"
               boxShadow="lg"
+              gap={0}
+              h={isMobile && inputFocused ? "220px" : undefined}
               overflow="hidden"
+              overflowY="auto"
               position="absolute"
               spacing={0}
               top="50px"
               width="100%"
-              zIndex={10}
-            >
-              {suggestions.map((suggestion, index) => (
-                <Text
-                  key={suggestion}
-                  _dark={{ bg: index === selectedSuggestionIndex ? "brand.700" : undefined }}
-                  _hover={{
-                    bg: index === selectedSuggestionIndex ? "brand.100" : "brand.200",
-                    _dark: { bg: index === selectedSuggestionIndex ? "brand.700" : "brand.500" }
-                  }}
-                  bg={index === selectedSuggestionIndex ? "brand.100" : undefined}
-                  cursor="pointer"
-                  px={2}
-                  py={1}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  {suggestion}
-                </Text>
-              ))}
+              zIndex="dropdown"
+            >                
+              <Stack gap={0} role="listbox">      
+                {suggestions.map((suggestion, index) => {
+                  const isSelected = index === selectedSuggestionIndex;
+                  return (
+                    <Flex
+                      key={suggestion}
+                      aria-selected={isSelected}
+                      className="group"
+                      cursor="pointer"
+                      px={2}
+                      py={1.5}
+                      role="option"
+                      sx={{
+                        // Base styles: selected state background
+                        bg: "transparent",
+                        "&[aria-selected='true']": {
+                          bg: "brand.100"
+                        },
+                        // Hover styles for non-selected items
+                        "&:hover": {
+                          bg: "brand.200"
+                        },
+                        // Hover styles for selected items
+                        "&[aria-selected='true']:hover": {
+                          bg: "brand.100"
+                        },
+                        // Dark mode: selected state background
+                        "[data-theme='dark'] &[aria-selected='true']": {
+                          bg: "brand.700"
+                        },
+                        // Dark mode: hover styles for non-selected items
+                        "[data-theme='dark'] &:hover": {
+                          bg: "brand.500"
+                        },
+                        // Dark mode: hover styles for selected items
+                        "[data-theme='dark'] &[aria-selected='true']:hover": {
+                          bg: "brand.700"
+                        }
+                      }}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      <Text>
+                        {suggestion}
+                      </Text>
+                      <Icon
+                        _groupHover={{ display: "block" }}
+                        as={HiArrowUpRight}
+                        display={isSelected ? "block" : "none"}
+                        ml="auto"
+                        mt="3px"
+                      />
+                    </Flex>
+                  )
+                })}
+              </Stack>
             </Stack>
           ) : null}
         </Flex>
@@ -338,19 +382,14 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
           >
             <Box
               bg="surface.foreground"
-              pb={3}
               position="sticky"
-              pt={2}
+              py={2}
               top={0}
               w="100%"
               zIndex="docked"
             >
               {!!error ?
-                <Text
-                  color="text.error"
-                  textAlign="center"
-                  textStyle="body/sub-text"
-                >
+                <Text color="text.error" textAlign="center" textStyle="body/sub-text">
                   An error occured while searching
                 </Text> :
                 <Text textStyle="body/sub-text">
@@ -361,18 +400,18 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
             </Box>
 
             {searchResultVideos.length ?
-              <Stack as="ul">
+              <Stack as="ul" pb={2}>
                 {searchResultVideos}
               </Stack> :
               null
             }
 
             {isValidating ?
-              <Box mx="auto" pt={2}>
-                <Spinner size="sm" />
+              <Box mx="auto" pb={2}>
+                <Spinner size="sm" speed="5s" />
               </Box> :
               !hasMore && flattened.length > 0 ?
-                <Text color="text.subtle" pt={2} textAlign="center">
+                <Text color="text.subtle" pb={2} textAlign="center">
                   No more videos to display
                 </Text> :
                 null

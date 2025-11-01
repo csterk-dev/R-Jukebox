@@ -138,7 +138,7 @@ const _Header: FC<FlexProps> = (props) => {
       >
         {isMobile ?
           <>
-            <SearchBarButton flex={1} isMobile onOpen={onOpenSearch} />
+            <SearchBarButton flex={1} iconOnly onOpen={onOpenSearch} />
             <VideoControls
               disablePlayButton={!showingCurrentVideo}
               disableQueueButton={!queue.length}
@@ -151,8 +151,8 @@ const _Header: FC<FlexProps> = (props) => {
             />
             <IconButton
               aria-label="Open settings"
-              colorScheme="brand"
-              icon={<HiCog6Tooth opacity={0.9} />}
+              colorScheme="neutral"
+              icon={<HiCog6Tooth />}
               size="md"
               onClick={onOpenSettings}
             />
@@ -171,7 +171,7 @@ const _Header: FC<FlexProps> = (props) => {
               onPressRewindToStart={onPressRewindToStart}
             />
 
-            <SearchBarButton flex={1} isMobile={false} onOpen={onOpenSearch} />
+            <SearchBarButton flex={1} onOpen={onOpenSearch} />
 
             <HStack flex={1} justifyContent="center">
               <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
@@ -234,7 +234,7 @@ const _Header: FC<FlexProps> = (props) => {
 
             <IconButton
               aria-label="Open settings"
-              icon={<HiCog6Tooth opacity={0.9} />}
+              icon={<HiCog6Tooth />}
               size="md"
               onClick={onOpenSettings}
             />

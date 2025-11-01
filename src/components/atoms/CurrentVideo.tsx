@@ -147,8 +147,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                 </motion.div>
                 <HStack
                   alignItems="flex-start"
+                  color="text.subtle"
                   ml={isMobile ? "12px" : undefined}
-                  opacity={0.8}
                   px={isMobile ? "20px" : undefined}
                 >
                   <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />

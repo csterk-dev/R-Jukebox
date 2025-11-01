@@ -76,7 +76,7 @@ export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((pro
           {/* Icon Button (below md breakpoint) */}
           <IconButton
             aria-label="Scroll to the top"
-            bottom={2.5}
+            bottom={10}
             display={showScrollToTopButton ? {
               base: "inline-flex",
               md: "none"

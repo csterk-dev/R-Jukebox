@@ -62,8 +62,7 @@ const search = definePartsStyle({
   },
   body: {
     bgColor: "surface.foreground",
-    pt: 0,
-    pb: 2,
+    py: 0,
     alignItems: "center",
     borderRadius: "sm",
     display: "flex",
