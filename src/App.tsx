@@ -143,8 +143,7 @@ export const App = () => {
           </PageContainer>
 
           <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
-          {/* <NewUpdateModal isOpen={true ?? isNewUpdateOpen} onClose={onCloseNewUpdate} /> */}
-
+          
         </PlayerProvider>
       </AppProvider>
     </ChakraProvider>
