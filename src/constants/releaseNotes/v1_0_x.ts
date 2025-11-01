@@ -1,12 +1,12 @@
 
-const v1_0_1: ReleaseNote[] = [
+export const v1_0_1: ReleaseNoteEntry[] = [
   {
     details: "Update the server URL with the correct production URL.",
     kind: "bugFix"
   }
 ];
 
-const v1_0_2: ReleaseNote[] = [
+export const v1_0_2: ReleaseNoteEntry[] = [
   {
     details: "Update how release numbering is defined.",
     kind: "improvement"
@@ -17,7 +17,7 @@ const v1_0_2: ReleaseNote[] = [
   }
 ];
 
-const v1_0_3: ReleaseNote[] = [
+export const v1_0_3: ReleaseNoteEntry[] = [
   {
     details: "Added 'Rewind to start' function to video controls.",
     kind: "newFeature"
@@ -52,7 +52,7 @@ const v1_0_3: ReleaseNote[] = [
   }
 ];
 
-const v1_0_4: ReleaseNote[] = [
+export const v1_0_4: ReleaseNoteEntry[] = [
   {
     details: "Added a new static background for when background animations are disabled.",
     kind: "newFeature"
@@ -68,34 +68,5 @@ const v1_0_4: ReleaseNote[] = [
   {
     details: "Fixed a bug where the current video would keep optimistically 'playing' after the iframe threw an error.",
     kind: "bugFix"
-  }
-];
-
-
-
-export const v1_0ReleaseNotes: ReleaseNotes = [
-  {
-    title: "Release 1.0.4",
-    versionNum: "1.0.4",
-    notes: v1_0_4,
-    date: "30/06/2024"
-  },
-  {
-    title: "Release 1.0.3",
-    versionNum: "1.0.3",
-    notes: v1_0_3,
-    date: "17/06/2024"
-  },
-  {
-    title: "Release 1.0.2",
-    versionNum: "1.0.2",
-    notes: v1_0_2,
-    date: "14/06/2024"
-  },
-  {
-    title: "Release 1.0.1",
-    versionNum: "1.0.1",
-    notes: v1_0_1,
-    date: "13/06/2024"
   }
 ];

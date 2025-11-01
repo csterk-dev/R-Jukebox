@@ -97,7 +97,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
                   {dayjs(entry.dateTime).format("hh:mm:ss a")}
                 </Text>
                 <Flex align="center" gap={2}>
-                  <Tag colorScheme={entry.type == "error" ? "red" : "brand"}>{entry.type}</Tag>
+                  <Tag colorScheme={entry.type == "error" ? "red" : "neutral"}>{entry.type}</Tag>
                   <AccordionIcon />
                 </Flex>
               </Flex>
@@ -167,7 +167,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
 
         <HStack ml="auto">
           {typeFilter !== "none" ?
-            <Tag colorScheme={typeFilter == "error" ? "red" : "brand"} role="button" onClick={clearFilter}>
+            <Tag colorScheme={typeFilter == "error" ? "red" : "neutral"} role="button" onClick={clearFilter}>
               <TagLabel textTransform="capitalize">{typeFilter}</TagLabel>
               <TagCloseButton pointerEvents="none" role="none" />
             </Tag> :

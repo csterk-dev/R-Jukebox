@@ -1,5 +1,5 @@
 
-const v1_1_0: ReleaseNote[] = [
+export const v1_1_0: ReleaseNoteEntry[] = [
   {
     details: "Added player history.",
     kind: "newFeature"
@@ -27,7 +27,7 @@ const v1_1_0: ReleaseNote[] = [
 ];
 
 
-const v1_1_1: ReleaseNote[] = [
+export const v1_1_1: ReleaseNoteEntry[] = [
   {
     details: "Jukebox will now remember whether you have disabled the background.",
     kind: "newFeature"

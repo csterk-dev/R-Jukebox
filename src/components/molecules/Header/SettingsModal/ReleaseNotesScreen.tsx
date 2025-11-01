@@ -1,40 +1,7 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Stack, Text, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Stack, Tag, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { ReleaseNotesList } from "components/atoms/ReleaseNotesList";
-import { v1_3ReleaseNotes } from "constants/releaseNotes/v1_3_x";
-import { v1_2ReleaseNotes } from "constants/releaseNotes/v1_2_x";
-import { v1_1ReleaseNotes } from "constants/releaseNotes/v1_1_x";
-import { v1_0ReleaseNotes } from "constants/releaseNotes/v1_0_x";
-import { v1_4ReleaseNotes } from "constants/releaseNotes/v1_4_x";
-import { v1_5ReleaseNotes } from "constants/releaseNotes/v1_5_x";
-
-
-const RELEASE_NOTES = [
-  {
-    title: "Infinite Scroll",
-    releases: v1_5ReleaseNotes
-  },
-  {
-    title: "Player Logs",
-    releases: v1_4ReleaseNotes
-  },
-  {
-    title: "Auto Complete",
-    releases: v1_3ReleaseNotes
-  },
-  {
-    title: "Queue",
-    releases: v1_2ReleaseNotes
-  },
-  {
-    title: "History",
-    releases: v1_1ReleaseNotes
-  },
-  {
-    title: "Launch",
-    releases: v1_0ReleaseNotes
-  }
-];
+import { RELEASE_NOTES_GROUP_TITLES } from "constants/releaseNotes"
 
 
 export const ReleaseNotesScreen: FC = () => {
@@ -59,19 +26,27 @@ export const ReleaseNotesScreen: FC = () => {
           width="100%"
           allowToggle
         >
-          {RELEASE_NOTES.map(({ title, releases }) => (
+          {RELEASE_NOTES_GROUP_TITLES.map(({ groupTitle, groupedNotes }) => (
             <Stack
-              key={title}
+              key={groupTitle}
               as="ul"
               gap={0}
               listStyleType="none"
               mt={2.5}
+              position="relative"
               width="100%"
             >
-              <Text as="h2" textStyle="heading/sub-section">
-                {title}
-              </Text>
-              {releases.map((notes) => (
+              <Flex 
+                align="flex-end"
+                bg="surface.foreground" 
+                position="sticky" 
+                top={0}
+              >
+                <Text as="h2" textStyle="heading/sub-section">
+                  {groupTitle}
+                </Text>
+              </Flex>
+              {groupedNotes.map(notes => (
                 <AccordionItem key={notes.versionNum} _first={{ borderTopWidth: 0 }} as="li">
                   <h3>
                     <Flex
@@ -81,14 +56,14 @@ export const ReleaseNotesScreen: FC = () => {
                       justifyContent="space-between"
                       px={0}
                     >
-                      <Text textAlign="start">
+                      <Text pl="2px" textAlign="start">
                         {`${notes.date}`}
                       </Text>
 
                       <Flex align="center" gap={2}>
-                        <Text textAlign="end">
+                        <Tag colorScheme="brand">
                           {`v ${notes.versionNum}`}
-                        </Text>
+                        </Tag>
                         <AccordionIcon />
                       </Flex>
                     </Flex>

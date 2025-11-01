@@ -142,7 +142,8 @@ export const App = () => {
             />
           </PageContainer>
 
-          <NewUpdateModal isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+          <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+          {/* <NewUpdateModal isOpen={true ?? isNewUpdateOpen} onClose={onCloseNewUpdate} /> */}
 
         </PlayerProvider>
       </AppProvider>
