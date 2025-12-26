@@ -1,5 +1,5 @@
-import { ChakraProvider, Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
-import { theme } from "./theme";
+import { Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
+import { Provider } from "components/ui/provider";
 import { CurrentVideo } from "components/atoms/CurrentVideo";
 import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
 import { PageContainer } from "components/templates/PageContainer";
@@ -11,12 +11,13 @@ import "@fontsource-variable/assistant";
 import { NewUpdateModal } from "components/molecules/Header/NewUpdateModal";
 import { getDebuggingStateFromStorage } from "utils/misc";
 import { DevScrollStateOverlay } from "components/atoms/DevScrollStateOverlay";
+import { Toaster } from "components/ui/toaster";
 
 
 export const App = () => {
   const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
 
-  const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+  const { open: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
 
   /** Open the update modal if the user has previously used jukebox. */
   useEffect(() => {
@@ -33,7 +34,7 @@ export const App = () => {
   const [isAtTopOfPage, setIsAtTopOfPage] = useState(true);
   const [isScrolledPastCurrentVideo, setIsScrolledPastCurrentVideo] = useState(false);
   /** 'lg' breakpoint value in 'em' as defined by the Chakra provider. */
-  const [isLandscape] = useMediaQuery("(min-width: 62em)");
+  const [isLandscape] = useMediaQuery(["(min-width: 62em)"]);
 
 
   /**
@@ -87,9 +88,11 @@ export const App = () => {
 
 
   return (
-    <ChakraProvider theme={theme}>
+    <Provider>
       <AppProvider>
         <PlayerProvider>
+          <Toaster />
+          
           <PageContainer handleScrollToTop={handleRootScrollToTop} ref={pageContainerRef} showScrollToTopButton={showScrollToTopButton}>
             <Flex
               flexDirection={{
@@ -146,6 +149,6 @@ export const App = () => {
           
         </PlayerProvider>
       </AppProvider>
-    </ChakraProvider>
+    </Provider>
   )
 }
