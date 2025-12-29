@@ -1,17 +1,13 @@
 import { Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
-import { Provider } from "components/ui/provider";
-import { CurrentVideo } from "components/atoms/CurrentVideo";
-import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
-import { PageContainer } from "components/templates/PageContainer";
-import { PlayerProvider } from "state/playerContext";
-import { AppProvider } from "state/appContext";
+import { CurrentVideo, DevScrollStateOverlay } from "@atoms";
+import { NewUpdateModal, QueueHistoryTabs } from "@molecules";
+import { PageContainer } from "@templates";
+import { AppProvider, PlayerProvider } from "@state";
+import { Provider, Toaster } from "@ui";
+import { getDebuggingStateFromStorage } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VERSION_NUM } from "./constants";
 import "@fontsource-variable/assistant";
-import { NewUpdateModal } from "components/molecules/Header/NewUpdateModal";
-import { getDebuggingStateFromStorage } from "utils/misc";
-import { DevScrollStateOverlay } from "components/atoms/DevScrollStateOverlay";
-import { Toaster } from "components/ui/toaster";
 
 
 export const App = () => {
