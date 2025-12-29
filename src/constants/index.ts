@@ -52,19 +52,37 @@ export const VERSION_NUM = PackageJson.version;
 export const TooltipOpenDelay = 500;
 
 /** In pixels. */
-export const MOBILE_BREAKPOINT = 550;
+export const MOBILE_BREAKPOINT = 480;
 
 /** Ensure front and server values match */
 export const PLAYER_VOLUME_DEFAULT = 30;
 
 
 /** Use when interacting with the server running on the RPI. @remarks If running on RPI 3, change to splice 5 */
-const RPI_SERVER_URL = `${window.location.protocol}//${window.location.host}:3001`;
+const RPI_SERVER_URL = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}:3001` : "localhost:3001";
 /** Use when interacting with the local server. */
-const LOCAL_SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
+const LOCAL_SERVER_URL = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001` : "localhost:3001";
+
+/**
+ * Helper to check if we're in production mode.
+ * Works in both browser (Vite) and Node.js (Chakra CLI)
+ * In Vite: uses import.meta.env.PROD
+ * In Node.js: uses process.env.PROD
+ */
+const isProduction = (): boolean => {
+  // Check if we're in a browser environment with Vite
+  if (typeof import.meta !== "undefined" && import.meta.env) {
+    return import.meta.env.PROD === true;
+  }
+  // Fall back to process.env for Node.js (e.g., Chakra CLI)
+  if (typeof process !== "undefined" && process.env) {
+    return process.env.PROD === "true" || process.env.NODE_ENV === "production";
+  }
+  return false;
+};
 
 /** The server URL. */
-export const SERVER_URL = process.env.NODE_ENV === "production" ? RPI_SERVER_URL : LOCAL_SERVER_URL
+export const SERVER_URL = isProduction() ? RPI_SERVER_URL : LOCAL_SERVER_URL
 // export const SERVER_URL = `${window.location.protocol}//${window.location.host.slice(0, -5)}:3001`;
 
 export const APP_TITLE = "R Jukebox";
@@ -75,3 +93,5 @@ export const NUM_OF_SEARCH_RESULTS = 40;
 export const MAX_NUM_OF_SUGGESTIONS = 10;
 
 export const LOCAL_STORAGE_KEY_DEV_DEBUGGING = "dev_debugging";
+
+export { ALL_RELEASE_NOTES, RELEASE_NOTES_GROUP_TITLES } from "./releaseNotes";

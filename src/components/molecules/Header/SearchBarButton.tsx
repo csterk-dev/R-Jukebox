@@ -15,19 +15,16 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ iconOnly, onOpen, ...pr
 
 
   if (iconOnly) return (
-    <IconButton
-      aria-label="Open search"
-      icon={<HiMagnifyingGlass />}
-      size="md"
-      onClick={onOpen}
-    />
+    <IconButton aria-label="Open search" size="md" onClick={onOpen}>
+      <HiMagnifyingGlass />
+    </IconButton>
   )
   return (
     <Box
       as="button"
       bg="surface.foreground"
       borderRadius="lg"
-      boxShadow="base"
+      boxShadow="md"
       height="40px"
       px={2}
       onClick={onOpen}
@@ -35,7 +32,7 @@ export const SearchBarButton: FC<SearchBarBoxProps> = ({ iconOnly, onOpen, ...pr
     >
       <HStack gap={4}>
         <Icon aria-label="Open search" as={HiMagnifyingGlass} />
-        <Text color="text.subtle">Search</Text>
+        <Text color="fg.muted">Search</Text>
         <Spacer />
         <Kbd userSelect="none">⌘ K</Kbd>
       </HStack>

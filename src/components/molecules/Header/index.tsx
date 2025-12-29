@@ -1,12 +1,12 @@
-import { Flex, FlexProps, HStack, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Tooltip, useColorModeValue, useDisclosure, useMediaQuery } from "@chakra-ui/react";
+import { chakra, Flex, FlexProps, HStack, Icon, IconButton, Menu, Portal, Slider, Text, useDisclosure } from "@chakra-ui/react";
 import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiCog6Tooth, HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { VideoControls } from "./VideoControls";
-import { usePlayer } from "state/playerContext";
-import { useAppState } from "state/appContext";
+import { useAppState, usePlayer } from "@state";
 import { SearchBarButton } from "./SearchBarButton";
 import { SearchModal } from "./SearchModal";
 import { SettingsModal } from "./SettingsModal/index";
+import { Tooltip } from "@ui";
 
 
 
@@ -21,20 +21,11 @@ const _Header: FC<FlexProps> = (props) => {
   const { isBgAnimated, isMobile, toggleBgAnimated } = useAppState();
 
   /*
-   * Styling variables
-   */
-  const headerBg = useColorModeValue("white", "neutral.900");
-  const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
-
-  /*
    * Modals
    */
-  const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
-  const { isOpen: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
+  const { open: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
+  const { open: isSettingsOpen, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure();
 
-
-  /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
-  const finalFocusRef = useRef(null);
 
 
   /*
@@ -56,7 +47,6 @@ const _Header: FC<FlexProps> = (props) => {
   const [localVolume, setLocalVolume] = useState<number>(playerVolume);
   const prevPlayerVolume = useRef<number>();
   const beforeMuteVolume = useRef<number>();
-  const [showVolumeTooltip, setShowVolumeTooltip] = useState(false);
 
 
   /** Callback to play the selected video from the search results. */
@@ -125,126 +115,232 @@ const _Header: FC<FlexProps> = (props) => {
   return (
     <>
       <Flex
-        alignItems="center"
         as="header"
-        background={headerBg}
+        bg="surface.background"
         boxShadow="base"
-        gap={2}
         h={`${HEADER_HEIGHT}px`}
-        justify="center"
         px={5}
         w="100%"
         {...props}
       >
-        {isMobile ?
-          <>
-            <SearchBarButton flex={1} iconOnly onOpen={onOpenSearch} />
-            <VideoControls
-              disablePlayButton={!showingCurrentVideo}
-              disableQueueButton={!queue.length}
-              disableRewindButton={!showingCurrentVideo}
-              flex={1}
-              isPlaying={isPlaying}
-              onPressPlayNextQueueItem={playNextQueueItem}
-              onPressPlayPause={onPressPlayPause}
-              onPressRewindToStart={onPressRewindToStart}
-            />
-            <IconButton
-              aria-label="Open settings"
-              colorScheme="neutral"
-              icon={<HiCog6Tooth />}
-              size="md"
-              onClick={onOpenSettings}
-            />
-          </> :
-
-          // Default view
-          <>
-            <VideoControls
-              disablePlayButton={!showingCurrentVideo}
-              disableQueueButton={!queue.length}
-              disableRewindButton={!showingCurrentVideo}
-              flex={1}
-              isPlaying={isPlaying}
-              onPressPlayNextQueueItem={playNextQueueItem}
-              onPressPlayPause={onPressPlayPause}
-              onPressRewindToStart={onPressRewindToStart}
-            />
-
-            <SearchBarButton flex={1} onOpen={onOpenSearch} />
-
-            <HStack flex={1} justifyContent="center">
-              <Tooltip isDisabled={showingCurrentVideo || isMobile} label="You can only change volume while a video is playing.">
-                <HStack width="170px">
-                  <IconButton
-                    aria-label="No volume"
-                    colorScheme="neutral"
-                    icon={<HiSpeakerXMark />}
-                    isDisabled={!showingCurrentVideo}
-                    size="md"
-                    onClick={onClickToggleMute}
-                  />
-                  <Slider
-                    aria-label="Volume control"
-                    colorScheme="brand"
-                    focusThumbOnChange={false}
-                    isDisabled={!showingCurrentVideo}
-                    max={100}
-                    min={0}
-                    step={5}
-                    value={localVolume}
-                    variant="horizontal"
-                    onChange={val => onChangeVolumeHandler(val)}
-                    onChangeEnd={val => onChangeEndVolumeHandler(val)}
-                    onMouseEnter={() => setShowVolumeTooltip(true)}
-                    onMouseLeave={() => setShowVolumeTooltip(false)}
+        {/* Mobile */}
+        <Flex
+          align="center"
+          gap={2}
+          hideFrom="lg"
+          justify="center"
+          w="100%"
+        >
+          <Flex 
+            w={{
+              base: "unset",
+              sm: "84px"
+            }}
+          >
+            <SearchBarButton iconOnly onOpen={onOpenSearch} />
+          </Flex>
+          <VideoControls
+            disablePlayButton={!showingCurrentVideo}
+            disableQueueButton={!queue.length}
+            disableRewindButton={!showingCurrentVideo}
+            flex={1}
+            isPlaying={isPlaying}
+            onPressPlayNextQueueItem={playNextQueueItem}
+            onPressPlayPause={onPressPlayPause}
+            onPressRewindToStart={onPressRewindToStart}
+          />
+          <HStack>
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <IconButton 
+                  aria-label="Show volume control" 
+                  hideBelow="sm"
+                  hideFrom="lg" 
+                  size="md"
+                >
+                  <HiSpeakerWave />
+                </IconButton>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content
+                    alignItems="center"
+                    display="flex"
+                    flexDir="column"
+                    gap={2}
+                    h="200px"
+                    justifyContent="center"
+                    minW="50px"
                   >
-                    <SliderTrack>
-                      <SliderFilledTrack />
-                    </SliderTrack>
-                    <Tooltip isOpen={showVolumeTooltip} label={`${localVolume}%`}>
-                      <SliderThumb />
-                    </Tooltip>
-                  </Slider>
-                  <IconButton
-                    aria-label="Max volume"
-                    colorScheme="neutral"
-                    icon={<HiSpeakerWave />}
-                    isDisabled={!showingCurrentVideo}
-                    size="md"
-                    onClick={onClickMaxVolume}
-                  />
-                </HStack>
-              </Tooltip>
+                    <Text>{`${localVolume}%`}</Text>
+                    <Slider.Root
+                      aria-label={["Volume control"]}
+                      disabled={!showingCurrentVideo}
+                      h="100%"
+                      max={100}
+                      min={0}
+                      orientation="vertical"
+                      step={5}
+                      value={[localVolume]}
+                      variant="volume"
+                      onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
+                      onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+                    >
+                      <Slider.Control>
+                        <Slider.Track w="4px">
+                          <Slider.Range />
+                        </Slider.Track>
+
+                        <Slider.Thumb index={0} />
+                      </Slider.Control>
+                    </Slider.Root>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
+            <IconButton aria-label="Open settings" onClick={onOpenSettings}>
+              <HiCog6Tooth />
+            </IconButton>
+          </HStack>
+        </Flex>
+
+        {/* Default */}
+        <Flex
+          align="center"
+          gap={2}
+          hideBelow="lg"
+          w="100%"
+        >
+
+          <VideoControls
+            disablePlayButton={!showingCurrentVideo}
+            disableQueueButton={!queue.length}
+            disableRewindButton={!showingCurrentVideo}
+            flex={1}
+            isPlaying={isPlaying}
+            onPressPlayNextQueueItem={playNextQueueItem}
+            onPressPlayPause={onPressPlayPause}
+            onPressRewindToStart={onPressRewindToStart}
+          />
+
+          <SearchBarButton flex={1} onOpen={onOpenSearch} />
+
+          <HStack flex={1} justify="end">
+            <HStack
+              justifyContent="center"
+              mx="auto"
+              width="170px"
+            >
+              <IconButton
+                aria-label="No volume"
+                colorPalette="neutral"
+                disabled={!showingCurrentVideo}
+                size="md"
+                onClick={onClickToggleMute}
+              >
+                <HiSpeakerXMark />
+              </IconButton>
+
+              <Slider.Root
+                aria-label={["Volume control"]}
+                disabled={!showingCurrentVideo}
+                max={100}
+                min={0}
+                step={5}
+                value={[localVolume]}
+                variant="volume"
+                w="100%"
+                onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
+                onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+              >
+                <Slider.Control>
+                  <Slider.Track h="4px">
+                    <Slider.Range />
+                  </Slider.Track>
+
+                  <Slider.Thumb index={0}>
+                    <Slider.DraggingIndicator
+                      bg="surface.foreground"
+                      px="1.5"
+                      rounded="sm"
+                      shadow="lg"
+                      top="6"
+                    >
+                      <Slider.ValueText />
+                    </Slider.DraggingIndicator>
+                  </Slider.Thumb>
+                </Slider.Control>
+              </Slider.Root>
+
+              <IconButton
+                aria-label="Max volume"
+                disabled={!showingCurrentVideo}
+                size="md"
+                onClick={onClickMaxVolume}
+              >
+                <HiSpeakerWave />
+              </IconButton>
             </HStack>
 
-            {isLargerThan800 ?
-              <Tooltip isDisabled={isMobile} label={`Player ${isConnected ? "Connected" : "Offline"}`} placement="left">
-                <span>
-                  <Icon
-                    aria-label={`${isConnected ? "Connected" : "Offline"}`}
-                    as={HiChartBar}
-                    color={isConnected ? "green" : "orange"}
-                    mt="7px"
-                  />
-                </span>
-              </Tooltip> :
-              null
-            }
+            <Tooltip content={`Player ${isConnected ? "Connected" : "Offline"}`} disabled={isMobile} positioning={{ placement: "left" }}>
+              <chakra.span hideBelow="md">
+                <Icon color={isConnected ? "fg.online" : "fg.offline"}>
+                  <HiChartBar />
+                </Icon>
+              </chakra.span>
+            </Tooltip>
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <IconButton aria-label="Show volume control" hideFrom="md" size="md">
+                  <HiSpeakerWave />
+                </IconButton>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content
+                    alignItems="center"
+                    display="flex"
+                    flexDir="column"
+                    gap={2}
+                    h="200px"
+                    justifyContent="center"
+                    minW="50px"
+                  >
+                    <Text>{`${localVolume}%`}</Text>
+                    <Slider.Root
+                      aria-label={["Volume control"]}
+                      disabled={!showingCurrentVideo}
+                      h="100%"
+                      max={100}
+                      min={0}
+                      orientation="vertical"
+                      step={5}
+                      value={[localVolume]}
+                      variant="volume"
+                      onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
+                      onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+                    >
+                      <Slider.Control>
+                        <Slider.Track w="4px">
+                          <Slider.Range />
+                        </Slider.Track>
 
-            <IconButton
-              aria-label="Open settings"
-              icon={<HiCog6Tooth />}
-              size="md"
-              onClick={onOpenSettings}
-            />
-          </>
-        }
+                        <Slider.Thumb index={0} />
+                      </Slider.Control>
+                    </Slider.Root>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
+            <IconButton aria-label="Open settings" size="md" onClick={onOpenSettings}>
+              <HiCog6Tooth />
+            </IconButton>
+          </HStack>
+        </Flex>
       </Flex>
 
       <SettingsModal
         entryLogs={logs}
-        finalFocusRef={finalFocusRef}
         isBgAnimated={isBgAnimated}
         isConnected={isConnected}
         isMobile={isMobile}
@@ -258,7 +354,6 @@ const _Header: FC<FlexProps> = (props) => {
       />
 
       <SearchModal
-        finalFocusRef={finalFocusRef}
         handleAddToBottomOfQueue={addToBottomOfQueue}
         handleAddToTopOfQueue={addToTopOfQueue}
         handlePlayVideo={handlePlayVideo}

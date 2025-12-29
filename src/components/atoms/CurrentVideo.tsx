@@ -1,13 +1,12 @@
-import { Box, Flex, HStack, Icon, Image, Link, SkeletonText, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Stack, StackProps, Tag, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { Box, Flex, HStack, Icon, Image, Link, LinkBox, LinkOverlay, Skeleton, SkeletonText, Slider, Spinner, Stack, StackProps, Tag, Text, VisuallyHidden, VStack } from "@chakra-ui/react";
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
-import { usePlayer } from "state/playerContext";
-import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoPublishedDateToString } from "utils/misc";
-import { motion, Variants } from "framer-motion";
-import { useAppState } from "state/appContext";
+import { useAppState, usePlayer } from "@state";
+import { ISO8601ToSeconds, replaceHtmlEntities, secondsToString, videoPublishedDateToString } from "@utils";
 import { FaYoutube } from "react-icons/fa6";
-import dayjs from "dayjs";
 import { GiWinterHat } from "react-icons/gi";
+import dayjs from "dayjs";
+import { Tooltip } from "@ui";
 
 type CurrentVideoProps = StackProps & {};
 
@@ -68,20 +67,25 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
     }
   }, [currentVideoTime, localProgressSeconds]);
 
-
   return (
     <Stack as="article" {...props}>
 
       {/* Video thumbnail preview */}
       <Flex
         alignItems="center"
-        bg={showingCurrentVideo ? "neutral.900" : "surface.solid"}
-        borderBottomRadius="base"
+        bg={showingCurrentVideo ? "neutral.900" : "surface.background"}
+        borderBottomRadius="lg"
         borderTopRadius="lg"
         height="calc(100vw / 3)"
         justifyContent="center"
-        minHeight={isMobile ? "300px" : "400px"}
-        minWidth={isMobile ? "300px" : "400px"}
+        minHeight={{
+          base: "300px",
+          sm: "400px"
+        }}
+        minWidth={{
+          base: "300px",
+          sm: "400px"
+        }}
         position="relative"
         width="calc(100vw / 3)"
       >
@@ -96,8 +100,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           w="100%"
         >
           <Box
-            bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : "surface.solid"}
-            borderRadius="lg"
+            bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : "surface.background"}
             filter={`blur(${currentVideo ? "10px" : "0px"})`}
             height="100%"
             position="absolute"
@@ -108,12 +111,9 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
             <Spinner /> :
 
             currentVideo ?
-              <Flex
-                as="a"
-                href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}` : undefined}
+              <LinkBox
                 justifyContent="center"
                 position="relative"
-                target="_blank"
                 width="75%"
                 zIndex={1}
               >
@@ -125,31 +125,36 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                   userSelect="none"
                   width="100%"
                 />
-                <Icon
-                  aria-label="Open in youtube"
-                  as={FaYoutube}
-                  bottom={0}
-                  boxSize="8%"
-                  color="neutral.50"
-                  position="absolute"
-                  right={0}
-                  role="button"
-                />
-              </Flex> :
+                <LinkOverlay href={`https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}`} target="_blank">
+                  <Icon
+                    as={FaYoutube}
+                    bottom={0}
+                    boxSize="8%"
+                    color="neutral.50"
+                    position="absolute"
+                    right={0}
+                    role="button"
+                  />
+                  <VisuallyHidden>Open in youtube</VisuallyHidden>
+                </LinkOverlay>
+              </LinkBox> :
 
               // Placeholder
-              <VStack gap={5} px={isMobile ? 5 : undefined} zIndex={1}>
-                <motion.div animate="animate" initial="initial" variants={TEXT_ANIM_VARIANTS.fadingOpacityAnimation}>
-                  <VStack gap={4} zIndex={1}>
-                    <Icon as={HiSignalSlash} boxSize="80px" />
-                    <Text fontSize="2xl" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
-                  </VStack>
-                </motion.div>
+              <VStack gap={5} px={{ sm: 5 }} zIndex={1}>
+                <VStack animation="fadingOpacity" gap={4} zIndex={1}>
+                  <Icon as={HiSignalSlash} boxSize="80px" />
+                  <Text fontSize="2xl" textAlign="center">{`Nothing is playing${!isMobile ? " right now" : ""}...`}</Text>
+                </VStack>
                 <HStack
                   alignItems="flex-start"
-                  color="text.subtle"
-                  ml={isMobile ? "12px" : undefined}
-                  px={isMobile ? "20px" : undefined}
+                  ml={{
+                    base: "12px",
+                    sm: "unset"
+                  }}
+                  px={{
+                    base: "20px",
+                    sm: "unset"
+                  }}
                 >
                   <Icon as={HiMagnifyingGlass} boxSize="20px" mt="4px" />
                   <Text>Use the search bar to find the music you love!</Text>
@@ -169,7 +174,7 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               right={2.5}
               textAlign="center"
             >
-              {`${videoTimeString} / ${videoDurationString}`}
+              {`${`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} / ${videoDurationString}`}
             </Text> :
             null
           }
@@ -177,32 +182,31 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
         </Box>
         {showingCurrentVideo ?
           <Box
-            bottom="5.5px"
+            bottom="5px"
             height="5px"
             left={0}
             position="absolute"
             width="100%"
             zIndex="docked"
           >
-            <Slider
-              aria-label="Volume control"
-              focusThumbOnChange={false}
-              isDisabled={!currentVideo}
+            <Slider.Root
+              disabled={!currentVideo}
               max={videoDurationSeconds}
               min={0}
-              role="group"
-              value={isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds}
+              size="sm"
+              value={[isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds]}
               variant="videoProgress"
-              onChange={val => onChangeLocalProgressHandler(val)}
-              onChangeEnd={val => onChangeEndProgressHandler(val)}
+              onValueChange={(e) => onChangeLocalProgressHandler(e.value[0])}
+              onValueChangeEnd={(e) => onChangeEndProgressHandler(e.value[0])}
             >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <Tooltip isOpen={isSlidingLocal} label={`${isSlidingLocal ? localProgressString ?? "0:00" : videoTimeString}`} placement="top">
-                <SliderThumb />
-              </Tooltip>
-            </Slider>
+              <Slider.Control className="group">
+                <Slider.Track _groupHover={{ h: "6px" }} h="4px">
+                  <Slider.Range _groupHover={{ h: "6px" }} />
+                </Slider.Track>
+
+                <Slider.Thumbs />
+              </Slider.Control>
+            </Slider.Root>
           </Box> :
           null
         }
@@ -216,8 +220,11 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
         boxShadow="lg"
         flexDir="column"
         gap="10px"
-        minWidth={isMobile ? "300px" : "400px"}
-        p="10px"
+        minWidth={{
+          base: "300px",
+          sm: "400px"
+        }}
+        p={2}
         position="relative"
         width="calc(100vw / 3)"
       >
@@ -234,78 +241,68 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           /> :
           null
         }
-        <Flex alignItems="center" justifyContent="space-between">
-          <SkeletonText
-            isLoaded={!isPlayerLoading}
-            noOfLines={1}
-            skeletonHeight="14px"
-            speed={SKELETON_SPEED}
-          >
+        <Flex alignItems="center">
+          <SkeletonText loading={isPlayerLoading} noOfLines={1} w="120px">
             <Text fontSize="sm" textTransform="uppercase">
               {currentVideo ? "Current Song" : "No song selected"}
             </Text>
           </SkeletonText>
 
           {showingCurrentVideo && isPlaying ?
-            <Tag
-              bg="red.600"
-              color="white"
-              fontWeight="bold"
-              pb="2px"
-              userSelect="none"
-            >
-              • Playing
-            </Tag> :
+            <Tag.Root bg="red.600" ml="auto" pb="2px">
+              <Tag.Label color="white" fontWeight="bold">
+                Playing
+              </Tag.Label>
+            </Tag.Root> :
             showingCurrentVideo ?
-              <Tag bg="neutral.500" color="white" userSelect="none">Paused</Tag> :
+              <Tag.Root bg="neutral.500" ml="auto">
+                <Tag.Label color="white">
+                  Paused
+                </Tag.Label>
+              </Tag.Root> :
               null
           }
         </Flex>
 
 
-        <Flex flex={1} flexDirection="column">
-          <SkeletonText
-            isLoaded={!isPlayerLoading}
-            noOfLines={2}
-            skeletonHeight="20px"
-            speed={SKELETON_SPEED}
-          >
+        <Stack gap={4}>
+          <SkeletonText loading={isPlayerLoading} noOfLines={1}>
             <Text
               as="h1"
               fontSize="xl"
-              fontWeight="600"
-              noOfLines={3}
+              fontWeight="semibold"
+              lineClamp={3}
+              overflow="hidden"
               textOverflow="ellipsis"
             >
               {videoTitle}
             </Text>
           </SkeletonText>
-        </Flex>
 
-        <SkeletonText
-          isLoaded={!isPlayerLoading}
-          noOfLines={1}
-          skeletonHeight="18px"
-          speed={SKELETON_SPEED}
-          width={isPlayerLoading ? "65%" : "100%"}
-        >
-          <Flex
-            alignItems="flex-start"
-            color="text.subtle"
-            flexDir={isMobile ? "column" : "row"}
-            fontSize="lg"
-            gap={2}
-            width="100%"
-          >
-            <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} isExternal>
-              {showingCurrentVideo ? currentVideo.channelTitle : null}
-            </Link>
-            {showingCurrentVideo && !isMobile ? <Text>•</Text> : null}
-            <Text role="button" onClick={togglePublishedAtDate}>
-              {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
-            </Text>
-          </Flex>
-        </SkeletonText>
+
+          <Skeleton loading={isPlayerLoading} width={isPlayerLoading ? "65%" : "100%"}>
+            <Flex
+              alignItems="flex-start"
+              flexDir={{
+                md: "column",
+                lg: "row"
+              }}
+              fontSize="lg"
+              gap={2}
+              width="100%"
+            >
+              <Link href={showingCurrentVideo ? `https://www.youtube.com/channel/${currentVideo.channelId}` : undefined} target="_blank">
+                {showingCurrentVideo ? currentVideo.channelTitle : null}
+              </Link>
+              {showingCurrentVideo ? <Text hideBelow="md">•</Text> : null}
+              <Tooltip content="Toggle date" contentProps={{ bg: "surface.foreground" }} positioning={{ placement: "top" }}>
+                <Text _hover={{ cursor: "pointer" }} role="button" onClick={togglePublishedAtDate}>
+                  {showPublishedAtAsDate ? dayjs(currentVideo?.publishedAt).format("DD/MM/YYYY") : videoPublishedAt}
+                </Text>
+              </Tooltip>
+            </Flex>
+          </Skeleton>
+        </Stack>
       </Flex>
     </Stack>
   )
@@ -319,31 +316,3 @@ _CurrentVideo.displayName = "CurrentVideo";
  * @returns {JSX.Element} The Current video or placeholder.
  */
 export const CurrentVideo = memo(_CurrentVideo);
-
-
-const SKELETON_SPEED = 2;
-
-const TEXT_ANIM_VARIANTS: Record<string, Variants> = {
-  fadingOpacityAnimation: {
-    initial: { opacity: 1 },
-    animate: {
-      opacity: 0.5,
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        repeatType: "reverse" as const
-      }
-    }
-  },
-  liveTagAnimation: {
-    initial: { opacity: 1 },
-    animate: {
-      opacity: 0.75,
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        repeatType: "reverse" as const
-      }
-    }
-  }
-}
