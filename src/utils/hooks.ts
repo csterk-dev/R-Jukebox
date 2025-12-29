@@ -69,26 +69,39 @@ export const useGoogleSuggestions = (query: string, maxNumOfResults: number) => 
  * @returns {Object} A momized object containing the current connection state of the socket.
  */
 export const useWebSockets = () => {
-  const [isConnected, setIsConnected] = useState(socketInstance.connected);
+  // Initialize with current connection state, but also check if socket is already connected
+  const [isConnected, setIsConnected] = useState(() => socketInstance.connected);
 
   useEffect(() => {
-
-    function onConnect() {
-      // Tell the server that the client is ready to sync state
+    // Helper function to handle connection - syncs state and requests initial state from server
+    const handleConnection = () => {
       setIsConnected(true);
       socketInstance.emit(SOCKET_EVENT_KEYS.getInitialState, socketInstance.id);
+    };
+
+    // Update state immediately if socket is already connected (e.g., on mount after refresh)
+    // This handles the race condition where the socket connected before the listener was set up
+    if (socketInstance.connected) {
+      handleConnection();
     }
 
     function onDisconnect() {
       setIsConnected(false);
     }
 
-    socketInstance.on("connect", onConnect);
+    function onReconnect(attemptNumber: number) {
+      console.log(`Socket reconnected after ${attemptNumber} attempt(s)`);
+      handleConnection();
+    }
+
+    socketInstance.on("connect", handleConnection);
     socketInstance.on("disconnect", onDisconnect);
+    socketInstance.on("reconnect", onReconnect);
 
     return () => {
-      socketInstance.off("connect", onConnect);
+      socketInstance.off("connect", handleConnection);
       socketInstance.off("disconnect", onDisconnect);
+      socketInstance.off("reconnect", onReconnect);
     };
   }, []);
 
