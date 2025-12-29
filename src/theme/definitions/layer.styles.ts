@@ -1,13 +1,15 @@
-import { BoxProps } from "@chakra-ui/react";
+import { defineLayerStyles } from "@chakra-ui/react";
 
-
-export const layerStyles: Record<string, BoxProps> = {
+export const layerStyles = defineLayerStyles({
   "themed-scroll": {
-    _dark: {
-      scrollbarColor: "rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0);"
-    },
-    _light: {
-      scrollbarColor: "rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0);"
+    description: "Themed scrollbar styles for dark and light modes",
+    value: {
+      _dark: {
+        scrollbarColor: "rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0);"
+      } as any,
+      _light: {
+        scrollbarColor: "rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0);"
+      } as any
     }
   }
-}
+});
