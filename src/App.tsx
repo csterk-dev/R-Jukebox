@@ -1,13 +1,17 @@
 import { Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
-import { CurrentVideo, DevScrollStateOverlay } from "@atoms";
-import { NewUpdateModal, QueueHistoryTabs } from "@molecules";
+import { CurrentVideo } from "@atoms";
+import { QueueHistoryTabs } from "@molecules";
 import { PageContainer } from "@templates";
 import { AppProvider, PlayerProvider } from "@state";
 import { Provider, Toaster } from "@ui";
 import { getDebuggingStateFromStorage } from "@utils";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VERSION_NUM } from "./constants";
 import "@fontsource-variable/assistant";
+
+// Dynamic imports for code splitting
+const DevScrollStateOverlay = lazy(() => import("@atoms").then(module => ({ default: module.DevScrollStateOverlay })));
+const NewUpdateModal = lazy(() => import("@molecules").then(module => ({ default: module.NewUpdateModal })));
 
 
 export const App = () => {
@@ -131,17 +135,25 @@ export const App = () => {
               </Flex>
             </Flex>
 
-            <DevScrollStateOverlay
-              display={showDevDebugging ? "flex" : "none"}
-              isAtBottomOfPage={isAtBottomOfPage}
-              isAtTopOfPage={isAtTopOfPage}
-              isLandscape={isLandscape}
-              isScrolledPastCurrentVideo={isScrolledPastCurrentVideo}
-              showScrollToTopButton={showScrollToTopButton}
-            />
+            {showDevDebugging ? (
+              <Suspense fallback={null}>
+                <DevScrollStateOverlay
+                  display="flex"
+                  isAtBottomOfPage={isAtBottomOfPage}
+                  isAtTopOfPage={isAtTopOfPage}
+                  isLandscape={isLandscape}
+                  isScrolledPastCurrentVideo={isScrolledPastCurrentVideo}
+                  showScrollToTopButton={showScrollToTopButton}
+                />
+              </Suspense>
+            ) : null}
           </PageContainer>
 
-          <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+          {isNewUpdateOpen ? (
+            <Suspense fallback={null}>
+              <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+            </Suspense>
+          ) : null}
           
         </PlayerProvider>
       </AppProvider>

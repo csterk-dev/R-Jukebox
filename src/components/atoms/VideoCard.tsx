@@ -1,5 +1,4 @@
 import { Box, Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, Portal, Tag, Text, VStack } from "@chakra-ui/react";
-import { useWebHover } from "@usesoftwareau/react-utils";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiEllipsisVertical, HiQueueList, HiSignal } from "react-icons/hi2";
 import { ISO8601ToSeconds, replaceHtmlEntities, videoDurationToString, videoPublishedDateToString } from "@utils";
@@ -21,7 +20,6 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
   const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
 
   const isLive = videoDuration === "Live";
-  const [cardRef, cardHovered] = useWebHover();
 
 
   const onClickPlay = useCallback(() => {
@@ -43,11 +41,11 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
       bg="surface.foreground"
       borderRadius="sm"
       boxShadow="base"
+      className="group"
       flexDir="row"
       height="94px"
       opacity={isLive ? 0.5 : 1}
       position="relative"
-      ref={cardRef}
       width="100%"
       {...props}
     >
@@ -71,8 +69,14 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
           }}
         // width={isMobile ? "130px" : "168px"}
         />
-        {cardHovered && !isMobile ?
-          <VStack gap="2px" position="absolute" right="2px">
+        {!isMobile ?
+          <VStack
+            _groupHover={{ visibility: "visible" }}
+            gap="2px"
+            position="absolute"
+            right="2px"
+            visibility="hidden"
+          >
             <Tooltip content="Play next" positioning={{ placement: "left" }}>
               <IconButton
                 _hover={{

@@ -1,4 +1,4 @@
-import { Dialog, HStack, Icon, Separator, Text } from "@chakra-ui/react";
+import { Button, Dialog, HStack, Icon, Separator, Text } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 import { Dispatch, FC, ReactNode, SetStateAction, useCallback, useMemo } from "react";
 import { HiChartBar, HiClipboardDocumentList, HiCodeBracket, HiMoon, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSun } from "react-icons/hi2";
@@ -31,10 +31,12 @@ const SettingsMenuItem: FC<SettingsMenuItemProps> = ({
   iconProps = { mt: "3px" }
 }) => {
   return (
-    <HStack
+    <Button
       _hover={{ cursor: "pointer" }}
       as="button"
       height="35px"
+      justifyContent="flex-start"
+      px={0}
       width="100%"
       onClick={onClick}
     >
@@ -54,7 +56,7 @@ const SettingsMenuItem: FC<SettingsMenuItemProps> = ({
         </>
       )}
       {rightContent}
-    </HStack>
+    </Button>
   );
 };
 SettingsMenuItem.displayName = "SettingsMenuItem";

@@ -1,12 +1,14 @@
 import { chakra, Flex, FlexProps, HStack, Icon, IconButton, Menu, Portal, Slider, Text, useDisclosure } from "@chakra-ui/react";
-import { FC, KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from "react";
+import { FC, KeyboardEvent, lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiCog6Tooth, HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { VideoControls } from "./VideoControls";
 import { useAppState, usePlayer } from "@state";
 import { SearchBarButton } from "./SearchBarButton";
-import { SearchModal } from "./SearchModal";
-import { SettingsModal } from "./SettingsModal/index";
 import { Tooltip } from "@ui";
+
+// Dynamic imports for code splitting
+const SearchModal = lazy(() => import("./SearchModal").then(module => ({ default: module.SearchModal })));
+const SettingsModal = lazy(() => import("./SettingsModal/index").then(module => ({ default: module.SettingsModal })));
 
 
 
@@ -137,7 +139,7 @@ const _Header: FC<FlexProps> = (props) => {
               sm: "84px"
             }}
           >
-            <SearchBarButton iconOnly onOpen={onOpenSearch} />
+            <SearchBarButton iconOnly onClick={onOpenSearch} />
           </Flex>
           <VideoControls
             disablePlayButton={!showingCurrentVideo}
@@ -223,7 +225,7 @@ const _Header: FC<FlexProps> = (props) => {
             onPressRewindToStart={onPressRewindToStart}
           />
 
-          <SearchBarButton flex={1} onOpen={onOpenSearch} />
+          <SearchBarButton flex={1} onClick={onOpenSearch} />
 
           <HStack flex={1} justify="end">
             <HStack
@@ -339,28 +341,32 @@ const _Header: FC<FlexProps> = (props) => {
         </Flex>
       </Flex>
 
-      <SettingsModal
-        entryLogs={logs}
-        isBgAnimated={isBgAnimated}
-        isConnected={isConnected}
-        isMobile={isMobile}
-        isOpen={isSettingsOpen}
-        isVolumeDisabled={!showingCurrentVideo}
-        toggleBgAnimated={toggleBgAnimated}
-        volumeLevel={localVolume}
-        onChangeEndVolumeHandler={onChangeEndVolumeHandler}
-        onChangeVolumeHandler={onChangeVolumeHandler}
-        onClose={onCloseSettings}
-      />
+      <Suspense fallback={null}>
+        <SettingsModal
+          entryLogs={logs}
+          isBgAnimated={isBgAnimated}
+          isConnected={isConnected}
+          isMobile={isMobile}
+          isOpen={isSettingsOpen}
+          isVolumeDisabled={!showingCurrentVideo}
+          toggleBgAnimated={toggleBgAnimated}
+          volumeLevel={localVolume}
+          onChangeEndVolumeHandler={onChangeEndVolumeHandler}
+          onChangeVolumeHandler={onChangeVolumeHandler}
+          onClose={onCloseSettings}
+        />
+      </Suspense>
 
-      <SearchModal
-        handleAddToBottomOfQueue={addToBottomOfQueue}
-        handleAddToTopOfQueue={addToTopOfQueue}
-        handlePlayVideo={handlePlayVideo}
-        isMobile={isMobile}
-        isOpen={isSearchOpen}
-        onClose={onCloseSearch}
-      />
+      <Suspense fallback={null}>
+        <SearchModal
+          handleAddToBottomOfQueue={addToBottomOfQueue}
+          handleAddToTopOfQueue={addToTopOfQueue}
+          handlePlayVideo={handlePlayVideo}
+          isMobile={isMobile}
+          isOpen={isSearchOpen}
+          onClose={onCloseSearch}
+        />
+      </Suspense>
     </>
   )
 }

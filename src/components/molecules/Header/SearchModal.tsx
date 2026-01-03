@@ -41,7 +41,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
   const { suggestions, clearSuggestions } = useGoogleSuggestions(debouncedSearchInput, MAX_NUM_OF_SUGGESTIONS);
 
   // Track if we should show results (when there are actual results to display, or if an error is present (we still render the error in the modal body).
-  const shouldShowResults = (!!data?.length && data.some(page => page.videos.length > 0));
+  const shouldShowResults = (!!placeholderDevData?.length && placeholderDevData.some(page => page.videos.length > 0));
 
 
   const hideSuggestions = useCallback(() => {
@@ -166,7 +166,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
   }, [hideSuggestions, searchVal, showSuggestions, suggestions.length]);
 
 
-  const flattened = useMemo(() => !data ? [] : data?.flatMap(page => page.videos), []);
+  const flattened = useMemo(() => !placeholderDevData ? [] : placeholderDevData?.flatMap(page => page.videos), []);
 
   const searchResultVideos = useMemo(() => {
     return flattened.map((video, index) => {
@@ -266,6 +266,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
               }
             >
               <Input
+                _placeholder={{ color: "fg.subtle" }}
                 borderColor="transparent"
                 className="searchInput"
                 enterKeyHint="search"
@@ -446,7 +447,8 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
 };
 
 
-const data = [
+/** An array of data for debugging. Use this array instead of querying the youtube get endpoint to prevent daily token limit throttling. */
+const placeholderDevData = [
   {
     nextPageToken: "CAoQAA",
     resultsPerPage: 10,

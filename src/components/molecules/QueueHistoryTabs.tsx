@@ -412,9 +412,10 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
 
                 <Dialog.Body>
                   <Field.Root as="search">
-                    <Field.Label color="fg.muted">Sort by</Field.Label>
+                    <Field.Label>Sort by</Field.Label>
                     <NativeSelect.Root>
                       <NativeSelect.Field
+                        borderColor="border.solid"
                         css={{
                           "--focus-color": "colors.primary.500"
                         }}
@@ -427,7 +428,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                     </NativeSelect.Root>
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label color="fg.muted">Search term</Field.Label>
+                    <Field.Label>Search term</Field.Label>
                     <InputGroup
                       endElement={
                         <Button
@@ -447,6 +448,8 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                       }
                     >
                       <Input
+                        _placeholder={{ color: "fg.subtle" }}
+                        borderColor="border.solid"
                         css={{
                           "--focus-color": "colors.primary.500"
                         }}

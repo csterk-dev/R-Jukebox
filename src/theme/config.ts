@@ -34,8 +34,8 @@ const bodyBg =
         dark: bgColors.christmasDark
       } :
       {
-        light: bgColors.purpleLight,
-        dark: bgColors.purpleDark
+        light: bgColors.defaultLight,
+        dark: bgColors.defaultDark
       }
 
 
@@ -43,7 +43,10 @@ const bodyBg =
 const system = createSystem(defaultConfig, {
   globalCss: {
     "*": {
-      focusRingColor: "primary.500 !important"
+      _dark: {
+        focusRingColor: "neutral.200 !important"
+      },
+      focusRingColor: "neutral.700 !important"
     },
     body: {
       bg: {

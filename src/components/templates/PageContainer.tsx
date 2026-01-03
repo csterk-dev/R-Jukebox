@@ -1,10 +1,10 @@
 import { Box, BoxProps, Button, IconButton, ScrollArea } from "@chakra-ui/react";
-import { useTheme } from "next-themes";
-import { forwardRef, useMemo } from "react";
+import { forwardRef } from "react";
 // import { PageBackdrop } from "@atoms";
 import { useAppState } from "@state";
 import { Header } from "@molecules";
 import { HiChevronUp } from "react-icons/hi2";
+import { AnimatedBackground } from "@atoms";
 
 type PageContainerProps = BoxProps & {
   handleScrollToTop(): void;
@@ -18,15 +18,14 @@ type PageContainerProps = BoxProps & {
 export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((props, ref) => {
   const { children, showScrollToTopButton, handleScrollToTop, ...rest } = props
 
-  const { isBgAnimated, themeSeason, showDevDebugging } = useAppState();
-  const { theme } = useTheme();
-  const colorMode = theme || "dark";
-  const staticBg = useMemo(() => {
-    return colorMode === "dark" ?
-      themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
-      themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
-  }, [colorMode, themeSeason]);
-
+  const { isBgAnimated, themeSeason } = useAppState();
+  // const { theme } = useTheme();
+  // const colorMode = theme || "dark";
+  // const staticBg = useMemo(() => {
+  //   return colorMode === "dark" ?
+  //     themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
+  //     themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
+  // }, [colorMode, themeSeason]);
 
   return (
     <Box
@@ -104,16 +103,10 @@ export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((pro
 
       </Box>
 
-      {isBgAnimated ?
-        // <PageBackdrop showDevDebugging={showDevDebugging} themeSeason={themeSeason} /> :
-        // TODO Temporary fix until the bg animations are refactored
-        <Box
-          bg={staticBg}
-          height="100%"
-          overflow="hidden"
-          width="100%"
-          zIndex={1}
-        /> :
+      
+      <AnimatedBackground animationsEnabled={isBgAnimated} themeSeason={themeSeason} /> 
+      {/* {isBgAnimated ?
+        <AnimatedBackground animationsEnabled={isBgAnimated} themeSeason={themeSeason} /> :
         <Box
           bg={staticBg}
           height="100%"
@@ -121,7 +114,7 @@ export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((pro
           width="100%"
           zIndex={1}
         />
-      }
+      } */}
     </Box>
   )
 })

@@ -1,3 +1,4 @@
+export * from "./AnimatedBackground";
 export * from "./ColorModeSwitcher";
 export * from "./CurrentVideo";
 export * from "./DevScrollStateOverlay";

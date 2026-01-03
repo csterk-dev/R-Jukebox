@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getGoogleAutoCompleteSuggestions } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
@@ -146,64 +146,4 @@ export function useDebounce(text: string, delay: number = 300) {
   }, [delay, text]);
 
   return output;
-}
-
-
-/**
- * A custom hook that allows you to track whether an element is being hovered over or not, 
- * enabling you to apply conditional rendering or perform any desired actions based on the hover state.
- * 
- * @returns {[instance: HTMLDivElement, boolean]} An array containing a reference to attach to the target element and the current boolean hovering status.
- * @example
- * ```tsx
- * // Chakra UI Box & Text example:
- * const [boxRef, boxHovered] = useWebHover();
- * <Box
- *    bg="blue"
- *    h="50px"
- *    ref={boxRef}
- *    w="100%"
- *  >
- *    <Text color={boxHovered ? "red" : "black"}>
- *        Hover over the box to change my text color!
- *    </Text>
- * </Box>
- * ```
- */
-export function useWebHover(): [(instance: HTMLDivElement) => void, boolean] {
-  const [hovering, setHovering] = useState(false);
-  const previousNode = useRef<HTMLDivElement>();
-
-  const handleMouseEnter = useCallback(() => {
-    setHovering(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHovering(false);
-  }, []);
-
-  const customRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
-        previousNode.current.removeEventListener(
-          "mouseenter",
-          handleMouseEnter
-        );
-        previousNode.current.removeEventListener(
-          "mouseleave",
-          handleMouseLeave
-        );
-      }
-
-      if (node?.nodeType === Node.ELEMENT_NODE) {
-        node.addEventListener("mouseenter", handleMouseEnter);
-        node.addEventListener("mouseleave", handleMouseLeave);
-      }
-
-      previousNode.current = node;
-    },
-    [handleMouseEnter, handleMouseLeave]
-  );
-
-  return [customRef, hovering];
 }
