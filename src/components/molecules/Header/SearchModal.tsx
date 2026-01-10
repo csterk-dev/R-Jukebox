@@ -347,17 +347,19 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
                         "&[aria-selected='true']:hover": {
                           bg: "primary.100"
                         },
-                        // Dark mode: selected state background
-                        "[data-theme='dark'] &[aria-selected='true']": {
-                          bg: "primary.700"
-                        },
-                        // Dark mode: hover styles for non-selected items
-                        "[data-theme='dark'] &:hover": {
-                          bg: "primary.500"
-                        },
-                        // Dark mode: hover styles for selected items
-                        "[data-theme='dark'] &[aria-selected='true']:hover": {
-                          bg: "primary.700"
+                        _dark: {
+                          // Dark mode: selected state background
+                          "&[aria-selected='true']": {
+                            bg: "primary.700"
+                          },
+                          // Dark mode: hover styles for non-selected items
+                          "&:hover": {
+                            bg: "primary.500"
+                          },
+                          // Dark mode: hover styles for selected items
+                          "&[aria-selected='true']:hover": {
+                            bg: "primary.700"
+                          }
                         }
                       }}
                       cursor="pointer"
@@ -382,21 +384,15 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
               </Stack>
             </Stack>
           ) : null}
-          {/* </Flex> */}
 
           {shouldShowResults || !!error ?
             <Dialog.Body
               borderRadius="lg"
               id="search_modal_body"
               layerStyle="themed-scroll"
-              // px={0}
               overflowY="auto"
               ref={modalBodyRef}
             >
-              {/* <ScrollArea.Root variant="always">
-                <ScrollArea.Viewport>
-                  <ScrollArea.Scrollbar />
-                  <ScrollArea.Content px="4"> */}
               <Box
                 bg="surface.foreground"
                 mb={2}
@@ -434,9 +430,6 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
                   </Text> :
                   null
               }
-              {/* </ScrollArea.Content>
-                </ScrollArea.Viewport>
-              </ScrollArea.Root> */}
             </Dialog.Body> :
             null
           }
