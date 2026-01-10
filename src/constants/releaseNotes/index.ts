@@ -4,9 +4,14 @@ import { v1_2_0, v1_2_1, v1_2_2 } from "./v1_2_x";
 import { v1_3_0, v1_3_1 } from "./v1_3_x";
 import { v1_4_0, v1_4_1, v1_4_2 } from "./v1_4_x";
 import { v1_5_0, v1_5_1, v1_5_2 } from "./v1_5_x";
+import { v2_0_0 } from "./v2_0_0";
 
 
 const VERSION_GROUP_DEFINITIONS = [
+  {
+    groupTitle: "Vite & Chakra 3",
+    versionNumGroup: "2.0"
+  },
   {
     groupTitle: "Infinite Scroll",
     versionNumGroup: "1.5"
@@ -35,6 +40,12 @@ const VERSION_GROUP_DEFINITIONS = [
 
 
 export const ALL_RELEASE_NOTES: ReleaseNotes = [
+  {
+    title: "Goodbye CRA... Hello Vite & Chakra 3",
+    versionNum: "2.0.0",
+    notes: v2_0_0,
+    date: "12/01/2025"
+  },
   {
     title: "Release 1.5.2",
     versionNum: "1.5.2",

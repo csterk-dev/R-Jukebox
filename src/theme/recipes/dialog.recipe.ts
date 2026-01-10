@@ -14,7 +14,7 @@ export const dialogRecipe = defineSlotRecipe({
       px: 4
     },
     title: {
-      textStyle: "heading/title"
+      fontSize: "xl"
     },
     body: {
       display: "flex",

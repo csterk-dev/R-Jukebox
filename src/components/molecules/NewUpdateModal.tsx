@@ -1,4 +1,4 @@
-import { Button, Dialog, Portal, Separator, Stack, Text } from "@chakra-ui/react";
+import { Button, Dialog, Portal, Stack, Text } from "@chakra-ui/react";
 import { FC, useMemo } from "react";
 import { ReleaseNotesList } from "@atoms";
 import { ALL_RELEASE_NOTES } from "@constants";
@@ -36,27 +36,27 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, curre
             overflowY="auto"
             userSelect="none"
           >
-            <Stack p="8px 20px 20px">
-              <Text as="h1" fontSize="32" fontWeight="semibold">{`${latestUpdateNotes?.title}`}</Text>
-
+            <Dialog.Header display="flex" flexDir="column">
+              <Dialog.Title>
+                {`${latestUpdateNotes?.title}`}
+              </Dialog.Title>
               <Text
-                as="h2"
                 color="fg.heading-subtle"
                 fontSize="24"
                 fontWeight="semibold"
               >
                 What's new?
               </Text>
-              <Separator />
+            </Dialog.Header>
+
+            <Stack p="8px 20px 20px">
               <Text textStyle="body/label">{latestUpdateNotes?.date}</Text>
               <ReleaseNotesList notes={latestUpdateNotes?.notes ?? []} />
 
               <Button
-                colorPalette="brand"
                 mt={4}
-                pb="2px"
                 size="md"
-                variant="solid"
+                variant="primary"
                 onClick={onClose}
               >
                 Lets go!
