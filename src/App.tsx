@@ -6,12 +6,12 @@ import { AppProvider, PlayerProvider } from "@state";
 import { Provider, Toaster } from "@ui";
 import { getDebuggingStateFromStorage } from "@utils";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { VERSION_NUM } from "./constants";
+import { LOCAL_STORAGE_KEY_CURRENT_VERSION, VERSION_NUM } from "./constants";
 import "@fontsource-variable/assistant";
 
-// Dynamic imports for code splitting
-const DevScrollStateOverlay = lazy(() => import("@atoms").then(module => ({ default: module.DevScrollStateOverlay })));
-const NewUpdateModal = lazy(() => import("@molecules").then(module => ({ default: module.NewUpdateModal })));
+// Dynamic imports for code splitting - components removed from barrel exports to enable proper splitting
+const DevScrollStateOverlay = lazy(() => import("./components/atoms/DevScrollStateOverlay").then(module => ({ default: module.DevScrollStateOverlay })));
+const NewUpdateModal = lazy(() => import("./components/molecules/NewUpdateModal").then(module => ({ default: module.NewUpdateModal })));
 
 
 export const App = () => {
@@ -21,10 +21,10 @@ export const App = () => {
 
   /** Open the update modal if the user has previously used jukebox. */
   useEffect(() => {
-    const currentVersion = localStorage.getItem("current_version");
+    const currentVersion = localStorage.getItem(LOCAL_STORAGE_KEY_CURRENT_VERSION);
     if (currentVersion && currentVersion !== VERSION_NUM) onOpenNewUpdate();
 
-    localStorage.setItem("current_version", VERSION_NUM);
+    localStorage.setItem(LOCAL_STORAGE_KEY_CURRENT_VERSION, VERSION_NUM);
   }, [onOpenNewUpdate]);
 
 

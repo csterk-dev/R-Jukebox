@@ -1,3 +1,3 @@
 export * from "./Header";
 export * from "./QueueHistoryTabs";
-export * from "./NewUpdateModal";
+// NewUpdateModal is not exported here to allow for code splitting via dynamic imports

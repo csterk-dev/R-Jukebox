@@ -94,4 +94,6 @@ export const MAX_NUM_OF_SUGGESTIONS = 10;
 
 export const LOCAL_STORAGE_KEY_DEV_DEBUGGING = "dev_debugging";
 
+export const LOCAL_STORAGE_KEY_CURRENT_VERSION = "current_version";
+
 export { ALL_RELEASE_NOTES, RELEASE_NOTES_GROUP_TITLES } from "./releaseNotes";
