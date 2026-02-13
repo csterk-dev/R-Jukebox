@@ -17,13 +17,10 @@ export const sliderRecipe = defineSlotRecipe({
           bg: "surface.muted"
         },
         thumb: {
-          _dark: {
-            bg: "surface.foreground"
-          },
           _dragging: {
-            bg: "brand.solid"
+            bg: "brand.fg"
           },
-          bg: "surface.muted",
+          bg: "brand.solid",
           border: "1px solid",
           borderColor: "surface.foreground",
           boxShadow: "2xl",
