@@ -1,23 +1,23 @@
-import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, ModalProps, Progress, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Dialog, Flex, Icon, Input, InputGroup, Progress, Separator, Spinner, Stack, Text } from "@chakra-ui/react";
 import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HiArrowUpRight, HiMagnifyingGlass } from "react-icons/hi2";
-import { VideoCard } from "components/atoms/VideoCard";
-import { MAX_NUM_OF_SUGGESTIONS } from "constants/index";
-import { useDebounce, useGoogleSuggestions } from "utils/hooks";
-import { usePaginatedYTSearch } from "state/swr";
-import { useAppState } from "state/appContext";
+import { VideoCard } from "@atoms";
+import { MAX_NUM_OF_SUGGESTIONS } from "@constants";
+import { useDebounce, useGoogleSuggestions } from "@utils";
+import { useAppState, usePaginatedYTSearch } from "@state";
 
 
 
-type SearchModalProps = Omit<ModalProps, "children"> & {
-  finalFocusRef: React.MutableRefObject<null>;
+type SearchModalProps = {
   isMobile: boolean;
+  isOpen: boolean;
+  onClose: () => void;
   handlePlayVideo: (video: Video) => void;
   handleAddToBottomOfQueue: (video: Video, action: "add" | "move") => void;
   handleAddToTopOfQueue: (video: Video, action: "add" | "move") => void;
 }
 
-export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
+export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlayVideo, handleAddToBottomOfQueue, handleAddToTopOfQueue, onClose }) => {
   const { showDevDebugging } = useAppState();
   const [searchVal, setSearchVal] = useState<string>("");
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(-1);
@@ -49,6 +49,10 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
     setShowSuggestions(false)
   }, []);
 
+  const onClickOverlay = useCallback(() => {
+    if (showSuggestions) return;
+    onClose();
+  }, [onClose, showSuggestions]);
 
   const handleSubmit = useCallback(() => {
     if (!searchVal) return;
@@ -166,25 +170,77 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
   }, [hideSuggestions, searchVal, showSuggestions, suggestions.length]);
 
 
-  const flattened = useMemo(() => !data ? [] : data?.flatMap(page => page.videos), [data]);
+  const dialogBody = useMemo(() => {
+    if (shouldShowResults || !!error) {
+      const flattened = !data ? [] : data?.flatMap(page => page.videos);
+      const searchResultVideos = flattened.map((video, index) => {
+        const cardKey = `${video.videoId}-${index}`;
+        return (
+          <>
+            <Separator />
+            <VideoCard
+              key={cardKey}
+              addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
+              addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
+              as="li"
+              isMobile={isMobile}
+              playVideo={handlePlayVideo}
+              video={video}
+            />
+          </>
+        );
+      });
 
-  const searchResultVideos = useMemo(() => {
-    return flattened.map((video, index) => {
-      const cardKey = `${video.videoId}-${index}`;
-      if (!video) return;
       return (
-        <VideoCard
-          key={cardKey}
-          addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
-          addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
-          as="li"
-          isMobile={isMobile}
-          playVideo={handlePlayVideo}
-          video={video}
-        />
-      );
-    })
-  }, [flattened, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, isMobile]);
+        <Dialog.Body
+          borderRadius="lg"
+          id="search_modal_body"
+          layerStyle="themed-scroll"
+          overflowY="auto"
+          ref={modalBodyRef}
+        >
+          <Box
+            bg="surface.foreground"
+            mb={2}
+            position="sticky"
+            py={2}
+            top={0}
+            w="100%"
+            zIndex="docked"
+          >
+            {!!error ?
+              <Text color="fg.error" textAlign="center" textStyle="body/sub-text">
+                An error occured while searching
+              </Text> :
+              <Text textStyle="body/sub-text">
+                {`Showing ${flattened.length} results for `}
+                <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
+              </Text>
+            }
+          </Box>
+
+          {searchResultVideos.length ?
+            <Stack as="ul" pb={2}>
+              {searchResultVideos}
+            </Stack> :
+            null
+          }
+
+          {isValidating ?
+            <Box mx="auto" pb={2}>
+              <Spinner size="sm" />
+            </Box> :
+            !hasMore && flattened.length > 0 ?
+              <Text color="fg.muted" pb={2} textAlign="center">
+                No more videos to display
+              </Text> :
+              null
+          }
+        </Dialog.Body>
+      )
+    }
+  }, [data, error, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, hasMore, isMobile, isValidating, searchTerm, shouldShowResults]);
+
 
 
   // Handle infinite scroll loading when user scrolls to bottom
@@ -219,23 +275,20 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
 
 
   return (
-    <Modal
-      closeOnOverlayClick={false}
-      finalFocusRef={finalFocusRef}
-      isOpen={isOpen}
+    <Dialog.Root
+      closeOnInteractOutside={false}
+      open={isOpen}
       scrollBehavior="inside"
       size={isMobile ? "xs" : "md"}
       variant="search"
-      onClose={() => void 0}
-      onEsc={hideSuggestionsAndClose}
+      onEscapeKeyDown={hideSuggestionsAndClose}
+      onInteractOutside={onClickOverlay}
+      // Decouple the internal on change handler as we handle closing manually.
+      onOpenChange={() => void 0}
     >
-      <ModalOverlay />
-      <ModalContent boxShadow={0}>
-        <Flex
-          alignItems="center"
-          flexDir="column"
-          position="relative"
-        >
+      <Dialog.Backdrop />
+      <Dialog.Positioner>
+        <Dialog.Content boxShadow="none">
           <form
             id="search"
             style={{ width: "100%" }}
@@ -245,21 +298,40 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               as="search"
               bg="surface.foreground"
               borderRadius="lg"
+              endElement={
+                <Button
+                  _hover={{
+                    color: "fg.accent",
+                    textDecoration: "underline"
+                  }}
+                  colorPalette="brand"
+                  mr="-10px"
+                  size="sm"
+                  variant="plain"
+                  onClick={onClickClear}
+                >
+                  {searchVal ? "Clear" : "Close"}
+                </Button>
+              }
               overflow="hidden"
+              startElement={
+                <Icon color="fg.muted">
+                  <HiMagnifyingGlass />
+                </Icon>
+              }
             >
-              <InputLeftElement pointerEvents="none">
-                <Icon aria-label="search icon" as={HiMagnifyingGlass} color="text.subtle" />
-              </InputLeftElement>
               <Input
+                _placeholder={{ color: "fg.subtle" }}
+                borderColor="transparent"
                 className="searchInput"
                 enterKeyHint="search"
+                focusRingColor="transparent"
                 height="40px"
                 id="searchInput"
                 placeholder="Search Youtube"
                 ref={inputRef}
                 type="text"
                 value={searchVal}
-                variant="unstyled"
                 width="100%"
                 autoFocus
                 onBlur={useCallback(() => setInputFocused(false), [])}
@@ -271,30 +343,26 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                 onFocus={useCallback(() => setInputFocused(true), [])}
                 onKeyDown={handleKeyDown}
               />
-              <InputRightElement bg="surface.foreground" px={3} w="auto">
-                <Button
-                  colorScheme="brand"
-                  size="sm"
-                  variant="link"
-                  onClick={onClickClear}
-                >
-                  {searchVal ? "Clear" : "Close"}
-                </Button>
-              </InputRightElement>
             </InputGroup>
           </form>
           {isLoading ?
-            <Progress
-              bg="surface.foreground"
-              borderBottomLeftRadius="6px"
-              borderBottomRightRadius="6px"
-              colorScheme="brand"
+            <Progress.Root
+              colorPalette="brand"
               height="8px"
               mt="-8px"
+              value={null}
               width="100%"
               zIndex={1}
-              isIndeterminate
-            /> :
+            >
+              <Progress.Track
+                bg="surface.foreground"
+                borderBottomLeftRadius="6px"
+                borderBottomRightRadius="6px"
+                boxShadow="none"
+              >
+                <Progress.Range />
+              </Progress.Track>
+            </Progress.Root> :
             null
           }
 
@@ -308,12 +376,11 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               overflow="hidden"
               overflowY="auto"
               position="absolute"
-              spacing={0}
               top="50px"
               width="100%"
               zIndex="dropdown"
-            >                
-              <Stack gap={0} role="listbox">      
+            >
+              <Stack gap={0} role="listbox">
                 {suggestions.map((suggestion, index) => {
                   const isSelected = index === selectedSuggestionIndex;
                   return (
@@ -321,37 +388,39 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
                       key={suggestion}
                       aria-selected={isSelected}
                       className="group"
+                      css={{
+                        // Base styles: selected state background
+                        bg: "transparent",
+                        "&[aria-selected='true']": {
+                          bg: "primary.100"
+                        },
+                        // Hover styles for non-selected items
+                        "&:hover": {
+                          bg: "primary.200"
+                        },
+                        // Hover styles for selected items
+                        "&[aria-selected='true']:hover": {
+                          bg: "primary.100"
+                        },
+                        _dark: {
+                          // Dark mode: selected state background
+                          "&[aria-selected='true']": {
+                            bg: "primary.700"
+                          },
+                          // Dark mode: hover styles for non-selected items
+                          "&:hover": {
+                            bg: "primary.500"
+                          },
+                          // Dark mode: hover styles for selected items
+                          "&[aria-selected='true']:hover": {
+                            bg: "primary.700"
+                          }
+                        }
+                      }}
                       cursor="pointer"
                       px={2}
                       py={1.5}
                       role="option"
-                      sx={{
-                        // Base styles: selected state background
-                        bg: "transparent",
-                        "&[aria-selected='true']": {
-                          bg: "brand.100"
-                        },
-                        // Hover styles for non-selected items
-                        "&:hover": {
-                          bg: "brand.200"
-                        },
-                        // Hover styles for selected items
-                        "&[aria-selected='true']:hover": {
-                          bg: "brand.100"
-                        },
-                        // Dark mode: selected state background
-                        "[data-theme='dark'] &[aria-selected='true']": {
-                          bg: "brand.700"
-                        },
-                        // Dark mode: hover styles for non-selected items
-                        "[data-theme='dark'] &:hover": {
-                          bg: "brand.500"
-                        },
-                        // Dark mode: hover styles for selected items
-                        "[data-theme='dark'] &[aria-selected='true']:hover": {
-                          bg: "brand.700"
-                        }
-                      }}
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       <Text>
@@ -370,56 +439,10 @@ export const SearchModal: FC<SearchModalProps> = ({ finalFocusRef, isMobile, isO
               </Stack>
             </Stack>
           ) : null}
-        </Flex>
 
-        {shouldShowResults || !!error ?
-          <ModalBody
-            borderRadius="lg"
-            id="search_modal_body"
-            layerStyle="themed-scroll"
-            overflowY="auto"
-            ref={modalBodyRef}
-          >
-            <Box
-              bg="surface.foreground"
-              position="sticky"
-              py={2}
-              top={0}
-              w="100%"
-              zIndex="docked"
-            >
-              {!!error ?
-                <Text color="text.error" textAlign="center" textStyle="body/sub-text">
-                  An error occured while searching
-                </Text> :
-                <Text textStyle="body/sub-text">
-                  {`Showing ${flattened.length} results for `}
-                  <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
-                </Text>
-              }
-            </Box>
-
-            {searchResultVideos.length ?
-              <Stack as="ul" pb={2}>
-                {searchResultVideos}
-              </Stack> :
-              null
-            }
-
-            {isValidating ?
-              <Box mx="auto" pb={2}>
-                <Spinner size="sm" />
-              </Box> :
-              !hasMore && flattened.length > 0 ?
-                <Text color="text.subtle" pb={2} textAlign="center">
-                  No more videos to display
-                </Text> :
-                null
-            }
-          </ModalBody> :
-          null
-        }
-      </ModalContent>
-    </Modal>
+          {dialogBody}
+        </Dialog.Content>
+      </Dialog.Positioner>
+    </Dialog.Root>
   );
 };

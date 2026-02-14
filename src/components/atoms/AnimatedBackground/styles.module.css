@@ -1,0 +1,284 @@
+/* 
+ * Special thanks to baunov for the original CSS Morphing Gradients Animated Background concept.
+ * https://github.com/baunov/gradients-bg 
+ */
+
+
+.hero-container {
+  cursor: default;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  /* --bg-color-1: #002b5d; */
+  /* --bg-color-2: #0098E9; */
+
+  /* Circle colors are set dynamically via JavaScript based on theme palette */
+  --circle-color-1: 0, 0, 0;
+  --circle-color-2: 0, 0, 0;
+  --circle-color-3: 0, 0, 0;
+  --circle-color-4: 0, 0, 0;
+  --circle-color-5: 0, 0, 0;
+  --circle-color-6: 0, 0, 0;
+  --circle-color-7: 0, 0, 0;
+  --circle-color-8: 0, 0, 0;
+  --circle-color-9: 0, 0, 0;
+  --color-interactive: 0, 0, 0;
+
+  --circle-size: 80%;
+  --blending: hard-light;
+}
+
+@keyframes moveInCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes moveVertical {
+  0% {
+    transform: translateY(-50%);
+  }
+
+  50% {
+    transform: translateY(50%);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes moveHorizontal {
+  0% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+
+  50% {
+    transform: translateX(50%) translateY(10%);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+}
+
+.gradient-bg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  /* background: radial-gradient(160.6% 95.68% at 50% 0%, var(--bg-color-1) 0%, var(--bg-color-2) 100%); */
+  top: 0;
+  left: 0;
+}
+
+@media screen and (max-width: 480px) {
+  .gradient-bg {
+    height: 300px;
+  }
+}
+
+.gradient-bg svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.circles-container {
+  filter: url(#goo) blur(40px);
+  width: 100%;
+  height: 100%;
+}
+
+/* Disable expensive filters when animations are disabled, use cheaper blur instead */
+.gradient-bg.animations-disabled .circles-container {
+  filter: blur(20px);
+  /* Much cheaper than url(#goo) blur(40px) - no SVG filter processing */
+}
+
+.gradient-bg.animations-disabled .c1,
+.gradient-bg.animations-disabled .c2,
+.gradient-bg.animations-disabled .c3,
+.gradient-bg.animations-disabled .c4,
+.gradient-bg.animations-disabled .c5,
+.gradient-bg.animations-disabled .c6,
+.gradient-bg.animations-disabled .interactive {
+  mix-blend-mode: normal;
+  will-change: auto;
+}
+
+.c1 {
+  position: absolute;
+  border-radius: full;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-7), 0.8) 0, rgba(var(--circle-color-3), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: center center;
+  animation: moveVertical 30s ease infinite;
+  opacity: 1;
+  will-change: transform;
+}
+
+.c2 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-5), 0.8) 0, rgba(var(--circle-color-3), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 1.5);
+  left: calc(50% - var(--circle-size) / 5);
+  transform-origin: calc(50% - 400px);
+  animation: moveInCircle 20s reverse infinite;
+  opacity: 1;
+  will-change: transform;
+}
+
+.c3 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-4), 0.8) 0, rgba(var(--circle-color-2), 0.1) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2 + 200px);
+  right: calc(50% - var(--circle-size) / 2 - 500px);
+  transform-origin: calc(-50% + 400px);
+  animation: moveInCircle 40s reverse linear infinite;
+  opacity: 1;
+  will-change: transform;
+}
+
+.c4 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-6), 0.8) 0, rgba(var(--circle-color-9), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: calc(var(--circle-size) * 1.2);
+  height: calc(var(--circle-size) * 1.2);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: calc(50% - 200px);
+  animation: moveHorizontal 40s ease infinite;
+  opacity: 0.7;
+  will-change: transform;
+}
+
+.c5 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-1), 0.7) 0, rgba(var(--circle-color-2), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: calc(var(--circle-size) * 2);
+  height: calc(var(--circle-size) * 2);
+  top: calc(50% - var(--circle-size));
+  left: calc(50% - var(--circle-size));
+  transform-origin: calc(50% - 800px) calc(50% + 200px);
+  animation: moveInCircle 20s ease infinite;
+  opacity: 0.7;
+  will-change: transform;
+}
+
+.c6 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--circle-color-9), 0.8) 0, rgba(var(--circle-color-8), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 3);
+  left: calc(50% - var(--circle-size) / 4);
+  transform-origin: calc(50% - 500px);
+  animation: moveHorizontal 40s reverse infinite;
+  opacity: 0.7;
+  will-change: transform;
+}
+
+.interactive {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color-interactive), 0.8) 0, rgba(var(--color-interactive), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: 100%;
+  height: 100%;
+  top: -50%;
+  left: -50%;
+  opacity: 0.7;
+  will-change: transform;
+}
+
+
+/* 
+ * Handle accessability preferences
+ */
+@media (prefers-reduced-motion: reduce) {
+
+  /* Stop all animations */
+  .c1,
+  .c2,
+  .c3,
+  .c4,
+  .c5,
+  .c6 {
+    animation: none;
+    transform: none;
+    /* Ensure they stay in their initial position */
+  }
+
+  /* Keep the interactive circle stationary */
+  .interactive {
+    transition: none;
+    /* Remove any potential transitions */
+    transform: none !important;
+    /* Override the inline style from JavaScript */
+  }
+}
+
+/*
+ * Handle manual animation disabiling
+ */
+.gradient-bg.animations-disabled .c1,
+.gradient-bg.animations-disabled .c2,
+.gradient-bg.animations-disabled .c3,
+.gradient-bg.animations-disabled .c4,
+.gradient-bg.animations-disabled .c5,
+.gradient-bg.animations-disabled .c6 {
+  animation: none;
+  cursor: default;
+  transform: none;
+  will-change: auto;
+}
+
+.gradient-bg.animations-disabled .interactive {
+  transition: none;
+  /* Override inline styles from JS */
+  transform: none !important;
+  will-change: auto;
+}
+
+/*
+ * Handle initial animation delay for LCP optimization
+ */
+.gradient-bg.animations-not-ready .c1,
+.gradient-bg.animations-not-ready .c2,
+.gradient-bg.animations-not-ready .c3,
+.gradient-bg.animations-not-ready .c4,
+.gradient-bg.animations-not-ready .c5,
+.gradient-bg.animations-not-ready .c6 {
+  animation: none;
+  transform: none;
+}
+
+.gradient-bg.animations-not-ready .interactive {
+  transition: none;
+  cursor: default;
+  transform: none !important;
+}

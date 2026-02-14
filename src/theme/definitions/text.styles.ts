@@ -1,39 +1,83 @@
-import { TextProps } from "@chakra-ui/react";
+import { defineTextStyles } from "@chakra-ui/react";
 
-
-export const textStyles: Record<string, TextProps> = {
+/**
+ * Properties defined in a text style
+ * - Font family, weight, and size
+ * - Line height
+ * - Letter spacing
+ * - Text decoration (strikethrough and underline)
+ * - Text transform (uppercase, lowercase, and capitalization)
+ * 
+ * @note Ideally, try to avoid semantic color token use in text styles to ensure for greater usability. 
+ */
+export const textStyles = defineTextStyles({
   "heading/title": {
-    color: "text.heading",
-    fontSize: "md",
-    fontWeight: "semibold",
-    textTransform: "uppercase"
+    description: "Used for main title headings",
+    value: {
+      fontSize: "md",
+      fontWeight: "semibold",
+      textTransform: "uppercase",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "heading"
+    }
   },
   "heading/section": {
-    color: "text.heading-subtle",
-    fontSize: "md",
-    textTransform: "uppercase"
+    description: "Used for section headings",
+    value: {
+      fontSize: "md",
+      textTransform: "uppercase",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "heading"
+    }
   },
   "heading/sub-section": {
-    color: "text.heading-subtle",
-    fontSize: "sm",
-    textTransform: "uppercase"
+    description: "Used for sub-section headings",
+    value: {
+      fontSize: "sm",
+      textTransform: "uppercase",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "heading"
+    }
   },
   "body/base": {
-    color: "text.body",
-    fontSize: "md",
-    fontWeight: "normal"
+    description: "Used for base body text",
+    value: {
+      fontSize: "md",
+      fontWeight: "normal",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "body"
+    }
   },
   "body/sub-text": {
-    color: "text.subtle",
-    fontSize: "md"
+    description: "Used for secondary/sub-text body content",
+    value: {
+      fontSize: "md",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "body"
+    }
   },
   "body/label": {
-    color: "text.subtle",
-    fontSize: "sm"
+    description: "Used for body text labels",
+    value: {
+      fontSize: "sm",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "body"
+    }
   },
   "form/label": {
-    color: "text.subtle",
-    fontSize: "sm",
-    textTransform: "uppercase"
+    description: "Used for form labels",
+    value: {
+      fontSize: "sm",
+      textTransform: "uppercase",
+      lineHeight: "normal",
+      fontStyle: "normal",
+      fontFamily: "body"
+    }
   }
-}
+});

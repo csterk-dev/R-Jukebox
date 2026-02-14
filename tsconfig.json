@@ -1,29 +1,35 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "baseUrl": "./src",
     "paths": {
-      
+      "@atoms": ["components/atoms"],
+      "@constants": ["./constants"],
+      "@molecules": ["components/molecules"],
+      "@organisms": ["components/organisms"],
+      "@state": ["./state"],
+      "@templates": ["components/templates"],
+      "@theme": ["./theme"],
+      "@utils": ["./utils"],
+      "@ui": ["components/ui"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "customConditions": ["dev"]
   },
+  "exclude": ["node_modules"],
   "include": [
     "./src/**/*.ts",
     "./src/**/*.tsx"

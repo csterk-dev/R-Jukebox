@@ -1,10 +1,11 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, HStack, Icon, IconButton, Menu, MenuButton, MenuItemOption, MenuList, MenuOptionGroup, Stack, Tag, TagCloseButton, TagLabel, Text, VStack } from "@chakra-ui/react";
+import { Accordion, Dialog, DialogBodyProps, Flex, HStack, Icon, IconButton, Link, Menu, Portal, RadioGroupValueChangeDetails, ScrollArea, Stack, Tag, Text } from "@chakra-ui/react";
 import { FC, useCallback, useMemo, useState } from "react";
-import { Placeholder } from "components/atoms/Placeholder";
+import { Placeholder } from "@atoms";
 import dayjs, { ManipulateType } from "dayjs";
 import { HiCalendarDays, HiCodeBracket, HiFunnel, HiOutlineArrowTopRightOnSquare } from "react-icons/hi2";
+import { Tooltip } from "@ui";
 
-type LogsScreenProps = {
+type LogsScreenProps = DialogBodyProps & {
   entryLogs: EntryLog[];
 };
 
@@ -46,7 +47,7 @@ const FILTER_BY_DATE_OPTIONS: { label: string; value: FilterByDateOptions }[] = 
 ]
 
 
-export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
+export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs, ...props }) => {
   const [typeFilter, setTypeFilter] = useState<FilterByTypeOptions>("none");
   const [dateFilter, setDateFilter] = useState<FilterByDateOptions>("3_months");
   const filterByDateObj = useMemo(() => dayjs().subtract(+dateFilter.split("_")[0], dateFilter.split("_")[1] as ManipulateType), [dateFilter]);
@@ -80,30 +81,47 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
         mt={2.5}
         width="100%"
       >
-        <Text as="h2" textStyle="heading/sub-section">
+        <Flex
+          align="flex-end"
+          bg="surface.foreground"
+          position="sticky"
+          top={0}
+        >
+          <Text
+            as="h2"
+            mt={2.5}
+            pb={1}
+            textStyle="heading/sub-section"
+          >
+            {date}
+          </Text>
+        </Flex>
+        {/* <Text as="h2" textStyle="heading/sub-section">
           {date}
-        </Text>
+        </Text> */}
         {logs.map(entry => (
-          <AccordionItem key={entry.id} _first={{ borderTopWidth: 0 }}>
-            <h3>
+          <Accordion.Item key={entry.id} _first={{ borderTopWidth: 0 }} value={entry.id.toString()}>
+            <Accordion.ItemTrigger>
               <Flex
                 _hover={{ bgColor: "transparent" }}
                 alignItems="center"
-                as={AccordionButton}
                 justifyContent="space-between"
                 px={0}
+                width="100%"
               >
                 <Text textAlign="start">
                   {dayjs(entry.dateTime).format("hh:mm:ss a")}
                 </Text>
                 <Flex align="center" gap={2}>
-                  <Tag colorScheme={entry.type == "error" ? "red" : "blue"}>{entry.type}</Tag>
-                  <AccordionIcon />
+                  <Tag.Root colorPalette={entry.type == "error" ? "red" : "blue"}>
+                    <Tag.Label>{entry.type}</Tag.Label>
+                  </Tag.Root>
+                  <Accordion.ItemIndicator />
                 </Flex>
               </Flex>
-            </h3>
+            </Accordion.ItemTrigger>
 
-            <AccordionPanel p={0}>
+            <Accordion.ItemContent p={0}>
               <Stack>
                 <Flex flexDir="column">
                   <Text as="h4" textStyle="body/label">
@@ -130,24 +148,23 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
                   <Text as="h4" textStyle="body/label">
                     Stack trace:
                   </Text>
-                  <Text
+                  <Link
                     alignItems="center"
                     as="button"
-                    color="brand.500"
-                    display="flex"
+                    color="primary.500"
                     gap={2}
-                    variant="link"
+                    variant="underline"
                     onClick={() => openEntryLogStackTrace(entry)}
                   >
                     Click here to view
                     <Icon as={HiOutlineArrowTopRightOnSquare} />
-                  </Text>
+                  </Link>
 
                 </Flex>
 
               </Stack>
-            </AccordionPanel>
-          </AccordionItem>
+            </Accordion.ItemContent>
+          </Accordion.Item>
         ))}
       </Stack>
     ))
@@ -155,94 +172,115 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs }) => {
 
 
   return (
-    <Flex flexDirection="column" h="448px">
-      <Flex align="center" px={2}>
-        <Text
-          as="h1"
-          pl={2}
-          textStyle="heading/section"
-        >
+    <Dialog.Body gap={0} pe="-2" {...props}>
+      <Flex align="center" minH="36px">
+        <Text as="h1" textStyle="heading/section">
           Player Logs
         </Text>
 
         <HStack ml="auto">
           {typeFilter !== "none" ?
-            <Tag colorScheme={typeFilter == "error" ? "red" : "blue"} role="button" onClick={clearFilter}>
-              <TagLabel textTransform="capitalize">{typeFilter}</TagLabel>
-              <TagCloseButton pointerEvents="none" role="none" />
-            </Tag> :
+            <Tooltip content="Clear filter">
+              <Tag.Root
+                _hover={{ cursor: "pointer" }}
+                colorPalette={typeFilter == "error" ? "red" : "blue"}
+                role="button"
+                onClick={clearFilter}
+              >
+                <Tag.Label textTransform="capitalize">{typeFilter}</Tag.Label>
+                <Tag.EndElement>
+                  <Tag.CloseTrigger />
+                </Tag.EndElement>
+              </Tag.Root>
+            </Tooltip> :
             null
           }
           <HStack gap={0}>
-            <Menu variant="logFilters">
-              <MenuButton
-                aria-label="Show filters"
-                as={IconButton}
-                icon={<HiFunnel />}
-              />
-              <MenuList>
-                <MenuOptionGroup
-                  title="Filter by type"
-                  type="radio"
-                  value={typeFilter}
-                  onChange={val => setTypeFilter(val as FilterByTypeOptions)}
-                >
-                  {FILTER_BY_TYPE_OPTIONS.map(opt => <MenuItemOption key={opt.value} value={opt.value}>{opt.label}</MenuItemOption>)}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
-            <Menu variant="logFilters">
-              <MenuButton
-                aria-label="Show sort options"
-                as={IconButton}
-                fontSize={18}
-                icon={<HiCalendarDays />}
-              />
-              <MenuList>
-                <MenuOptionGroup
-                  title="Filter by date"
-                  type="radio"
-                  value={dateFilter}
-                  onChange={val => setDateFilter(val as FilterByDateOptions)}
-                >
-                  {FILTER_BY_DATE_OPTIONS.map(opt => <MenuItemOption key={opt.value} value={opt.value}>{opt.label}</MenuItemOption>)}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <Menu.Root variant="logFilters">
+              <Menu.Trigger asChild>
+                <IconButton aria-label="Show filters">
+                  <HiFunnel />
+                </IconButton>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content>
+                    <Menu.RadioItemGroup
+                      title="Filter by type"
+                      value={typeFilter}
+                      onValueChange={useCallback((e: RadioGroupValueChangeDetails) => setTypeFilter(e.value as FilterByTypeOptions), [])}
+                    >
+                      {FILTER_BY_TYPE_OPTIONS.map(opt => (
+                        <Menu.RadioItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                          <Menu.ItemIndicator />
+                        </Menu.RadioItem>
+                      ))}
+                    </Menu.RadioItemGroup>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
+            <Menu.Root variant="logFilters">
+              <Menu.Trigger asChild>
+                <IconButton aria-label="Show sort options" fontSize={18}>
+                  <HiCalendarDays />
+                </IconButton>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content>
+                    <Menu.RadioItemGroup
+                      title="Filter by date"
+                      value={dateFilter}
+                      onValueChange={useCallback((e: RadioGroupValueChangeDetails) => setDateFilter(e.value as FilterByDateOptions), [])}
+                    >
+                      {FILTER_BY_DATE_OPTIONS.map(opt => (
+                        <Menu.RadioItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                          <Menu.ItemIndicator />
+                        </Menu.RadioItem>
+                      ))}
+                    </Menu.RadioItemGroup>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
           </HStack>
         </HStack>
       </Flex>
 
-      <VStack
-        layerStyle="themed-scroll"
-        overflowY="auto"
-        pb={2}
-        px={5}
-      >
-        {!entryLogs.length ? (
-          <Placeholder
-            alignSelf="center"
-            icon={HiCodeBracket}
-            iconBgOverride="neutral.50"
-            mb={5}
-            title="Log entries will appear here"
-          />
-        ) : (
-          !logElements.length ?
-            <Text>
-              {`No ${typeFilter} logs in the last ${+dateFilter.split("_")[0]} ${dateFilter.split("_")[1]}`}
-            </Text> :
-            <Accordion
-              as="li"
-              listStyleType="none"
-              width="100%"
-              allowToggle
-            >
-              {logElements}
-            </Accordion>
-        )}
-      </VStack>
-    </Flex>
+      <ScrollArea.Root h="100%">
+        <ScrollArea.Scrollbar />
+        <ScrollArea.Viewport>
+          <ScrollArea.Content pe="4">
+            {!entryLogs.length ? (
+              <Placeholder
+                alignSelf="center"
+                icon={HiCodeBracket}
+                iconBgOverride="neutral.50"
+                mb={5}
+                title="Log entries will appear here"
+              />
+            ) : (
+              !logElements.length ?
+                <Text>
+                  {`No ${typeFilter === "none" ? " " : `${typeFilter} `}logs in the last ${+dateFilter.split("_")[0]} ${dateFilter.split("_")[1]}`}
+                </Text> :
+                <Accordion.Root
+                  as="li"
+                  listStyleType="none"
+                  width="100%"
+                  collapsible
+                >
+                  {logElements}
+                </Accordion.Root>
+            )}
+
+          </ScrollArea.Content>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>
+    </Dialog.Body>
   );
 };
 

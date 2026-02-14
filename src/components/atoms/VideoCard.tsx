@@ -1,8 +1,8 @@
-import { Box, Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Tag, Text, Tooltip, useColorModeValue, VStack } from "@chakra-ui/react";
-import { useWebHover } from "@usesoftwareau/react-utils";
+import { Box, Flex, FlexProps, HStack, Icon, IconButton, Image, Menu, Portal, Tag, Text, VStack } from "@chakra-ui/react";
 import { FC, memo, useCallback, useMemo } from "react";
 import { HiBarsArrowDown, HiEllipsisVertical, HiQueueList, HiSignal } from "react-icons/hi2";
-import { ISO8601ToSeconds, replaceHtmlEntities, videoDurationToString, videoPublishedDateToString } from "utils/misc";
+import { ISO8601ToSeconds, replaceHtmlEntities, videoDurationToString, videoPublishedDateToString } from "@utils";
+import { Tooltip } from "@ui";
 
 type VideoCardProps = FlexProps & {
   isMobile: boolean;
@@ -14,14 +14,12 @@ type VideoCardProps = FlexProps & {
 }
 
 const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBottomOfQueue, addToTopOfQueue, ...props }) => {
-  const moreActionsIconColor = useColorModeValue("neutral.900", "base.white");
 
   const videoDuration = useMemo(() => videoDurationToString(ISO8601ToSeconds(video.duration)), [video?.duration]);
   const videoPublishedAt = useMemo(() => videoPublishedDateToString(video.publishedAt), [video.publishedAt]);
   const videoTitle = useMemo(() => replaceHtmlEntities(video.title), [video.title]);
 
   const isLive = videoDuration === "Live";
-  const [cardRef, cardHovered] = useWebHover();
 
 
   const onClickPlay = useCallback(() => {
@@ -39,15 +37,27 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
 
   return (
     <Flex
-      _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
-      bg="surface.solid"
+      _hover={{
+        cursor: "pointer",
+        bg: "surface.muted"
+      }}
+      bg="surface.foreground"
       borderRadius="sm"
       boxShadow="base"
+      className="group"
+      css={{
+        "&[data-live-video=true]": {
+          _hover: {
+            cursor: "not-allowed"
+          },
+          opacity: 0.5
+        }
+      }}
+      data-live-video={isLive ? "true" : "false"}
       flexDir="row"
       height="94px"
-      opacity={isLive ? 0.5 : 1}
+      opacity={1}
       position="relative"
-      ref={cardRef}
       width="100%"
       {...props}
     >
@@ -65,11 +75,20 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
           objectFit="cover"
           pointerEvents="none"
           src={video.thumbnails.medium.url}
-          width={isMobile ? "130px" : "168px"}
+          width={{
+            sm: "130px",
+            md: "168px"
+          }}
         />
-        {cardHovered && !isMobile ?
-          <VStack gap="2px" position="absolute" right="2px">
-            <Tooltip label="Play next" placement="left">
+        {!isMobile ?
+          <VStack
+            _groupHover={{ visibility: "visible" }}
+            gap="2px"
+            position="absolute"
+            right="2px"
+            visibility="hidden"
+          >
+            <Tooltip content="Play next" positioning={{ placement: "left" }}>
               <IconButton
                 _hover={{
                   transition: "all linear 0ms "
@@ -77,14 +96,15 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 aria-label="Play video next"
                 bgColor="rgba(0,0,0, 0.8)"
                 color="white"
+                disabled={isLive}
                 fontSize="16px"
-                icon={<HiQueueList />}
-                isDisabled={isLive}
                 variant="solid"
                 onClick={onClickNext}
-              />
+              >
+                <HiQueueList />
+              </IconButton>
             </Tooltip>
-            <Tooltip label="Play last" placement="left">
+            <Tooltip content="Play last" positioning={{ placement: "left" }}>
               <IconButton
                 _hover={{
                   transition: "all linear 0ms "
@@ -92,40 +112,47 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
                 aria-label="Play video last"
                 bgColor="rgba(0,0,0, 0.8)"
                 color="white"
+                disabled={isLive}
                 fontSize="16px"
-                icon={<HiBarsArrowDown />}
-                isDisabled={isLive}
                 variant="solid"
                 onClick={onClickLast}
-              />
+              >
+                <HiBarsArrowDown />
+              </IconButton>
             </Tooltip>
           </VStack> :
           null
         }
-        <Tag
+        <Tag.Root
           alignItems="center"
-          bgColor={isLive ? "red.500" : "rgba(0,0,0, 0.6)"}
+          bgColor="rgba(0,0,0, 0.6)"
           borderRadius="xs"
           bottom="2px"
           color="white"
+          css={{
+            "&[data-live-video=true]": {
+              bg: "red.500"
+            }
+          }}
+          data-live-video={isLive ? "true" : "false"}
           fontSize="14"
-          fontWeight="600"
+          fontWeight="semibold"
           lineHeight="short"
           position="absolute"
           px="4px"
           right="2px"
           textAlign="center"
+          variant="solid"
         >
           {isLive ? <Icon as={HiSignal} mr="2px" /> : null}
           {videoDuration}
-        </Tag>
+        </Tag.Root>
       </Flex>
 
       <Flex
         borderEndRadius="sm"
         flex={1}
         flexDir="column"
-        fontSize="12"
         justifyContent="space-between"
         px={2.5}
         py="5px"
@@ -133,13 +160,14 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
       >
         <Text
           as="h1"
+          fontSize="sm"
           fontWeight="semibold"
-          noOfLines={2}
+          lineClamp={2}
           textOverflow="ellipsis"
         >
           {videoTitle}
         </Text>
-        <Text color="text.subtle" noOfLines={1} textOverflow="ellipsis">
+        <Text fontSize="xs" lineClamp={1} textOverflow="ellipsis">
           {video.channelTitle}
         </Text>
         <HStack>
@@ -149,32 +177,34 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
           <Text>
             •
           </Text> */}
-          <Text color="text.subtle">
+          <Text fontSize="xs">
             {videoPublishedAt}
           </Text>
         </HStack>
       </Flex>
 
       <Flex flexDirection="column" height="100%">
-        <Menu size="sm">
-          <MenuButton
-            aria-label="More options"
-            as={IconButton}
-            color={moreActionsIconColor}
-            fontSize="18px"
-            icon={<HiEllipsisVertical />}
-            size="sm"
-            variant="ghost"
-          />
-          <MenuList>
-            <MenuItem icon={<HiQueueList />} isDisabled={isLive} onClick={onClickNext}>
-              Play Next
-            </MenuItem>
-            <MenuItem icon={<HiBarsArrowDown />} isDisabled={isLive} onClick={onClickLast}>
-              Play Last
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <IconButton aria-label="More options" colorPalette="brand" variant="tertiary">
+              <HiEllipsisVertical />
+            </IconButton>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content>
+                <Menu.Item disabled={isLive} value="next" onSelect={addToTopOfQueue}>
+                  <HiQueueList />
+                  Play Next
+                </Menu.Item>
+                <Menu.Item disabled={isLive} value="last" onClick={addToBottomOfQueue}>
+                  <HiBarsArrowDown />
+                  Play Last
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
       </Flex>
     </Flex>
   )
@@ -193,7 +223,7 @@ export const VideoCard = memo(_VideoCard);
 
 export const VidoeCardSkeleton: FC<FlexProps> = (props) => (
   <Flex
-    bg="surface.solid"
+    bg="surface.foreground"
     borderRadius="sm"
     boxShadow="base"
     flexDir="row"
@@ -237,7 +267,7 @@ export const VidoeCardSkeleton: FC<FlexProps> = (props) => (
         w="130px"
       />
     </Flex>
-    
+
     <Flex
       borderEndRadius="sm"
       flex={1}

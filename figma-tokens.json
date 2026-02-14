@@ -1,0 +1,193 @@
+{
+  "colors": {
+    "base": {
+      "white": "#FFFFFF"
+    },
+    "neutralPurple": {
+      "50": "#e5e5e7",
+      "100": "#bebfc4",
+      "200": "#92949d",
+      "300": "#666975",
+      "400": "#464958",
+      "500": "#25293a",
+      "600": "#212434",
+      "700": "#1b1f2c",
+      "800": "#161925",
+      "900": "#0d0f18"
+    },
+    "neutralOrange": {
+      "50": "#c4bcb4",
+      "100": "#aa9b8d",
+      "200": "#96826f",
+      "300": "#7c6148",
+      "400": "#66492e",
+      "500": "#513f2d",
+      "600": "#473220",
+      "700": "#2b1f13",
+      "800": "#211204",
+      "900": "#0f0801"
+    },
+    "neutralGreen": {
+      "50": "#E8ECE9",
+      "100": "#DDE3DF",
+      "200": "#C8CEC9",
+      "300": "#B2B9B4",
+      "400": "#99A09A",
+      "500": "#808780",
+      "600": "#535653",
+      "700": "#414442",
+      "800": "#383E39",
+      "900": "#1F2521"
+    },
+    "purple": {
+      "50": "#FAF5FF",
+      "100": "#E9D8FD",
+      "200": "#D6BCFA",
+      "300": "#B794F4",
+      "400": "#9F7AEA",
+      "500": "#805AD5",
+      "600": "#6B46C1",
+      "700": "#553C9A",
+      "800": "#44337A",
+      "900": "#322659"
+    },
+    "orange": {
+      "50": "#FFFAF0",
+      "100": "#FEEBC8",
+      "200": "#FBD38D",
+      "300": "#F6AD55",
+      "400": "#ED8936",
+      "500": "#DD6B20",
+      "600": "#C05621",
+      "700": "#9C4221",
+      "800": "#7B341E",
+      "900": "#652B19"
+    },
+    "red": {
+      "50": "#FFF5F5",
+      "100": "#FED7D7",
+      "200": "#FEB2B2",
+      "300": "#FC8181",
+      "400": "#F56565",
+      "500": "#E53E3E",
+      "600": "#C53030",
+      "700": "#9B2C2C",
+      "800": "#822727",
+      "900": "#63171B"
+    },
+    "green": {
+      "50": "#E6F7ED",
+      "100": "#BCE9CE",
+      "200": "#8FDCAB",
+      "300": "#60C888",
+      "400": "#4AAA6F",
+      "500": "#3C8E5E",
+      "600": "#31784E",
+      "700": "#285F3E",
+      "800": "#204C32",
+      "900": "#193D29"
+    }
+  },
+  "semantic": {
+    "icon": {
+      "info": {
+        "light": "#B794F4",
+        "default": "#B794F4"
+      },
+      "bug": {
+        "light": "#FC8181",
+        "default": "#FC8181"
+      },
+      "improvement": {
+        "light": "#D69E2E",
+        "default": "#D69E2E"
+      },
+      "body": {
+        "light": "#1b1f2c",
+        "default": "#FFFFFF"
+      },
+      "on-light": {
+        "light": "#1b1f2c",
+        "default": "#1b1f2c"
+      },
+      "on-dark": {
+        "light": "#e5e5e7",
+        "default": "#e5e5e7"
+      },
+      "inverted": {
+        "light": "#FFFFFF",
+        "default": "#1b1f2c"
+      }
+    },
+    "surface": {
+      "solid": {
+        "light": "#FFFFFF",
+        "default": "#0d0f18"
+      },
+      "foreground": {
+        "light": "#FFFFFF",
+        "default": "#1b1f2c"
+      },
+      "foreground-transparent": {
+        "light": "rgba(255, 255, 255, 0.8)",
+        "default": "rgba(13, 15, 24, 0.75)"
+      },
+      "brand": {
+        "default": "#805AD5"
+      },
+      "brand.hover": {
+        "default": "#6B46C1"
+      }
+    },
+    "text": {
+      "body": {
+        "light": "#1b1f2c",
+        "default": "#FFFFFF"
+      },
+      "subtle": {
+        "light": "#666975",
+        "default": "#bebfc4"
+      },
+      "on-light": {
+        "light": "#1b1f2c",
+        "default": "#1b1f2c"
+      },
+      "on-dark": {
+        "light": "#e5e5e7",
+        "default": "#e5e5e7"
+      },
+      "inverted": {
+        "light": "#FFFFFF",
+        "default": "#1b1f2c"
+      },
+      "heading": {
+        "light": "#1b1f2c",
+        "default": "#FFFFFF"
+      },
+      "heading-subtle": {
+        "light": "#666975",
+        "default": "#bebfc4"
+      },
+      "accent": {
+        "light": "#805AD5",
+        "default": "#B794F4"
+      },
+      "focus": {
+        "light": "#6B46C1",
+        "default": "#6B46C1"
+      },
+      "error": {
+        "light": "#E53E3E",
+        "default": "#FC8181"
+      },
+      "success": {
+        "light": "#3C8E5E",
+        "default": "#60C888"
+      },
+      "warning": {
+        "light": "#B7791F",
+        "default": "#D69E2E"
+      }
+    }
+  }
+}

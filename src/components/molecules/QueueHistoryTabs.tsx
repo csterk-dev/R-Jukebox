@@ -1,13 +1,10 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Circle, Divider, Flex, FlexProps, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Select, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useDisclosure, usePrevious } from "@chakra-ui/react";
-import { Placeholder } from "components/atoms/Placeholder";
-import { VideoCard } from "components/atoms/VideoCard";
+import { Box, Button, Circle, Dialog, Field, Flex, FlexProps, IconButton, Input, InputGroup, NativeSelect, Portal, Spinner, Stack, Tabs, Text, useDisclosure, usePrevious } from "@chakra-ui/react";
+import { Placeholder, VideoCard } from "@atoms";
+import { Tooltip } from "@ui";
 import { ChangeEvent, Dispatch, FC, FormEvent, memo, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HiClock, HiFaceFrown, HiRectangleStack, HiXMark } from "react-icons/hi2";
-import { useAppState } from "state/appContext";
-import { usePlayer } from "state/playerContext";
-import { usePaginatedHistory } from "state/swr";
-import { HistorySortTypes } from "utils/api";
-import { ISO8601ToSeconds, secondsToString, videoPlayedAtToString } from "utils/misc";
+import { useAppState, usePaginatedHistory, usePlayer } from "@state";
+import { HistorySortTypes, ISO8601ToSeconds, secondsToString, videoPlayedAtToString } from "@utils";
 
 
 const HISTORY_SORT_OPTIONS: SelectOption<HistorySortTypes>[] = [
@@ -35,18 +32,13 @@ type QueueHistoryProps = FlexProps & {
 
 const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNearBottomOfPage, handleScrollToTop, isAtBottomOfPage, isLandscape, ...props }) => {
   const { queue, playVideo, addToBottomOfQueue, addToTopOfQueue, clearQueue, deleteQueueItem } = usePlayer();
-  const { showDevDebugging } = useAppState();
-  const [tabIndex, setTabIndex] = useState<number>(0);
-  const { isOpen: isClearConfOpen, onOpen: onOpenClearConf, onClose: onCloseClearConf } = useDisclosure();
-  const { isOpen: isHistoryOptionsOpen, onOpen: onOpenHistoryOptions, onClose: onCloseHistoryOptions } = useDisclosure();
-  const cancelClearButtonRef = useRef<HTMLButtonElement>(null);
-  const cancelHistoryOotionsButtonRef = useRef<HTMLButtonElement>(null);
+  const { showDevDebugging, isMobile } = useAppState();
+  const [tabValue, setTabValue] = useState<string>("queue");
+  const { open: isClearConfOpen, onOpen: onOpenClearConf, onClose: onCloseClearConf } = useDisclosure();
+  const { open: isHistoryOptionsOpen, onOpen: onOpenHistoryOptions, onClose: onCloseHistoryOptions } = useDisclosure();
   const panelsRef = useRef<HTMLDivElement>(null);
   const historyPanelRef = useRef<HTMLDivElement>(null);
-  /** Used to clear the focus when the modal closes (so it doesn't highlight the button - default behaviour) */
-  const finalFocusRef = useRef(null);
-  const { isMobile } = useAppState();
-  const hasHistoryTabFocused = tabIndex === 1;
+  const hasHistoryTabFocused = tabValue === "history";
   const previouslyFocusedQueue = usePrevious(!hasHistoryTabFocused);
 
   const {
@@ -232,41 +224,43 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
           base: "100%",
           lg: "calc(100dvh - 80px)"
         }}
-        maxWidth={isMobile ? "300px" : "400px"}
+        maxW={{
+          base: "300px",
+          sm: "400px"
+        }}
         overflow="clip"
         width="100%"
         {...props}
       >
-        <Tabs
-          colorScheme="brand"
-          defaultIndex={0}
+        <Tabs.Root
+          colorPalette="brand"
+          defaultValue="queue"
           display="flex"
           flexDirection="column"
-          variant="soft-rounded"
+          value={tabValue}
+          variant="subtle"
           width="100%"
-          onChange={useCallback((index: number) => setTabIndex(index), [])}
+          onValueChange={useCallback((e: { value: string }) => {
+            setTabValue(e.value);
+            if (e.value === "history") {
+              setIsNearBottomOfPage(false);
+              onClickScrollToTop();
+            }
+          }, [onClickScrollToTop, setIsNearBottomOfPage])}
         >
-          <TabList
+          <Tabs.List
             alignItems="center"
-            bg="surface.solid"
+            bg="surface.background"
             boxShadow="base"
             justifyContent="space-between"
             p={2}
           >
             <Flex>
-              <Tab color="text.body">Queue</Tab>
-              <Tab
-                color="text.body"
-                onClick={useCallback(() => {
-                  setIsNearBottomOfPage(false);
-                  onClickScrollToTop();
-                }, [onClickScrollToTop, setIsNearBottomOfPage])}
-              >
-                History
-              </Tab>
+              <Tabs.Trigger color="fg.body" value="queue">Queue</Tabs.Trigger>
+              <Tabs.Trigger color="fg.body" value="history">History</Tabs.Trigger>
             </Flex>
-            {tabIndex === 0 ?
-              <Button isDisabled={queue.length === 0} onClick={onOpenClearConf}>
+            {tabValue === "queue" ?
+              <Button disabled={queue.length === 0} variant="tertiary" onClick={onOpenClearConf}>
                 Clear
               </Button> :
               <Box position="relative">
@@ -283,14 +277,14 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                 </Button>
               </Box>
             }
-          </TabList>
-          <TabPanels
+          </Tabs.List>
+          <Box
             height="100%"
             layerStyle="themed-scroll"
             overflowY="auto"
             ref={panelsRef}
           >
-            <TabPanel height="100%" p="8px 8px 8px 0px">
+            <Tabs.Content height="100%" p="8px 8px 8px 0px" value="queue">
               {queue.length === 0 ?
                 <Placeholder
                   icon={HiRectangleStack}
@@ -307,15 +301,10 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                       alignItems="center"
                       as="li"
                     >
-                      <Tooltip label="Remove item" placement="left">
-                        <IconButton
-                          _dark={{ color: "base.white" }}
-                          aria-label="More options"
-                          color="neutral.900"
-                          fontSize="18px"
-                          icon={<HiXMark />}
-                          onClick={() => deleteQueueItem(vid.videoId)}
-                        />
+                      <Tooltip content="Remove item" positioning={{ placement: "left" }}>
+                        <IconButton aria-label="Remove video from queue" variant="tertiary" onClick={() => deleteQueueItem(vid.videoId)}>
+                          <HiXMark />
+                        </IconButton>
                       </Tooltip>
                       <VideoCard
                         addToBottomOfQueue={() => addToBottomOfQueue(vid, "move")}
@@ -328,14 +317,15 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                   ))}
                 </Stack>
               }
-            </TabPanel>
+            </Tabs.Content>
 
-            <TabPanel
+            <Tabs.Content
               height="100%"
               pl={2}
               pr={1}
               py={2}
               ref={historyPanelRef}
+              value="history"
             >
               {!allHistoryVideos.length && !isLoading && !isValidating ? (
                 <Placeholder icon={hasHistoryOptionsEnabled ? HiFaceFrown : HiClock} mb={5} title={hasHistoryOptionsEnabled ? "No history videos match those options" : "History will appear here"} />
@@ -344,7 +334,7 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                   {historyCards}
 
                   {error ?
-                    <Text color="text.error" textAlign="center">
+                    <Text color="fg.error" textAlign="center">
                       Error loading history.
                     </Text> :
 
@@ -354,137 +344,147 @@ const _QueueHistoryTabs: FC<QueueHistoryProps> = ({ setIsAtBottomOfPage: setIsNe
                       </Box> :
 
                       !hasMore ?
-                        <Text color="text.subtle" textAlign="center">
+                        <Text color="fg.muted" textAlign="center">
                           {searchTerm ? "No more videos to display" : "You've reached the end of the history"}
                         </Text> :
                         null
                   }
                 </Stack>
               )}
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+            </Tabs.Content>
+          </Box>
+        </Tabs.Root>
       </Flex>
 
-      <AlertDialog
-        finalFocusRef={finalFocusRef}
-        isOpen={isClearConfOpen}
-        leastDestructiveRef={cancelClearButtonRef}
+      <Dialog.Root
+        open={isClearConfOpen}
+        role="alertdialog"
         size="xs"
-        onClose={onCloseClearConf}
+        onOpenChange={(e) => !e.open && onCloseClearConf()}
       >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <h1>Clear queue?</h1>
-            </AlertDialogHeader>
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Clear queue?</Dialog.Title>
+              </Dialog.Header>
 
-            <AlertDialogBody gap={4}>
-              Are you sure that you want to clear all videos in the queue?
-              <Divider />
-            </AlertDialogBody>
+              <Dialog.Body gap={4}>
+                Are you sure that you want to clear all videos in the queue?
+              </Dialog.Body>
 
-            <AlertDialogFooter>
-              <Button
-                size="sm"
-                variant="destructive"
-                width="100%"
-                onClick={onClickConfirmClear}
-              >
-                Clear
-              </Button>
-              <Button
-                ref={cancelClearButtonRef}
-                size="sm"
-                variant="outline"
-                width="100%"
-                onClick={onCloseClearConf}
-              >
-                Cancel
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+              <Dialog.Footer>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  width="100%"
+                  onClick={onClickConfirmClear}
+                >
+                  Clear
+                </Button>
+                <Dialog.ActionTrigger asChild>
+                  <Button variant="secondary" width="100%">
+                    Cancel
+                  </Button>
+                </Dialog.ActionTrigger>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
 
 
-      <AlertDialog
-        finalFocusRef={finalFocusRef}
-        isOpen={isHistoryOptionsOpen}
-        leastDestructiveRef={cancelHistoryOotionsButtonRef}
+      <Dialog.Root
+        open={isHistoryOptionsOpen}
+        role="alertdialog"
         size="xs"
-        onClose={onCloseHistoryOptions}
+        onOpenChange={(e) => !e.open && onCloseHistoryOptions()}
       >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <form onSubmit={handleSubmitHistoryOptions}>
-              <AlertDialogHeader>
-                <h1>History View Options</h1>
-              </AlertDialogHeader>
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <form onSubmit={handleSubmitHistoryOptions}>
+                <Dialog.Header>
+                  <Dialog.Title>History View Options</Dialog.Title>
+                </Dialog.Header>
 
-              <AlertDialogBody gap={4}>
-                <FormControl as="search">
-                  <FormLabel color="text.subtle">Sort by</FormLabel>
-                  <Select
-                    focusBorderColor="brand.500"
-                    value={historySortInputVal}
-                    variant="outline"
-                    onChange={useCallback((e: ChangeEvent<HTMLSelectElement>) => setHistorySortInputVal(e.target.value as HistorySortTypes), [])}
-                  >
-                    {HISTORY_SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="text.subtle">Search term</FormLabel>
-                  <InputGroup>
-                    <Input
-                      enterKeyHint="search"
-                      focusBorderColor="brand.500"
-                      placeholder="Search by video title or channel"
-                      type="text"      
-                      value={historySearchInputVal}
-                      variant="outline"
-                      onChange={useCallback((e: ChangeEvent<HTMLInputElement>) => setHistorySearchInputVal(e.target.value), [setHistorySearchInputVal])}
-                    />
-                    <InputRightElement mr={3}>
-                      <Button
-                        colorScheme="brand"
-                        display={historySearchInputVal ? "inline-block" : "none"}
-                        size="sm"
-                        variant="link"
-                        onClick={useCallback(() => setHistorySearchInputVal(""), [])}
+                <Dialog.Body>
+                  <Field.Root as="search">
+                    <Field.Label>Sort by</Field.Label>
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        borderColor="border.solid"
+                        css={{
+                          "--focus-color": "colors.primary.500"
+                        }}
+                        value={historySortInputVal}
+                        onChange={useCallback((e: ChangeEvent<HTMLSelectElement>) => setHistorySortInputVal(e.target.value as HistorySortTypes), [])}
                       >
-                        Clear
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                <Divider />
-              </AlertDialogBody>
+                        {HISTORY_SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                      </NativeSelect.Field>
+                      <NativeSelect.Indicator />
+                    </NativeSelect.Root>
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label>Search term</Field.Label>
+                    <InputGroup
+                      endElement={
+                        <Button
+                          _hover={{
+                            color: "fg.accent",
+                            textDecoration: "underline"
+                          }}
+                          colorPalette="brand"
+                          display={historySearchInputVal ? "inline-block" : "none"}
+                          mr="-10px"
+                          size="sm"
+                          variant="plain"
+                          onClick={useCallback(() => setHistorySearchInputVal(""), [])}
+                        >
+                          Clear
+                        </Button>
+                      }
+                    >
+                      <Input
+                        _placeholder={{ color: "fg.subtle" }}
+                        borderColor="border.solid"
+                        css={{
+                          "--focus-color": "colors.primary.500"
+                        }}
+                        enterKeyHint="search"
+                        placeholder="Search by video title or channel"
+                        type="text"
+                        value={historySearchInputVal}
+                        variant="outline"
+                        onChange={useCallback((e: ChangeEvent<HTMLInputElement>) => setHistorySearchInputVal(e.target.value), [setHistorySearchInputVal])}
+                      />
+                    </InputGroup>
+                  </Field.Root>
+                </Dialog.Body>
 
-              <AlertDialogFooter>
-                <Button
-                  isDisabled={isValidating || isLoading}
-                  isLoading={isValidating || isLoading}
-                  type="submit"
-                  variant="brand"
-                  width="100%"
-                >
-                  Apply
-                </Button>
-                <Button
-                  ref={cancelHistoryOotionsButtonRef}
-                  variant="outline"
-                  width="100%"
-                  onClick={onCloseHistoryOptions}
-                >
-                  Close
-                </Button>
-              </AlertDialogFooter>
-            </form>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+                <Dialog.Footer>
+                  <Button
+                    disabled={isValidating || isLoading}
+                    loading={isValidating || isLoading}
+                    type="submit"
+                    variant="primary"
+                    width="100%"
+                  >
+                    Apply
+                  </Button>
+                  <Dialog.ActionTrigger asChild>
+                    <Button variant="secondary" width="100%">
+                      Close
+                    </Button>
+                  </Dialog.ActionTrigger>
+                </Dialog.Footer>
+              </form>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </>
   )
 }

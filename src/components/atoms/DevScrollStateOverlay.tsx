@@ -22,23 +22,23 @@ export const DevScrollStateOverlay: FC<DevScrollStateOverlayProps> = ({ isAtTopO
   >
     <HStack justify="space-between">
       <Text>isAtTopOfPage</Text>
-      <Badge colorScheme={isAtTopOfPage ? "green" : "yellow"}>{`${isAtTopOfPage}`}</Badge>
+      <Badge colorPalette={isAtTopOfPage ? "green" : "yellow"}>{`${isAtTopOfPage}`}</Badge>
     </HStack>
     <HStack justify="space-between">
       <Text>isAtBottomOfPage</Text>
-      <Badge colorScheme={isAtBottomOfPage ? "green" : "yellow"}>{`${isAtBottomOfPage}`}</Badge>
+      <Badge colorPalette={isAtBottomOfPage ? "green" : "yellow"}>{`${isAtBottomOfPage}`}</Badge>
     </HStack>
     <HStack justify="space-between">
       <Text>isScrolledPastCurrentVideo</Text>
-      <Badge colorScheme={isScrolledPastCurrentVideo ? "green" : "yellow"}>{`${isScrolledPastCurrentVideo}`}</Badge>
+      <Badge colorPalette={isScrolledPastCurrentVideo ? "green" : "yellow"}>{`${isScrolledPastCurrentVideo}`}</Badge>
     </HStack>
     <HStack justify="space-between">
       <Text>showScrollToTopButton</Text>
-      <Badge colorScheme={showScrollToTopButton ? "green" : "yellow"}>{`${showScrollToTopButton}`}</Badge>
+      <Badge colorPalette={showScrollToTopButton ? "green" : "yellow"}>{`${showScrollToTopButton}`}</Badge>
     </HStack>
     <HStack justify="space-between">
       <Text>isLandscape</Text>
-      <Badge colorScheme={isLandscape ? "green" : "yellow"}>{`${isLandscape}`}</Badge>
+      <Badge colorPalette={isLandscape ? "green" : "yellow"}>{`${isLandscape}`}</Badge>
     </HStack>
   </Stack>
 )
