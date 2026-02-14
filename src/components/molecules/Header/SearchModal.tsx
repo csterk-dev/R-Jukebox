@@ -25,7 +25,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
   const [inputFocused, setInputFocused] = useState(false);
 
   const {
-    // data,
+    data,
     error,
     searchTerm,
     setSearchTerm,
@@ -41,7 +41,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
   const { suggestions, clearSuggestions } = useGoogleSuggestions(debouncedSearchInput, MAX_NUM_OF_SUGGESTIONS);
 
   // Track if we should show results (when there are actual results to display, or if an error is present (we still render the error in the modal body).
-  const shouldShowResults = (!!placeholderDevData?.length && placeholderDevData.some(page => page.videos.length > 0));
+  const shouldShowResults = (!!data?.length && data.some(page => page.videos.length > 0));
 
 
   const hideSuggestions = useCallback(() => {
@@ -49,6 +49,10 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
     setShowSuggestions(false)
   }, []);
 
+  const onClickOverlay = useCallback(() => {
+    if (showSuggestions) return;
+    onClose();
+  }, [onClose, showSuggestions]);
 
   const handleSubmit = useCallback(() => {
     if (!searchVal) return;
@@ -166,27 +170,77 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
   }, [hideSuggestions, searchVal, showSuggestions, suggestions.length]);
 
 
-  const flattened = useMemo(() => !placeholderDevData ? [] : placeholderDevData?.flatMap(page => page.videos), []);
+  const dialogBody = useMemo(() => {
+    if (shouldShowResults || !!error) {
+      const flattened = !data ? [] : data?.flatMap(page => page.videos);
+      const searchResultVideos = flattened.map((video, index) => {
+        const cardKey = `${video.videoId}-${index}`;
+        return (
+          <>
+            <Separator />
+            <VideoCard
+              key={cardKey}
+              addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
+              addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
+              as="li"
+              isMobile={isMobile}
+              playVideo={handlePlayVideo}
+              video={video}
+            />
+          </>
+        );
+      });
 
-  const searchResultVideos = useMemo(() => {
-    return flattened.map((video, index) => {
-      const cardKey = `${video.videoId}-${index}`;
       return (
-        <>
-          <Separator />
-          <VideoCard
-            key={cardKey}
-            addToBottomOfQueue={() => handleAddToBottomOfQueue(video, "add")}
-            addToTopOfQueue={() => handleAddToTopOfQueue(video, "add")}
-            as="li"
-            isMobile={isMobile}
-            playVideo={handlePlayVideo}
-            video={video}
-          />
-        </>
-      );
-    })
-  }, [flattened, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, isMobile]);
+        <Dialog.Body
+          borderRadius="lg"
+          id="search_modal_body"
+          layerStyle="themed-scroll"
+          overflowY="auto"
+          ref={modalBodyRef}
+        >
+          <Box
+            bg="surface.foreground"
+            mb={2}
+            position="sticky"
+            py={2}
+            top={0}
+            w="100%"
+            zIndex="docked"
+          >
+            {!!error ?
+              <Text color="fg.error" textAlign="center" textStyle="body/sub-text">
+                An error occured while searching
+              </Text> :
+              <Text textStyle="body/sub-text">
+                {`Showing ${flattened.length} results for `}
+                <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
+              </Text>
+            }
+          </Box>
+
+          {searchResultVideos.length ?
+            <Stack as="ul" pb={2}>
+              {searchResultVideos}
+            </Stack> :
+            null
+          }
+
+          {isValidating ?
+            <Box mx="auto" pb={2}>
+              <Spinner size="sm" />
+            </Box> :
+            !hasMore && flattened.length > 0 ?
+              <Text color="fg.muted" pb={2} textAlign="center">
+                No more videos to display
+              </Text> :
+              null
+          }
+        </Dialog.Body>
+      )
+    }
+  }, [data, error, handleAddToBottomOfQueue, handleAddToTopOfQueue, handlePlayVideo, hasMore, isMobile, isValidating, searchTerm, shouldShowResults]);
+
 
 
   // Handle infinite scroll loading when user scrolls to bottom
@@ -228,12 +282,13 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
       size={isMobile ? "xs" : "md"}
       variant="search"
       onEscapeKeyDown={hideSuggestionsAndClose}
+      onInteractOutside={onClickOverlay}
+      // Decouple the internal on change handler as we handle closing manually.
       onOpenChange={() => void 0}
     >
       <Dialog.Backdrop />
       <Dialog.Positioner>
         <Dialog.Content boxShadow="none">
-          {/* <Flex alignItems="center" flexDir="column" position="relative"> */}
           <form
             id="search"
             style={{ width: "100%" }}
@@ -385,318 +440,9 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
             </Stack>
           ) : null}
 
-          {shouldShowResults || !!error ?
-            <Dialog.Body
-              borderRadius="lg"
-              id="search_modal_body"
-              layerStyle="themed-scroll"
-              overflowY="auto"
-              ref={modalBodyRef}
-            >
-              <Box
-                bg="surface.foreground"
-                mb={2}
-                position="sticky"
-                py={2}
-                top={0}
-                w="100%"
-                zIndex="docked"
-              >
-                {!!error ?
-                  <Text color="fg.error" textAlign="center" textStyle="body/sub-text">
-                    An error occured while searching
-                  </Text> :
-                  <Text textStyle="body/sub-text">
-                    {`Showing ${flattened.length} results for `}
-                    <span style={{ fontWeight: "bold" }}>{`'${searchTerm}'`}</span>
-                  </Text>
-                }
-              </Box>
-
-              {searchResultVideos.length ?
-                <Stack as="ul" pb={2}>
-                  {searchResultVideos}
-                </Stack> :
-                null
-              }
-
-              {isValidating ?
-                <Box mx="auto" pb={2}>
-                  <Spinner size="sm" />
-                </Box> :
-                !hasMore && flattened.length > 0 ?
-                  <Text color="fg.muted" pb={2} textAlign="center">
-                    No more videos to display
-                  </Text> :
-                  null
-              }
-            </Dialog.Body> :
-            null
-          }
+          {dialogBody}
         </Dialog.Content>
       </Dialog.Positioner>
     </Dialog.Root>
   );
 };
-
-
-/** An array of data for debugging. Use this array instead of querying the youtube get endpoint to prevent daily token limit throttling. */
-const placeholderDevData = [
-  {
-    nextPageToken: "CAoQAA",
-    resultsPerPage: 10,
-    totalResults: 1000000,
-    videos: [
-      {
-        channelId: "UC9FJbqC1B8NCBy19vs8AD_A",
-        channelTitle: "OCT",
-        duration: "PT51M20S",
-        publishedAt: "2024-06-01T11:06:01Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/tncNEtyL1nE/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/tncNEtyL1nE/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/tncNEtyL1nE/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "UKG mix for Driving",
-        videoId: "tncNEtyL1nE"
-      },
-      {
-        channelId: "UCi0saujlf14gmqPqCUxAjUg",
-        channelTitle: "Stuswerve",
-        duration: "PT1H27M13S",
-        publishedAt: "2025-07-12T01:37:39Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/BJr8pqLs7qo/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/BJr8pqLs7qo/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/BJr8pqLs7qo/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "A Disgusting UKG mix that&#39;ll change your life forever",
-        videoId: "BJr8pqLs7qo"
-      },
-      {
-        channelId: "UC9FJbqC1B8NCBy19vs8AD_A",
-        channelTitle: "OCT",
-        duration: "PT1H2M",
-        publishedAt: "2024-05-16T06:14:09Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/DjDWKh2bBzs/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/DjDWKh2bBzs/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/DjDWKh2bBzs/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "Spicy UKG mix 134bpm",
-        videoId: "DjDWKh2bBzs"
-      },
-      {
-        channelId: "UCt1uTq8rC2kY_gWWD2Htd1w",
-        channelTitle: "DJ Day Day",
-        duration: "PT1H13M28S",
-        publishedAt: "2023-02-09T19:19:13Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/VL2QPaHbisY/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/VL2QPaHbisY/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/VL2QPaHbisY/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "UK Garage Mix / Best Of Oldschool Garage UKG (by @DJDAYDAY_)",
-        videoId: "VL2QPaHbisY"
-      },
-      {
-        channelId: "UCJEKlziKdxoos1qbptjGgLg",
-        channelTitle: "DJ Mag",
-        duration: "PT1H4S",
-        publishedAt: "2025-07-25T16:00:07Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/cZsP_4luaHU/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/cZsP_4luaHU/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/cZsP_4luaHU/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "MPH High Energy UKG DJ Set Live From DJ Mag HQ",
-        videoId: "cZsP_4luaHU"
-      },
-      {
-        channelId: "UCy_sRmD4P8EWRnqc0SUcykQ",
-        channelTitle: "Paul Velocity",
-        duration: "PT1H2M46S",
-        publishedAt: "2014-08-03T09:59:34Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/90suQs2Z2k0/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/90suQs2Z2k0/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/90suQs2Z2k0/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "Oldskool Garage Mix UKG",
-        videoId: "90suQs2Z2k0"
-      },
-      {
-        channelId: "UCTQtc0TZEGmcoSPAKtCvwZg",
-        channelTitle: "De Layna",
-        duration: "PT35M27S",
-        publishedAt: "2025-08-03T13:00:06Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/0GOQyRb4Mgc/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/0GOQyRb4Mgc/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/0GOQyRb4Mgc/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "UKG Bassline Mix 2025 #5",
-        videoId: "0GOQyRb4Mgc"
-      },
-      {
-        channelId: "UCJEKlziKdxoos1qbptjGgLg",
-        channelTitle: "DJ Mag",
-        duration: "PT1H15S",
-        publishedAt: "2025-03-07T17:30:07Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/udE4hBAyz2U/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/udE4hBAyz2U/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/udE4hBAyz2U/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "Notion UKG And Bassline Set Live From DJ Mag HQ",
-        videoId: "udE4hBAyz2U"
-      },
-      {
-        channelId: "UCwudNUIIkLyG1VS364ZNmZg",
-        channelTitle: "DJBenjiUK",
-        duration: "PT1H7S",
-        publishedAt: "2025-07-21T16:01:29Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/uYEP8OnXPaI/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/uYEP8OnXPaI/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/uYEP8OnXPaI/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "UKG Classics Mix - UK garage 2 step classics",
-        videoId: "uYEP8OnXPaI"
-      },
-      {
-        channelId: "UCMbQAndaUwMjj7G-__drdmg",
-        channelTitle: "Le Kla",
-        duration: "PT18M11S",
-        publishedAt: "2024-02-05T02:30:23Z",
-        thumbnails: {
-          default: {
-            url: "https://i.ytimg.com/vi/3ji1JpMfkHA/default.jpg",
-            width: 120,
-            height: 90
-          },
-          medium: {
-            url: "https://i.ytimg.com/vi/3ji1JpMfkHA/mqdefault.jpg",
-            width: 320,
-            height: 180
-          },
-          high: {
-            url: "https://i.ytimg.com/vi/3ji1JpMfkHA/hqdefault.jpg",
-            width: 480,
-            height: 360
-          }
-        },
-        title: "UKG/Grime mix",
-        videoId: "3ji1JpMfkHA"
-      }
-    ]
-  }
-]

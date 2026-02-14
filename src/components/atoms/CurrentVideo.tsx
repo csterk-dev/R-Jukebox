@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Icon, Image, Link, LinkBox, LinkOverlay, Skeleton, SkeletonText, Slider, Spinner, Stack, StackProps, Tag, Text, VisuallyHidden, VStack } from "@chakra-ui/react";
+import { Box, Flex, HStack, Icon, Image, Link, LinkBox, LinkOverlay, Skeleton, SkeletonText, Slider, SliderValueChangeDetails, Spinner, Stack, StackProps, Tag, Text, VisuallyHidden, VStack } from "@chakra-ui/react";
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiSignalSlash } from "react-icons/hi2";
 import { useAppState, usePlayer } from "@state";
@@ -31,14 +31,15 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const togglePublishedAtDate = useCallback(() => setShowPublishedAtAsDate(prev => !prev), []);
 
   /** Change handler for the progress slider to update its value locally (to allow sliding). */
-  const onChangeLocalProgressHandler = useCallback((value: number) => {
+  const onChangeLocalProgressHandler = useCallback((e: SliderValueChangeDetails) => {
     setIsSlidingLocal(true);
-    setLocalProgressSeconds(value - 1);
+    setLocalProgressSeconds(e.value[0] - 1);
   }, []);
 
 
   /** Optimistically update the time and send the final value to the player. */
-  const onChangeEndProgressHandler = useCallback((value: number) => {
+  const onChangeEndProgressHandler = useCallback((e: SliderValueChangeDetails) => {
+    const value = e.value[0];
     setIsSlidingLocal(false);
     updatePlayerTimestamp(value);
     setOptimisticTimeSeconds(value)
@@ -72,10 +73,12 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 
       {/* Video thumbnail preview */}
       <Flex
+        _active={{ bg: "neutral.900" }}
         alignItems="center"
-        bg={showingCurrentVideo ? "neutral.900" : "surface.background"}
+        bg="surface.background"
         borderBottomRadius="lg"
         borderTopRadius="lg"
+        data-active={showingCurrentVideo ? "true" : "false"}
         height="calc(100vw / 3)"
         justifyContent="center"
         minHeight={{
@@ -100,7 +103,9 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
           w="100%"
         >
           <Box
-            bg={showingCurrentVideo ? `url('${currentVideo.thumbnails.high.url}') center/cover no-repeat` : "surface.background"}
+            _active={{ bg: `url('${currentVideo?.thumbnails.high.url}') center/cover no-repeat` }}
+            bg="surface.background"
+            data-active={showingCurrentVideo ? "true" : "false"}
             filter={`blur(${currentVideo ? "10px" : "0px"})`}
             height="100%"
             position="absolute"
@@ -196,8 +201,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
               size="sm"
               value={[isSlidingLocal ? localProgressSeconds : optimisticTimeSeconds]}
               variant="videoProgress"
-              onValueChange={(e) => onChangeLocalProgressHandler(e.value[0])}
-              onValueChangeEnd={(e) => onChangeEndProgressHandler(e.value[0])}
+              onValueChange={onChangeLocalProgressHandler}
+              onValueChangeEnd={onChangeEndProgressHandler}
             >
               <Slider.Control className="group">
                 <Slider.Track _groupHover={{ h: "6px" }} h="4px">

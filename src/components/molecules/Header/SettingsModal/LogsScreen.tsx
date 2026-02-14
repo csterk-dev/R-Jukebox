@@ -1,4 +1,4 @@
-import { Accordion, Dialog, DialogBodyProps, Flex, HStack, Icon, IconButton, Link, Menu, Portal, ScrollArea, Stack, Tag, Text } from "@chakra-ui/react";
+import { Accordion, Dialog, DialogBodyProps, Flex, HStack, Icon, IconButton, Link, Menu, Portal, RadioGroupValueChangeDetails, ScrollArea, Stack, Tag, Text } from "@chakra-ui/react";
 import { FC, useCallback, useMemo, useState } from "react";
 import { Placeholder } from "@atoms";
 import dayjs, { ManipulateType } from "dayjs";
@@ -208,7 +208,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs, ...props }) => {
                     <Menu.RadioItemGroup
                       title="Filter by type"
                       value={typeFilter}
-                      onValueChange={(e) => setTypeFilter(e.value as FilterByTypeOptions)}
+                      onValueChange={useCallback((e: RadioGroupValueChangeDetails) => setTypeFilter(e.value as FilterByTypeOptions), [])}
                     >
                       {FILTER_BY_TYPE_OPTIONS.map(opt => (
                         <Menu.RadioItem key={opt.value} value={opt.value}>
@@ -233,7 +233,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ entryLogs, ...props }) => {
                     <Menu.RadioItemGroup
                       title="Filter by date"
                       value={dateFilter}
-                      onValueChange={(e) => setDateFilter(e.value as FilterByDateOptions)}
+                      onValueChange={useCallback((e: RadioGroupValueChangeDetails) => setDateFilter(e.value as FilterByDateOptions), [])}
                     >
                       {FILTER_BY_DATE_OPTIONS.map(opt => (
                         <Menu.RadioItem key={opt.value} value={opt.value}>

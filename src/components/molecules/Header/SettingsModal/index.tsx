@@ -1,4 +1,4 @@
-import { Dialog, Flex, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
+import { Dialog, DialogOpenChangeDetails, Flex, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
 import { FC, useCallback, useState } from "react";
 import { HiChevronLeft, HiXMark } from "react-icons/hi2";
 import { VolumeScreen } from "./VolumeScreen";
@@ -42,7 +42,7 @@ export const SettingsModal: FC<SettingsModalProps> = ({ isBgAnimated, isConnecte
       scrollBehavior="inside"
       size="xs"
       variant="settings"
-      onOpenChange={(e) => !e.open && onCloseSettings()}
+      onOpenChange={useCallback((e: DialogOpenChangeDetails) => !e.open && onCloseSettings(), [onCloseSettings])}
     >
       <Dialog.Backdrop />
       <Dialog.Positioner>

@@ -37,14 +37,26 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
 
   return (
     <Flex
-      _hover={{ cursor: isLive ? "not-allowed" : "pointer" }}
+      _hover={{
+        cursor: "pointer",
+        bg: "surface.muted"
+      }}
       bg="surface.foreground"
       borderRadius="sm"
       boxShadow="base"
       className="group"
+      css={{
+        "&[data-live-video=true]": {
+          _hover: {
+            cursor: "not-allowed"
+          },
+          opacity: 0.5
+        }
+      }}
+      data-live-video={isLive ? "true" : "false"}
       flexDir="row"
       height="94px"
-      opacity={isLive ? 0.5 : 1}
+      opacity={1}
       position="relative"
       width="100%"
       {...props}
@@ -67,7 +79,6 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
             sm: "130px",
             md: "168px"
           }}
-        // width={isMobile ? "130px" : "168px"}
         />
         {!isMobile ?
           <VStack
@@ -114,10 +125,16 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
         }
         <Tag.Root
           alignItems="center"
-          bgColor={isLive ? "red.500" : "rgba(0,0,0, 0.6)"}
+          bgColor="rgba(0,0,0, 0.6)"
           borderRadius="xs"
           bottom="2px"
           color="white"
+          css={{
+            "&[data-live-video=true]": {
+              bg: "red.500"
+            }
+          }}
+          data-live-video={isLive ? "true" : "false"}
           fontSize="14"
           fontWeight="semibold"
           lineHeight="short"

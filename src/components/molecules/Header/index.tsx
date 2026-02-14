@@ -1,4 +1,4 @@
-import { chakra, Flex, FlexProps, HStack, Icon, IconButton, Menu, Portal, Slider, Text, useDisclosure } from "@chakra-ui/react";
+import { chakra, Flex, FlexProps, HStack, Icon, IconButton, Menu, Portal, Slider, SliderValueChangeDetails, Text, useDisclosure } from "@chakra-ui/react";
 import { FC, KeyboardEvent, lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { HiChartBar, HiCog6Tooth, HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { VideoControls } from "./VideoControls";
@@ -57,17 +57,23 @@ const _Header: FC<FlexProps> = (props) => {
     onCloseSearch();
   }, [onCloseSearch, playVideo]);
 
-
+  
   /** Send the final value to the player. */
-  const onChangeEndVolumeHandler = useCallback((value: number) => {
+  const handleVolumeChange = useCallback((value: number) => {
     prevPlayerVolume.current = value;
     updatePlayerVolume(value);
   }, [updatePlayerVolume]);
+  
+
+  /** Callback used to update the player with the final volume scrubbing value. */
+  const volumeSliderEnd = useCallback((e: SliderValueChangeDetails) => {
+    handleVolumeChange(e.value[0]);
+  }, [handleVolumeChange]);
 
 
   /** Change handler for the volume slider to update its value locally (to allow sliding). */
-  const onChangeVolumeHandler = useCallback((value: number) => {
-    setLocalVolume(value);
+  const volumeSliderOnChange = useCallback((e: SliderValueChangeDetails) => {
+    setLocalVolume(e.value[0]);
   }, []);
 
 
@@ -75,9 +81,9 @@ const _Header: FC<FlexProps> = (props) => {
   const onClickMaxVolume = useCallback(() => {
     if (!currentVideo) return;
 
-    onChangeEndVolumeHandler(100);
-    onChangeVolumeHandler(100);
-  }, [currentVideo, onChangeEndVolumeHandler, onChangeVolumeHandler]);
+    handleVolumeChange(100);
+    setLocalVolume(100);
+  }, [currentVideo, handleVolumeChange]);
 
 
   /** Toggles the volume to mute/prev val before mute. */
@@ -86,13 +92,13 @@ const _Header: FC<FlexProps> = (props) => {
 
     if (playerVolume !== 0) {
       beforeMuteVolume.current = playerVolume;
-      onChangeEndVolumeHandler(0);
-      onChangeVolumeHandler(0);
+      handleVolumeChange(0);
+      setLocalVolume(0);
     } else if (beforeMuteVolume.current) {
-      onChangeEndVolumeHandler(beforeMuteVolume.current);
-      onChangeVolumeHandler(beforeMuteVolume.current);
+      handleVolumeChange(beforeMuteVolume.current);
+      setLocalVolume(beforeMuteVolume.current);
     }
-  }, [currentVideo, onChangeEndVolumeHandler, onChangeVolumeHandler, playerVolume]);
+  }, [currentVideo, handleVolumeChange, playerVolume]);
 
 
   // Resync player and local volume
@@ -185,8 +191,8 @@ const _Header: FC<FlexProps> = (props) => {
                       step={5}
                       value={[localVolume]}
                       variant="volume"
-                      onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
-                      onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+                      onValueChange={volumeSliderOnChange}
+                      onValueChangeEnd={(e) => handleVolumeChange(e.value[0])}
                     >
                       <Slider.Control>
                         <Slider.Track w="4px">
@@ -252,8 +258,8 @@ const _Header: FC<FlexProps> = (props) => {
                 value={[localVolume]}
                 variant="volume"
                 w="100%"
-                onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
-                onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+                onValueChange={volumeSliderOnChange}
+                onValueChangeEnd={volumeSliderEnd}
               >
                 <Slider.Control>
                   <Slider.Track h="4px">
@@ -319,8 +325,8 @@ const _Header: FC<FlexProps> = (props) => {
                       step={5}
                       value={[localVolume]}
                       variant="volume"
-                      onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
-                      onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+                      onValueChange={volumeSliderOnChange}
+                      onValueChangeEnd={volumeSliderEnd}
                     >
                       <Slider.Control>
                         <Slider.Track w="4px">
@@ -351,8 +357,8 @@ const _Header: FC<FlexProps> = (props) => {
           isVolumeDisabled={!showingCurrentVideo}
           toggleBgAnimated={toggleBgAnimated}
           volumeLevel={localVolume}
-          onChangeEndVolumeHandler={onChangeEndVolumeHandler}
-          onChangeVolumeHandler={onChangeVolumeHandler}
+          onChangeEndVolumeHandler={handleVolumeChange}
+          onChangeVolumeHandler={useCallback((vol: number) => setLocalVolume(vol), [])}
           onClose={onCloseSettings}
         />
       </Suspense>

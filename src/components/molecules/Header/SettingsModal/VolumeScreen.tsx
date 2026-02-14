@@ -1,5 +1,5 @@
-import { Dialog, DialogBodyProps, Flex, Slider, Text } from "@chakra-ui/react";
-import { FC } from "react";
+import { Dialog, DialogBodyProps, Flex, Slider, SliderValueChangeDetails, Text } from "@chakra-ui/react";
+import { FC, useCallback } from "react";
 
 type VolumeScreenProps = DialogBodyProps & {
   onChangeEndVolumeHandler: (value: number) => void;
@@ -30,8 +30,8 @@ export const VolumeScreen: FC<VolumeScreenProps> = ({ isVolumeDisabled, volumeLe
           step={5}
           value={[volumeLevel]}
           variant="mobileVolume"
-          onValueChange={(e) => onChangeVolumeHandler(e.value[0])}
-          onValueChangeEnd={(e) => onChangeEndVolumeHandler(e.value[0])}
+          onValueChange={useCallback((e: SliderValueChangeDetails) => onChangeVolumeHandler(e.value[0]), [onChangeVolumeHandler])}
+          onValueChangeEnd={useCallback((e:SliderValueChangeDetails) => onChangeEndVolumeHandler(e.value[0]), [onChangeEndVolumeHandler])}
         >
           <Slider.Control>
             <Slider.Track>

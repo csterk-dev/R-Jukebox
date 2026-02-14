@@ -33,7 +33,6 @@ const SettingsMenuItem: FC<SettingsMenuItemProps> = ({
   return (
     <Button
       _hover={{ cursor: "pointer" }}
-      as="button"
       height="35px"
       justifyContent="flex-start"
       px={0}

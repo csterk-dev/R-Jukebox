@@ -13,7 +13,21 @@ export const ReleaseNotesList: FC<NotesProps> = ({ notes, ...props }) => {
     <List.Root gap={2} variant="plain" {...props}>
       {notes.map(note => (
         <List.Item key={note.details}>
-          <List.Indicator color={note.kind == "bugFix" ? "red.300" : note.kind == "improvement" ? "primary.300" : "yellow.500"} asChild>
+          <List.Indicator 
+            css={{
+              "&[data-kind=bugFix]": {
+                color: "red.300"
+              },
+              "&[data-kind=improvement]": {
+                color: "purple.300"
+              },
+              "&[data-kind=newFeature]": {
+                color: "yellow.500"
+              }
+            }}
+            data-kind={note.kind}
+            asChild
+          >
             {note.kind == "bugFix" ? <HiBugAnt /> : note.kind == "improvement" ? <HiWrenchScrewdriver /> : <HiStar />}
           </List.Indicator>
           {note.details}

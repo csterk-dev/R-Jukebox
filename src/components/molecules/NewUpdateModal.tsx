@@ -1,5 +1,5 @@
-import { Button, Dialog, Portal, Stack, Text } from "@chakra-ui/react";
-import { FC, useMemo } from "react";
+import { Button, Dialog, DialogOpenChangeDetails, Portal, Stack, Text } from "@chakra-ui/react";
+import { FC, useCallback, useMemo } from "react";
 import { ReleaseNotesList } from "@atoms";
 import { ALL_RELEASE_NOTES } from "@constants";
 
@@ -25,7 +25,7 @@ export const NewUpdateModal: FC<NewUpdateModalProps> = ({ onClose, isOpen, curre
         base: "sm",
         lg: "md"
       }}
-      onOpenChange={(e) => !e.open && onClose()}
+      onOpenChange={useCallback((e: DialogOpenChangeDetails) => !e.open && onClose(), [onClose])}
     >
       <Portal>
         <Dialog.Backdrop />
