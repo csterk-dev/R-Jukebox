@@ -1,23 +1,20 @@
-import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { APP_TITLE, PLAYER_VOLUME_DEFAULT, SOCKET_EVENT_KEYS } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useWebSockets } from "utils/hooks";
-import { getDebuggingStateFromStorage, replaceHtmlEntities, truncateString } from "utils/misc";
+import { getDebuggingStateFromStorage, replaceHtmlEntities, truncateString, useWebSockets } from "@utils";
 import { usePrevious } from "@usesoftwareau/react-utils";
 import { usePaginatedHistory } from "./swr";
+import { toaster } from "@ui";
 
 const queueToastProps = {
-  status: "success" as UseToastOptions["status"],
-  variant: "success",
+  type: "success" as const,
   duration: 5000,
-  isClosable: true
+  closable: true
 };
 
 const errorToastProps = {
-  status: "error" as UseToastOptions["status"],
-  variant: "error",
+  type: "error" as const,
   duration: 10000,
-  isClosable: true
+  closable: true
 };
 
 /** ID's are used to ensure that toasts do not duplicate and visually stack. */
@@ -74,7 +71,6 @@ const PlayerContext = createContext<PlayerContextType>(defaultPlayerContextVal);
  * Manage the current video player context.
  */
 export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
-  const toast = useToast();
   const { isConnected, socketInstance } = useWebSockets();
   const previousIsConnected = usePrevious(isConnected);
   const { mutate: updateHistory } = usePaginatedHistory();
@@ -102,7 +98,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: `Cannot ${action} video`,
           description: ack.errorMessage,
           ...errorToastProps
@@ -112,7 +108,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.setIsPlaying, req, resCallback);
 
-  }, [currentVideo, socketInstance, toast]);
+  }, [currentVideo, socketInstance]);
 
 
   /** Starts the player with the provided video. */
@@ -126,7 +122,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot play video",
           description: ack.errorMessage,
           ...errorToastProps
@@ -136,7 +132,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideo, req, resCallback);
 
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   /** Updates the queue with the provided video. */
@@ -150,12 +146,13 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (ack.success) {
-        toast({
+        toaster.success({
           title: `Playing "${replaceHtmlEntities(truncateString(video.title, 40))}" next`,
-          ...queueToastProps
+          duration: queueToastProps.duration,
+          closable: queueToastProps.closable
         });
       } else {
-        toast({
+        toaster.create({
           title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to move "${replaceHtmlEntities(truncateString(video.title, 40))}" to the top`,
           description: ack.errorMessage,
           ...errorToastProps
@@ -164,7 +161,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
     }
     socketInstance.emit(SOCKET_EVENT_KEYS.addToTopOfQueue, req, resCallback);
 
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   /** Adds the provided video to the end of the queue. */
@@ -176,14 +173,15 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       video
     };
 
-    const resCallback = (ack: WSAcknowledgement) => {
+    const resCallback = (ack: WSAcknowledgement) => { 
       if (ack.success) {
-        toast({
+        toaster.success({
           title: action === "add" ? `Added "${replaceHtmlEntities(truncateString(video.title, 40))}" to the end of queue` : `Moved "${replaceHtmlEntities(truncateString(video.title, 40))}" to the end of queue`,
-          ...queueToastProps
+          duration: queueToastProps.duration,
+          closable: queueToastProps.closable
         });
       } else {
-        toast({
+        toaster.create({
           title: action === "add" ? `Unable to add "${replaceHtmlEntities(truncateString(video.title, 40))}" to the queue` : `Unable to move "${replaceHtmlEntities(truncateString(video.title, 40))}" to the bottom`,
           description: ack.errorMessage,
           ...errorToastProps
@@ -193,7 +191,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.addToBottomOfQueue, req, resCallback);
 
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   /** Triggers the player to retrieve and start the next video (if any) from the queue. */
@@ -204,7 +202,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot next play video",
           description: ack.errorMessage,
           ...errorToastProps
@@ -214,7 +212,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.playNextQueueItem, req, resCallback);
 
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   const clearQueue = useCallback(() => {
@@ -224,7 +222,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot clear queue",
           description: ack.errorMessage,
           ...errorToastProps
@@ -234,7 +232,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.clearQueue, req, resCallback);
 
-  }, [queue.length, socketInstance, toast]);
+  }, [queue.length, socketInstance]);
 
 
   /** Deletes the specified video from the queue. */
@@ -248,7 +246,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot remove video from the queue",
           description: ack.errorMessage,
           ...errorToastProps
@@ -258,7 +256,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.deleteQueueItem, req, resCallback);
 
-  }, [socketInstance, toast]);
+  }, [socketInstance]);
 
 
   /** Set the volume of the player. */
@@ -272,7 +270,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot change video progress",
           description: ack.errorMessage,
           ...errorToastProps
@@ -282,7 +280,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.setCurrentVideoTime, req, resCallback);
 
-  }, [currentVideo, socketInstance, toast]);
+  }, [currentVideo, socketInstance]);
 
 
   /** Set the volume of the player. */
@@ -297,7 +295,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const resCallback = (ack: WSAcknowledgement) => {
       if (!ack.success) {
-        toast({
+        toaster.create({
           title: "Cannot change video volume",
           description: ack.errorMessage,
           ...errorToastProps
@@ -307,7 +305,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     socketInstance.emit(SOCKET_EVENT_KEYS.setPlayerVolume, req, resCallback);
 
-  }, [currentVideo, socketInstance, toast]);
+  }, [currentVideo, socketInstance]);
 
 
   /**
@@ -346,8 +344,8 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       // Sync error state
       socketInstance.on(SOCKET_EVENT_KEYS.error, (errorMessage: string) => {
         setError(errorMessage);
-        if (!toast.isActive(toastIds.playerError)) {
-          toast({
+        if (!toaster.isVisible(toastIds.playerError)) {
+          toaster.create({
             id: toastIds.playerError,
             title: "Player error",
             description: errorMessage,
@@ -419,7 +417,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
       socketInstance.off(SOCKET_EVENT_KEYS.logs);
     }
-  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, toast, volume, currentVideo, currentVideoTime, updateHistory, showDevDebugging]);
+  }, [previousIsConnected, isConnected, currentVideo?.videoId, isPlaying, updatePlayerVolume, socketInstance, volume, currentVideo, currentVideoTime, updateHistory, showDevDebugging]);
 
 
   const playerContext: PlayerContextType = useMemo(() => {
@@ -452,5 +450,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-/** An easy hook to allow access to the current player context, values, and its functions. */
-export const usePlayer = (): PlayerContextType => useContext(PlayerContext);
+/** 
+ * An easy hook to allow access to the current player context, values, and its functions.
+ * @remarks This hook must be used within a PlayerProvider component.
+ */
+export function usePlayer(): PlayerContextType {
+  return useContext(PlayerContext);
+}

@@ -20,25 +20,28 @@ const _VideoControls: FC<VideoControlsProps> = ({ disableRewindButton: disableBa
     <HStack justifyContent="center" {...props}>
       <IconButton
         aria-label="rewind"
-        icon={<HiBackward />}
-        isDisabled={disableBackButton}
+        disabled={disableBackButton}
         size="md"
         onClick={onPressRewindToStart}
-      />
+      >
+        <HiBackward />
+      </IconButton>
       <IconButton
         aria-label={isPlaying ? "Pause player" : "Resume player"}
-        icon={playPauseIcon}
-        isDisabled={disablePlayButton}
+        disabled={disablePlayButton}
         size="md"
         onClick={onPressPlayPause}
-      />
+      >
+        {playPauseIcon}
+      </IconButton>
       <IconButton
         aria-label="forward"
-        icon={<HiForward />}
-        isDisabled={disableQueueButton}
+        disabled={disableQueueButton}
         size="md"
         onClick={onPressPlayNextQueueItem}
-      />
+      >
+        <HiForward />
+      </IconButton>
     </HStack>
   );
 }

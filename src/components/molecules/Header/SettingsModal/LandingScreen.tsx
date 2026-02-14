@@ -1,8 +1,7 @@
-import { Divider, Flex, HStack, Icon, Stack, Text } from "@chakra-ui/react";
-import { ColorModeSwitcher } from "components/atoms/ColorModeSwitcher";
-import { VERSION_NUM } from "constants/index";
-import { Dispatch, FC, SetStateAction } from "react";
-import { HiChartBar, HiClipboardDocumentList, HiCodeBracket, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave } from "react-icons/hi2";
+import { Button, Dialog, HStack, Icon, Separator, Text } from "@chakra-ui/react";
+import { useTheme } from "next-themes";
+import { Dispatch, FC, ReactNode, SetStateAction, useCallback, useMemo } from "react";
+import { HiChartBar, HiClipboardDocumentList, HiCodeBracket, HiMoon, HiOutlineRocketLaunch, HiRocketLaunch, HiSpeakerWave, HiSun } from "react-icons/hi2";
 import { SettingScreens } from ".";
 
 type LandScreenProps = {
@@ -14,29 +13,79 @@ type LandScreenProps = {
   setScreen: Dispatch<SetStateAction<SettingScreens>>;
 }
 
+type SettingsMenuItemProps = {
+  icon: ReactNode;
+  label: string;
+  ariaLabel: string;
+  onClick: () => void;
+  rightContent?: ReactNode;
+  iconProps?: Record<string, unknown>;
+}
+
+const SettingsMenuItem: FC<SettingsMenuItemProps> = ({ 
+  icon, 
+  label, 
+  ariaLabel, 
+  onClick, 
+  rightContent,
+  iconProps = { mt: "3px" }
+}) => {
+  return (
+    <Button
+      _hover={{ cursor: "pointer" }}
+      height="35px"
+      justifyContent="flex-start"
+      px={0}
+      width="100%"
+      onClick={onClick}
+    >
+      {rightContent ? (
+        <HStack alignItems="center" width="100%">
+          <Icon aria-label={ariaLabel} {...iconProps}>
+            {icon}
+          </Icon>
+          <Text>{label}</Text>
+        </HStack>
+      ) : (
+        <>
+          <Icon aria-label={ariaLabel} {...iconProps}>
+            {icon}
+          </Icon>
+          <Text>{label}</Text>
+        </>
+      )}
+      {rightContent}
+    </Button>
+  );
+};
+SettingsMenuItem.displayName = "SettingsMenuItem";
+
 
 export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, isMobile, toggleBgAnimated, volumeLevel, setScreen }) => {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const toggleColorMode = useCallback(() => setTheme(isDark ? "light" : "dark"), [isDark, setTheme]);
+  const colorModeText = useMemo(() => isDark ? "light" : "dark", [isDark]);
+  const handleRelNotesClick = useCallback(() => setScreen("relNotes"), [setScreen]);
+  const handleLogsClick = useCallback(() => setScreen("logs"), [setScreen]);
+
   return (
-    <Stack fontSize="normal" pb={4} px={5}>
+    <Dialog.Body>
       <Text textStyle="heading/sub-section">
         {isMobile ? "Player" : "Player status"}
       </Text>
 
       {isMobile ?
         <>
-          <HStack
-            as="button"
-            height="35px"
-            width="100%"
+          <SettingsMenuItem
+            ariaLabel="Adjust volume"
+            icon={<HiSpeakerWave />}
+            iconProps={{}}
+            label="Adjust volume"
+            rightContent={<Text>{`${volumeLevel}%`}</Text>}
             onClick={() => setScreen("volume")}
-          >
-            <HStack alignItems="center" width="100%">
-              <Icon aria-label="Adjust volume" as={HiSpeakerWave} />
-              <Text>Adjust volume</Text>
-            </HStack>
-            <Text>{`${volumeLevel}%`}</Text>
-          </HStack>
-          <Divider />
+          />
+          <Separator />
         </> :
         null
       }
@@ -48,73 +97,49 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
           color={isConnected ? "green" : "orange"}
           mt="3px"
         />
-        <Text color="text.subtle">{`${isConnected ? "Connected" : "Offline"}`}</Text>
+        <Text>{`${isConnected ? "Connected" : "Offline"}`}</Text>
       </HStack>
-      <Divider />
+      <Separator />
 
       <Text textStyle="heading/sub-section">Customise</Text>
 
-      <ColorModeSwitcher />
+      <SettingsMenuItem
+        ariaLabel={`Switch to ${colorModeText} mode`}
+        icon={isDark ? <HiSun /> : <HiMoon />}
+        label={`Switch to ${colorModeText} mode`}
+        onClick={toggleColorMode}
+      />
 
-      <Divider />
+      <Separator />
 
-      <HStack
-        as="button"
-        height="35px"
-        width="100%"
+      <SettingsMenuItem
+        ariaLabel={`${isBgAnimated ? "Disable" : "enable"} background animations `}
+        icon={isBgAnimated ? <HiOutlineRocketLaunch /> : <HiRocketLaunch />}
+        label={`${isBgAnimated ? "Disable" : "Enable"} background animations `}
         onClick={toggleBgAnimated}
-      >
-        <Icon aria-label={`${isBgAnimated ? "Disable" : "enable"} background animations `} as={isBgAnimated ? HiOutlineRocketLaunch : HiRocketLaunch} mt="3px" />
-        <Text>{`${isBgAnimated ? "Disable" : "Enable"} background animations `}</Text>
-      </HStack>
+      />
 
-      <Divider />
+      <Separator />
 
       <Text textStyle="heading/sub-section">About</Text>
 
-      <HStack
-        as="button"
-        height="35px"
-        width="100%"
-        onClick={() => setScreen("relNotes")}
-      >
-        <Icon aria-label="Release notes" as={HiClipboardDocumentList} mt="3px" />
-        <Text>Release notes</Text>
-      </HStack>
+      <SettingsMenuItem
+        ariaLabel="Release notes"
+        icon={<HiClipboardDocumentList />}
+        label="Release notes"
+        onClick={handleRelNotesClick}
+      />
 
-      <Divider />
+      <Separator />
 
-      <HStack
-        as="button"
-        height="35px"
-        width="100%"
-        onClick={() => setScreen("logs")}
-      >
-        <Icon aria-label="Bug list" as={HiCodeBracket} mt="3px" />
-        <Text>Player logs</Text>
-      </HStack>
-      <Divider />
-
-      <Flex
-        alignItems="center"
-        fontWeight="semibold"
-        justifyContent="space-between"
-        textStyle="body/sub-text"
-        width="100%"
-      >
-        <Text>R Jukebox</Text>
-        <Text>{`v ${VERSION_NUM}`}</Text>
-      </Flex>
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        textStyle="body/label"
-        width="100%"
-      >
-        <Text>By Chris Sterkenburg</Text>
-        <Text>2025</Text>
-      </Flex>
-    </Stack>
+      <SettingsMenuItem
+        ariaLabel="Bug list"
+        icon={<HiCodeBracket />}
+        label="Player logs"
+        onClick={handleLogsClick}
+      />
+      <Separator />
+    </Dialog.Body>
   )
 }
 LandingScreen.displayName = "LandingScreen";

@@ -1,133 +1,271 @@
+import { defineSemanticTokens } from "@chakra-ui/react";
 
-
-type ColorModeToken = {
-  default?: string;
-  _light?: string;
-  _dark?: string;
-};
-
-
-type SemanticToken = {
-  [tokenName: string]: ColorModeToken;
-};
-
-
-const icon: SemanticToken = {
-  info: {
-    _light: "brand.300",
-    default: "brand.300"
+const brandColors = defineSemanticTokens.colors({
+  contrast: {
+    value: {
+      _dark: "{colors.base.white}",
+      _light: "{colors.base.white}"
+    }
   },
-  bug: {
-    _light: "red.300",
-    default: "red.300"
-  },
-  improvement: {
-    _light: "yellow.500",
-    default: "yellow.500"
-  },
-  body: {
-    _light: "neutral.700",
-    default: "base.white"
-  },
-  "on-light": {
-    _light: "neutral.700",
-    default: "neutral.700"
-  },
-  "on-dark": {
-    _light: "neutral.50",
-    default: "neutral.50"
-  },
-  inverted: {
-    _light: "base.white",
-    default: "neutral.700"
-  }
-}
-
-
-const surface: SemanticToken = {
-  solid: {
-    _light: "base.white",
-    default: "neutral.900"
-  },
-  foreground: {
-    _light: "base.white",
-    default: "neutral.700"
-  },
-  "foreground-transparent": {
-    _light: "rgba(255, 255, 255, 0.8)",
-    default: "rgba(13, 15, 24, 0.75)"
-  },
-  brand: {
-    default: "brand.500"
-  },
-  "brand.hover": {
-    default: "brand.600"
-  }
-}
-
-
-const text: SemanticToken = {
-  body: {
-    _light: "neutral.700",
-    default: "base.white"
+  fg: {
+    value: {
+      _dark: "{colors.primary.300}",
+      _light: "{colors.primary.700}"
+    }
   },
   subtle: {
-    _light: "neutral.300",
-    default: "neutral.100"
+    value: {
+      _dark: "{colors.primary.900}",
+      _light: "{colors.primary.100}"
+    }
   },
-  "on-light": {
-    _light: "neutral.700",
-    default: "neutral.700"
+  muted: {
+    value: {
+      _dark: "{colors.primary.800}",
+      _light: "{colors.primary.200}"
+    }
   },
-  "on-dark": {
-    _light: "neutral.50",
-    default: "neutral.50"
+  emphasized: {
+    value: {
+      _dark: "{colors.primary.700}",
+      _light: "{colors.primary.300}"
+    }
   },
-  inverted: {
-    _light: "base.white",
-    default: "neutral.700"
+  solid: {
+    value: {
+      _dark: "{colors.primary.600}",
+      _light: "{colors.primary.600}"
+    }
   },
-  heading: {
-    _light: "neutral.700",
-    default: "base.white"
+  focusRing: {
+    value: {
+      _dark: "{colors.primary.500}",
+      _light: "{colors.primary.500}"
+    }
   },
-  "heading-subtle": {
-    _light: "neutral.300",
-    default: "neutral.100"
+  border: {
+    value: {
+      _dark: "{colors.primary.400}",
+      _light: "{colors.primary.500}"
+    }
+  }
+});
+
+
+const neutralColors = defineSemanticTokens.colors({
+  solid: {
+    value: {
+      _dark: "{colors.neutral.900}",
+      _light: "{colors.base.white}"
+    }
   },
-  accent: {
-    _light: "brand.500",
-    default: "brand.300"
+  contrast: {
+    value: {
+      _dark: "{colors.base.white}",
+      _light: "{colors.neutral.700}"
+    }
   },
-  focus: {
-    _light: "brand.600",
-    default: "brand.600"
+  fg: {
+    value: {
+      _dark: "{colors.base.white}",
+      _light: "{colors.neutral.700}"
+    }
+  },
+  subtle: {
+    value: {
+      _dark: "{colors.neutral.100}",
+      _light: "{colors.neutral.300}"
+    }
+  },
+  muted: {
+    value: {
+      _dark: "{colors.neutral.200}",
+      _light: "{colors.neutral.400}"
+    }
+  },
+  emphasized: {
+    value: {
+      _dark: "{colors.neutral.300}",
+      _light: "{colors.neutral.500}"
+    }
+  },
+  focusRing: {
+    value: {
+      _dark: "{colors.neutral.800}",
+      _light: "{colors.neutral.900}"
+    }
+  }
+});
+
+
+const borderColors = defineSemanticTokens.colors({
+  solid: {
+    value: {
+      _dark: "{colors.neutral.400}",
+      _light: "{colors.neutral.200}"
+    }
   },
   error: {
-    _light: "red.500",
-    default: "red.300"
-  },
-  success: {
-    _light: "green.500",
-    default: "green.300"
+    value: {
+      _dark: "{colors.red.400}",
+      _light: "{colors.red.500}"
+    }
   },
   warning: {
-    _light: "yellow.700",
-    default: "yellow.500"
+    value: {
+      _dark: "{colors.orange.400}",
+      _light: "{colors.orange.500}"
+    }
+  },
+  success: {
+    value: {
+      _dark: "{colors.green.400}",
+      _light: "{colors.green.500}"
+    }
+  },
+  info: {
+    value: {
+      _dark: "{colors.blue.400}",
+      _light: "{colors.blue.500}"
+    }
   }
-};
+});
 
 
+const surfaceColors = defineSemanticTokens.colors({
+  background: {
+    value: {
+      _dark: "{colors.neutral.900}",
+      _light: "{colors.base.white}"
+    }
+  },
+  foreground: {
+    value: {
+      _dark: "{colors.neutral.700}",
+      _light: "{colors.base.white}"
+    }
+  },
+  muted: {
+    value: {
+      _dark: "{colors.neutral.800}",
+      _light: "{colors.neutral.100}"
+    }
+  },
+  primary: {
+    value: {
+      _dark: "{colors.primary.900}",
+      _light: "{colors.primary.100}"
+    }
+  },
+  "foreground-transparent": {
+    value: {
+      _dark: "rgba(13, 15, 24, 0.75)",
+      _light: "rgba(255, 255, 255, 0.8)"
+    }
+  },
+  "primary.hover": {
+    value: {
+      _dark: "{colors.primary.600}",
+      _light: "{colors.primary.300}"
+    }
+  },
+  success: {
+    value: {
+      _dark: "{colors.green.900}",
+      _light: "{colors.green.100}"
+    }
+  },
+  "error-danger": {
+    value: {
+      _dark: "{colors.red.900}",
+      _light: "{colors.red.100}"
+    }
+  },
+  info: {
+    value: {
+      _dark: "{colors.blue.900}",
+      _light: "{colors.blue.100}"
+    }
+  },
+  warning: {
+    value: {
+      _dark: "{colors.yellow.900}",
+      _light: "{colors.yellow.100}"
+    }
+  }
+});
 
-/**
- * All tokens refer only to named palettes to ensure consistency accross different themes:
- *   i.e. `"brand.<shade>"` or `"neutral.<shade>"`, plus a few
- *   hard-coded neutrals (red, yellow).
- */
-export const semanticTokens = {
+
+const fgColors = defineSemanticTokens.colors({
+  body: {
+    value: {
+      _dark: "{colors.neutral.50}",
+      _light: "{colors.neutral.700}"
+    }
+  },
+  primary: {
+    value: {
+      _dark: "{colors.primary.300}",
+      _light: "{colors.primary.700}"
+    }
+  },
+  accent: {
+    value: {
+      _dark: "{colors.primary.200}",
+      _light: "{colors.primary.600}"
+    }
+  },
+  heading: {
+    value: {
+      _dark: "{colors.base.white}",
+      _light: "{colors.neutral.700}"
+    }
+  },
+  muted: {
+    value: {
+      _dark: "{colors.neutral.400}",
+      _light: "{colors.neutral.600}"
+    }
+  },
+  "error-danger": {
+    value: {
+      _dark: "{colors.red.200}",
+      _light: "{colors.red.600}"
+    }
+  },
+  warning: {
+    value: {
+      _dark: "{colors.orange.200}",
+      _light: "{colors.orange.600}"
+    }
+  },
+  success: {
+    value: {
+      _dark: "{colors.green.200}",
+      _light: "{colors.green.600}"
+    }
+  },
+  info: {
+    value: {
+      _dark: "{colors.primary.200}",
+      _light: "{colors.primary.600}"
+    }
+  },
+  online: {
+    value: "{colors.green.500}"
+  },
+  offline: {
+    value: "{colors.orange.500}"
+  }
+});
+
+
+export const semanticTokens = defineSemanticTokens({
   colors: {
-    icon: { ...icon },
-    surface: { ...surface },
-    text: { ...text }
+    fg: fgColors,
+    border: borderColors,
+    brand: brandColors,
+    neutral: neutralColors,
+    surface: surfaceColors
   }
-}
+});

@@ -1,16 +1,16 @@
-import { useMediaQuery, useToast, UseToastOptions } from "@chakra-ui/react";
+import { useMediaQuery } from "@chakra-ui/react";
 import { MOBILE_BREAKPOINT } from "../constants";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { getDebuggingStateFromStorage, getThemeSeason } from "../utils/misc";
+import { getDebuggingStateFromStorage, getThemeSeason } from "@utils";
 import dayjs from "dayjs";
+import { toaster } from "@ui";
 
 const themeSeason = getThemeSeason(dayjs());
 
 const infoToastProps = {
-  status: "info" as UseToastOptions["status"],
-  variant: "info",
+  type: "info" as const,
   duration: 7000,
-  isClosable: true
+  closable: true
 };
 
 
@@ -43,8 +43,7 @@ const AppContext = createContext<AppContextType>(defaultAppContextVal);
  * Manages the app's context.
  */
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
-  const toast = useToast();
-  const [isMobile] = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const [isMobile] = useMediaQuery([`(max-width: ${MOBILE_BREAKPOINT}px)`]);
   const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
 
   const [isBgAnimated, setIsBgAnimated] = useState<AppContextType["isBgAnimated"]>(() => {
@@ -69,23 +68,23 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     setManualIsBgAnimated(prev => !prev);
     setIsBgAnimated(prev => !prev);
 
-    if (!toast.isActive(toastIds.bgAnimatedTrue) && isBgAnimated) {
-      toast({
+    if (!toaster.isVisible(toastIds.bgAnimatedTrue) && isBgAnimated) {
+      toaster.create({
         id: toastIds.bgAnimatedTrue,
         title: "Animations disabled",
         description: "Battery life and performance may increase.",
         ...infoToastProps
       });
 
-    } else if (!toast.isActive(toastIds.bgAnimatedFalse) && !isBgAnimated) {
-      toast({
+    } else if (!toaster.isVisible(toastIds.bgAnimatedFalse) && !isBgAnimated) {
+      toaster.create({
         id: toastIds.bgAnimatedFalse,
         title: "Animations enabled",
         description: "This may affect your battery life and performance",
         ...infoToastProps
       });
     }
-  }, [isBgAnimated, toast]);
+  }, [isBgAnimated]);
 
 
   const appContext: AppContextType = useMemo(() => {

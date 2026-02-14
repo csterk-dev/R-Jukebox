@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getGoogleAutoCompleteSuggestions } from "./api";
 import { AxiosResponse } from "axios";
 import { socket as socketInstance } from "./socket";
@@ -69,26 +69,39 @@ export const useGoogleSuggestions = (query: string, maxNumOfResults: number) => 
  * @returns {Object} A momized object containing the current connection state of the socket.
  */
 export const useWebSockets = () => {
-  const [isConnected, setIsConnected] = useState(socketInstance.connected);
+  // Initialize with current connection state, but also check if socket is already connected
+  const [isConnected, setIsConnected] = useState(() => socketInstance.connected);
 
   useEffect(() => {
-
-    function onConnect() {
-      // Tell the server that the client is ready to sync state
+    // Helper function to handle connection - syncs state and requests initial state from server
+    const handleConnection = () => {
       setIsConnected(true);
       socketInstance.emit(SOCKET_EVENT_KEYS.getInitialState, socketInstance.id);
+    };
+
+    // Update state immediately if socket is already connected (e.g., on mount after refresh)
+    // This handles the race condition where the socket connected before the listener was set up
+    if (socketInstance.connected) {
+      handleConnection();
     }
 
     function onDisconnect() {
       setIsConnected(false);
     }
 
-    socketInstance.on("connect", onConnect);
+    function onReconnect(attemptNumber: number) {
+      console.log(`Socket reconnected after ${attemptNumber} attempt(s)`);
+      handleConnection();
+    }
+
+    socketInstance.on("connect", handleConnection);
     socketInstance.on("disconnect", onDisconnect);
+    socketInstance.on("reconnect", onReconnect);
 
     return () => {
-      socketInstance.off("connect", onConnect);
+      socketInstance.off("connect", handleConnection);
       socketInstance.off("disconnect", onDisconnect);
+      socketInstance.off("reconnect", onReconnect);
     };
   }, []);
 
@@ -133,64 +146,4 @@ export function useDebounce(text: string, delay: number = 300) {
   }, [delay, text]);
 
   return output;
-}
-
-
-/**
- * A custom hook that allows you to track whether an element is being hovered over or not, 
- * enabling you to apply conditional rendering or perform any desired actions based on the hover state.
- * 
- * @returns {[instance: HTMLDivElement, boolean]} An array containing a reference to attach to the target element and the current boolean hovering status.
- * @example
- * ```tsx
- * // Chakra UI Box & Text example:
- * const [boxRef, boxHovered] = useWebHover();
- * <Box
- *    bg="blue"
- *    h="50px"
- *    ref={boxRef}
- *    w="100%"
- *  >
- *    <Text color={boxHovered ? "red" : "black"}>
- *        Hover over the box to change my text color!
- *    </Text>
- * </Box>
- * ```
- */
-export function useWebHover(): [(instance: HTMLDivElement) => void, boolean] {
-  const [hovering, setHovering] = useState(false);
-  const previousNode = useRef<HTMLDivElement>();
-
-  const handleMouseEnter = useCallback(() => {
-    setHovering(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHovering(false);
-  }, []);
-
-  const customRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
-        previousNode.current.removeEventListener(
-          "mouseenter",
-          handleMouseEnter
-        );
-        previousNode.current.removeEventListener(
-          "mouseleave",
-          handleMouseLeave
-        );
-      }
-
-      if (node?.nodeType === Node.ELEMENT_NODE) {
-        node.addEventListener("mouseenter", handleMouseEnter);
-        node.addEventListener("mouseleave", handleMouseLeave);
-      }
-
-      previousNode.current = node;
-    },
-    [handleMouseEnter, handleMouseLeave]
-  );
-
-  return [customRef, hovering];
 }

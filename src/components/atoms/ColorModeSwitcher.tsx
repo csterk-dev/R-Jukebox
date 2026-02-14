@@ -1,14 +1,17 @@
-import { HStack, Icon, StackProps, Text, useColorMode, useColorModeValue } from "@chakra-ui/react"
-import { FC, memo } from "react"
+import { HStack, Icon, StackProps, Text } from "@chakra-ui/react"
+import { useTheme } from "next-themes"
+import { FC, memo, useCallback, useMemo } from "react"
 import { HiMoon, HiSun } from "react-icons/hi2"
 
 type ColorModeSwitcherProps = StackProps & {}
 
 
 const _ColorModeSwitcher: FC<ColorModeSwitcherProps> = ({ ...props }) => {
-  const { toggleColorMode } = useColorMode()
-  const text = useColorModeValue("dark", "light")
-  const SwitchIcon = useColorModeValue(HiMoon, HiSun);
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const toggleColorMode = useCallback(() => setTheme(isDark ? "light" : "dark"), [isDark, setTheme]);
+  const text = isDark ? "light" : "dark";
+  const SwitchIcon = useMemo(() => isDark ? HiSun : HiMoon, [isDark]);
 
   return (
     <HStack
@@ -28,6 +31,7 @@ _ColorModeSwitcher.displayName = "ColorModeSwitcher";
 
 
 /**
+ * @deprecated This component is deprecated. Use SettingsMenuItem in the landing screen instead.
  * Renders a button to toggle colormodes.
  * @returns {JSX.Element} The toggle button.
  */

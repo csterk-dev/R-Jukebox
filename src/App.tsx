@@ -1,29 +1,30 @@
-import { ChakraProvider, Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
-import { theme } from "./theme";
-import { CurrentVideo } from "components/atoms/CurrentVideo";
-import { QueueHistoryTabs } from "components/molecules/QueueHistoryTabs";
-import { PageContainer } from "components/templates/PageContainer";
-import { PlayerProvider } from "state/playerContext";
-import { AppProvider } from "state/appContext";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { VERSION_NUM } from "./constants";
+import { Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
+import { CurrentVideo } from "@atoms";
+import { QueueHistoryTabs } from "@molecules";
+import { PageContainer } from "@templates";
+import { AppProvider, PlayerProvider } from "@state";
+import { Provider, Toaster } from "@ui";
+import { getDebuggingStateFromStorage } from "@utils";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { LOCAL_STORAGE_KEY_CURRENT_VERSION, VERSION_NUM } from "./constants";
 import "@fontsource-variable/assistant";
-import { NewUpdateModal } from "components/molecules/Header/NewUpdateModal";
-import { getDebuggingStateFromStorage } from "utils/misc";
-import { DevScrollStateOverlay } from "components/atoms/DevScrollStateOverlay";
+
+// Dynamic imports for code splitting - components removed from barrel exports to enable proper splitting
+const DevScrollStateOverlay = lazy(() => import("./components/atoms/DevScrollStateOverlay").then(module => ({ default: module.DevScrollStateOverlay })));
+const NewUpdateModal = lazy(() => import("./components/molecules/NewUpdateModal").then(module => ({ default: module.NewUpdateModal })));
 
 
 export const App = () => {
   const showDevDebugging = useMemo<boolean>(() => getDebuggingStateFromStorage(), []);
 
-  const { isOpen: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
+  const { open: isNewUpdateOpen, onOpen: onOpenNewUpdate, onClose: onCloseNewUpdate } = useDisclosure();
 
   /** Open the update modal if the user has previously used jukebox. */
   useEffect(() => {
-    const currentVersion = localStorage.getItem("current_version");
+    const currentVersion = localStorage.getItem(LOCAL_STORAGE_KEY_CURRENT_VERSION);
     if (currentVersion && currentVersion !== VERSION_NUM) onOpenNewUpdate();
 
-    localStorage.setItem("current_version", VERSION_NUM);
+    localStorage.setItem(LOCAL_STORAGE_KEY_CURRENT_VERSION, VERSION_NUM);
   }, [onOpenNewUpdate]);
 
 
@@ -33,7 +34,7 @@ export const App = () => {
   const [isAtTopOfPage, setIsAtTopOfPage] = useState(true);
   const [isScrolledPastCurrentVideo, setIsScrolledPastCurrentVideo] = useState(false);
   /** 'lg' breakpoint value in 'em' as defined by the Chakra provider. */
-  const [isLandscape] = useMediaQuery("(min-width: 62em)");
+  const [isLandscape] = useMediaQuery(["(min-width: 62em)"]);
 
 
   /**
@@ -87,9 +88,11 @@ export const App = () => {
 
 
   return (
-    <ChakraProvider theme={theme}>
+    <Provider>
       <AppProvider>
         <PlayerProvider>
+          <Toaster />
+          
           <PageContainer handleScrollToTop={handleRootScrollToTop} ref={pageContainerRef} showScrollToTopButton={showScrollToTopButton}>
             <Flex
               flexDirection={{
@@ -132,20 +135,28 @@ export const App = () => {
               </Flex>
             </Flex>
 
-            <DevScrollStateOverlay
-              display={showDevDebugging ? "flex" : "none"}
-              isAtBottomOfPage={isAtBottomOfPage}
-              isAtTopOfPage={isAtTopOfPage}
-              isLandscape={isLandscape}
-              isScrolledPastCurrentVideo={isScrolledPastCurrentVideo}
-              showScrollToTopButton={showScrollToTopButton}
-            />
+            {showDevDebugging ? (
+              <Suspense fallback={null}>
+                <DevScrollStateOverlay
+                  display="flex"
+                  isAtBottomOfPage={isAtBottomOfPage}
+                  isAtTopOfPage={isAtTopOfPage}
+                  isLandscape={isLandscape}
+                  isScrolledPastCurrentVideo={isScrolledPastCurrentVideo}
+                  showScrollToTopButton={showScrollToTopButton}
+                />
+              </Suspense>
+            ) : null}
           </PageContainer>
 
-          <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+          {isNewUpdateOpen ? (
+            <Suspense fallback={null}>
+              <NewUpdateModal currentVersionNumber={VERSION_NUM as VersionNumber} isOpen={isNewUpdateOpen} onClose={onCloseNewUpdate} />
+            </Suspense>
+          ) : null}
           
         </PlayerProvider>
       </AppProvider>
-    </ChakraProvider>
+    </Provider>
   )
 }
