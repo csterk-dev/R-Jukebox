@@ -17,15 +17,8 @@ type PageContainerProps = BoxProps & {
  */
 export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((props, ref) => {
   const { children, showScrollToTopButton, handleScrollToTop, ...rest } = props
-
   const { isBgAnimated, themeSeason } = useAppState();
-  // const { theme } = useTheme();
-  // const colorMode = theme || "dark";
-  // const staticBg = useMemo(() => {
-  //   return colorMode === "dark" ?
-  //     themeSeason === "halloween" ? "url('halloween_dark_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_dark_bg_static.webp') center/cover no-repeat" : "url('dark_bg_static.webp') center/cover no-repeat" :
-  //     themeSeason === "halloween" ? "url('halloween_light_bg_static.webp') center/cover no-repeat" : themeSeason === "christmas" ? "url('christmas_light_bg_static.webp') center/cover no-repeat" : "url('light_bg_static.webp') center/cover no-repeat"
-  // }, [colorMode, themeSeason]);
+
 
   return (
     <Box
