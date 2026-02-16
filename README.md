@@ -412,4 +412,4 @@ When you need to update the client:
 
 ## 📄 License
 
-Private project.
+As usual, you're welcome to use this code as inspiration for your own projects - but please do not copy the code directly.
