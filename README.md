@@ -2,6 +2,8 @@
 
 A modern, real-time YouTube video jukebox web application that allows multiple users to search, queue, and control video playback from any device. Perfect for shared entertainment systems, parties, or remote-controlled media centers.
 
+Read the [behind the scenes case study](https://www.csterk.dev/projects/jukebox) at [ctserk.dev](https://www.csterk.dev/)!
+
 ## 📑 Table of Contents
 
 - [R-Jukebox](#r-jukebox)
