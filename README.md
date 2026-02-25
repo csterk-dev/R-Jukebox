@@ -4,6 +4,8 @@ A modern, real-time YouTube video jukebox web application that allows multiple u
 
 Read the [behind the scenes case study](https://www.csterk.dev/projects/jukebox) at [csterk.dev](https://www.csterk.dev/)!
 
+Checkout the Back-end repository [here](https://github.com/csterk-dev/R-Jukebox-API).
+
 ![R-Jukebox](public/images/github/jukebox-frame.png)
 
 ## 📑 Table of Contents

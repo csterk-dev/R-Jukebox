@@ -136,7 +136,7 @@ const surfaceColors = defineSemanticTokens.colors({
   background: {
     value: {
       _dark: "{colors.neutral.900}",
-      _light: "{colors.base.white}"
+      _light: "#fff"
     }
   },
   foreground: {

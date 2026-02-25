@@ -78,7 +78,6 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
         bg="surface.background"
         borderBottomRadius="lg"
         borderTopRadius="lg"
-        data-active={showingCurrentVideo ? "true" : "false"}
         height="calc(100vw / 3)"
         justifyContent="center"
         minHeight={{
