@@ -39,9 +39,8 @@ export const PageContainer = forwardRef<HTMLDivElement, PageContainerProps>((pro
           position="relative"
           w="100%"
           {...rest}
-          ref={ref}
         >
-          <ScrollArea.Viewport>
+          <ScrollArea.Viewport ref={ref}>
             <ScrollArea.Content>
 
               <Header

@@ -76,7 +76,7 @@ const _VideoCard: FC<VideoCardProps> = ({ isMobile, video, playVideo, addToBotto
           pointerEvents="none"
           src={video.thumbnails.medium.url}
           width={{
-            sm: "130px",
+            base: "130px",
             md: "168px"
           }}
         />

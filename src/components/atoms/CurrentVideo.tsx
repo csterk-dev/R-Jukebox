@@ -270,7 +270,8 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
 
 
         <Stack gap={4}>
-          <SkeletonText loading={isPlayerLoading} noOfLines={1}>
+          {isPlayerLoading ?
+            <SkeletonText noOfLines={1} /> :
             <Text
               as="h1"
               fontSize="xl"
@@ -281,14 +282,13 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
             >
               {videoTitle}
             </Text>
-          </SkeletonText>
-
+          }
 
           <Skeleton loading={isPlayerLoading} width={isPlayerLoading ? "65%" : "100%"}>
             <Flex
               alignItems="flex-start"
               flexDir={{
-                md: "column",
+                base: "column",
                 lg: "row"
               }}
               fontSize="lg"

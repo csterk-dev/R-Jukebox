@@ -80,7 +80,6 @@ export const LandingScreen: FC<LandScreenProps> = ({ isBgAnimated, isConnected, 
           <SettingsMenuItem
             ariaLabel="Adjust volume"
             icon={<HiSpeakerWave />}
-            iconProps={{}}
             label="Adjust volume"
             rightContent={<Text>{`${volumeLevel}%`}</Text>}
             onClick={() => setScreen("volume")}

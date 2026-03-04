@@ -196,6 +196,7 @@ export const SearchModal: FC<SearchModalProps> = ({ isMobile, isOpen, handlePlay
           borderRadius="lg"
           id="search_modal_body"
           layerStyle="themed-scroll"
+          maxH="740px"
           overflowY="auto"
           ref={modalBodyRef}
         >
