@@ -15,7 +15,6 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const { isMobile, themeSeason } = useAppState();
   const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, updatePlayerTimestamp } = usePlayer();
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
-
   const [showPublishedAtAsDate, setShowPublishedAtAsDate] = useState(false);
   const [isSlidingLocal, setIsSlidingLocal] = useState(false);
   const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
