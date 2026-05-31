@@ -13,9 +13,8 @@ type CurrentVideoProps = StackProps & {};
 
 const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   const { isMobile, themeSeason } = useAppState();
-  const { currentVideo, currentVideoTime, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, updatePlayerTimestamp } = usePlayer();
+  const { currentVideo, currentVideoTime, isPlaying, isPlayerBuffering, isPlayerLoading, pauseResumeCurrentVideo, updatePlayerTimestamp } = usePlayer();
   const showingCurrentVideo = currentVideo && !isPlayerLoading;
-
   const [showPublishedAtAsDate, setShowPublishedAtAsDate] = useState(false);
   const [isSlidingLocal, setIsSlidingLocal] = useState(false);
   const [localProgressSeconds, setLocalProgressSeconds] = useState(currentVideoTime || 0);
@@ -51,14 +50,14 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (!isSlidingLocal && showingCurrentVideo && isPlaying && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
+    if (!isSlidingLocal && showingCurrentVideo && isPlaying && !isPlayerBuffering && videoDurationSeconds && optimisticTimeSeconds < videoDurationSeconds) {
       intervalId = setInterval(() => {
         setOptimisticTimeSeconds(prevTime => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
-  }, [isSlidingLocal, showingCurrentVideo, isPlaying, optimisticTimeSeconds, videoDurationSeconds]);
+  }, [isSlidingLocal, showingCurrentVideo, isPlaying, isPlayerBuffering, optimisticTimeSeconds, videoDurationSeconds]);
 
 
   // Sync the optimistic time with the current video time from the server
@@ -129,6 +128,21 @@ const _CurrentVideo: FC<CurrentVideoProps> = ({ ...props }) => {
                   userSelect="none"
                   width="100%"
                 />
+                {isPlayerBuffering ?
+                  <Flex
+                    alignItems="center"
+                    height="100%"
+                    justifyContent="center"
+                    left={0}
+                    position="absolute"
+                    top={0}
+                    width="100%"
+                    zIndex={2}
+                  >
+                    <Spinner />
+                  </Flex> :
+                  null
+                }
                 <LinkOverlay href={`https://www.youtube.com/watch?v=${currentVideo.videoId}&t=${optimisticTimeSeconds}`} target="_blank">
                   <Icon
                     as={FaYoutube}

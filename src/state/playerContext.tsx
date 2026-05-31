@@ -32,6 +32,7 @@ interface PlayerContextType {
   error: string | undefined;
   isConnected: boolean;
   isPlaying: boolean;
+  isPlayerBuffering: boolean;
   isPlayerLoading: boolean;
   logs: EntryLog[];
   pauseResumeCurrentVideo: (action: "resume" | "pause") => void;
@@ -53,6 +54,7 @@ const defaultPlayerContextVal: PlayerContextType = {
   error: undefined,
   isConnected: false,
   isPlaying: false,
+  isPlayerBuffering: false,
   isPlayerLoading: false,
   logs: [],
   pauseResumeCurrentVideo: () => void 0,
@@ -80,6 +82,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentVideo, setCurrentVideo] = useState<PlayerContextType["currentVideo"]>();
   const [currentVideoTime, setCurrentVideoTime] = useState<PlayerContextType["currentVideoTime"]>();
   const [isPlaying, setIsPlaying] = useState<PlayerContextType["isPlaying"]>(false);
+  const [isPlayerBuffering, setIsPlayerBuffering] = useState<PlayerContextType["isPlayerBuffering"]>(false);
   const [isPlayerLoading, setIsPlayerLoading] = useState<PlayerContextType["isPlayerLoading"]>(false);
   const [error, setError] = useState<PlayerContextType["error"]>();
   const [volume, setVolume] = useState<PlayerContextType["playerVolume"]>(PLAYER_VOLUME_DEFAULT);
@@ -388,6 +391,10 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       });
 
 
+      // Sync buffering state
+      socketInstance.on(SOCKET_EVENT_KEYS.isBuffering, setIsPlayerBuffering);
+
+
       // Sync playing state
       socketInstance.on(SOCKET_EVENT_KEYS.isPlaying, (incomingIsPlaying: boolean) => {
         if (isPlaying !== incomingIsPlaying) {
@@ -413,6 +420,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       socketInstance.off(SOCKET_EVENT_KEYS.error);
       socketInstance.off(SOCKET_EVENT_KEYS.queue);
       socketInstance.off(SOCKET_EVENT_KEYS.isLoading);
+      socketInstance.off(SOCKET_EVENT_KEYS.isBuffering);
       socketInstance.off(SOCKET_EVENT_KEYS.isPlaying);
       socketInstance.off(SOCKET_EVENT_KEYS.playerVolume);
       socketInstance.off(SOCKET_EVENT_KEYS.logs);
@@ -429,6 +437,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       error,
       isConnected,
       isPlaying,
+      isPlayerBuffering,
       isPlayerLoading,
       pauseResumeCurrentVideo,
       playVideo,
@@ -441,7 +450,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
       updatePlayerVolume,
       updatePlayerTimestamp
     }
-  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, isConnected, isPlaying, isPlayerLoading, pauseResumeCurrentVideo, playVideo, logs, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
+  }, [clearQueue, currentVideo, currentVideoTime, deleteQueueItem, error, isConnected, isPlaying, isPlayerBuffering, isPlayerLoading, pauseResumeCurrentVideo, playVideo, logs, playNextQueueItem, addToTopOfQueue, addToBottomOfQueue, volume, queue, updatePlayerVolume, updatePlayerTimestamp]);
 
   return (
     <PlayerContext.Provider value={playerContext}>

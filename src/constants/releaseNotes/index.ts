@@ -5,9 +5,14 @@ import { v1_3_0, v1_3_1 } from "./v1_3_x";
 import { v1_4_0, v1_4_1, v1_4_2 } from "./v1_4_x";
 import { v1_5_0, v1_5_1, v1_5_2 } from "./v1_5_x";
 import { v2_0_0 } from "./v2_0_0";
+import { v3_0_0 } from "./v3_0_0";
 
 
 const VERSION_GROUP_DEFINITIONS = [
+  {
+    groupTitle: "YouTube IFrame Bridge",
+    versionNumGroup: "3.0"
+  },
   {
     groupTitle: "Vite & Chakra 3",
     versionNumGroup: "2.0"
@@ -40,6 +45,12 @@ const VERSION_GROUP_DEFINITIONS = [
 
 
 export const ALL_RELEASE_NOTES: ReleaseNotes = [
+  {
+    title: "Playback controls restored!",
+    versionNum: "3.0.0",
+    notes: v3_0_0,
+    date: "31/05/2026"
+  },
   {
     title: "Goodbye CRA... Hello Vite & Chakra 3",
     versionNum: "2.0.0",
