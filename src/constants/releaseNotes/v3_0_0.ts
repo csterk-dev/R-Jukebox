@@ -8,6 +8,10 @@ export const v3_0_0: ReleaseNoteEntry[] = [
     kind: "improvement"
   },
   {
+    details: "Show a buffering spinner over the video thumbnail when YouTube is loading more data (e.g. after seeking or on slow connections).",
+    kind: "newFeature"
+  },
+  {
     details: "Fix progress timestamps occasionally showing decimal seconds.",
     kind: "bugFix"
   },
